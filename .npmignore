@@ -1,0 +1,12 @@
+.kiro/
+.vscode/
+.yarn/
+.pnp.cjs
+.pnp.loader.mjs
+example/
+node_modules/
+__test_fixtures__/
+*.test.js
+lib/*.test.js
+vitest.config.*
+yarn.lock

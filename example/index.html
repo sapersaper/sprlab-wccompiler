@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>wcc-example</title>
+</head>
+<body>
+  <h1>wcCompiler Example</h1>
+
+  <wcc-counter label="Clicks:"></wcc-counter>
+
+  <hr>
+
+  <wcc-hi :value="counter" :value2="counter2" @on-click="handleClick">
+    <template #title><strong>Título custom!</strong></template>
+    <template #info="{ count, label }">
+      <em>Count: {{count}} | Label: {{label}}</em>
+    </template>
+    <p>Este es contenido default del slot</p>
+  </wcc-hi>
+
+  <script type="module">
+    import './dist/wcc-counter.js';
+    import './dist/wcc-hi.js';
+    import { init, set, get, on } from './dist/wcc-runtime.js';
+
+    on('handleClick', (e) => {
+      console.log('Evento recibido:', e.detail);
+    });
+
+    init({ counter: 100, counter2: 0 });
+
+    setInterval(() => set('counter', get('counter') + 1), 1000);
+    setInterval(() => set('counter2', get('counter2') + 1), 500);
+  </script>
+</body>
+</html>

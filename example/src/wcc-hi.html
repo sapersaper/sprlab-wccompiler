@@ -1,0 +1,59 @@
+<template>
+  <div class="counter">{{value}}</div>
+  <div class="info">segundo: {{prefix}} {{value2}}</div>
+  <div>{{internalValue}}</div>
+  <div>computed: {{fullLabel}}</div>
+  <div class="slot-area">
+    <slot name="title">Default title</slot>
+  </div>
+  <div class="slot-area">
+    <slot name="info" :count="value" :label="prefix">Default info</slot>
+  </div>
+  <slot>Default content</slot>
+  <button @click="handleClick">Click me</button>
+  <button @click="handleInternal">cambiar adentro</button>
+</template>
+
+<style>
+  .counter {
+    color: red;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .info {
+    color: blue;
+  }
+
+  .slot-area {
+    border: 1px solid #ccc;
+    padding: 8px;
+    margin: 4px 0;
+  }
+
+  button {
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  defineProps(['value', 'value2'])
+
+  const prefix = 'el prefix'
+  const internalValue = 'hola desde adentro'
+
+  const fullLabel = computed(() => prefix + ' - ' + value + '/' + value2)
+
+  watch('value', (newVal, oldVal) => {
+    console.log('value cambió:', oldVal, '->', newVal)
+  })
+
+  function handleClick() {
+    emit('on-click', internalValue)
+  }
+
+  function handleInternal() {
+    const internalValue = 'chau'
+  }
+</script>
