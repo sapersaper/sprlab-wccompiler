@@ -344,12 +344,12 @@ __metadata:
 
 "wccompiler@file:..::locator=wcc-example%40workspace%3A.":
   version: 0.0.2
-  resolution: "wccompiler@file:..#..::hash=9808c1&locator=wcc-example%40workspace%3A."
+  resolution: "wccompiler@file:..#..::hash=fd95fe&locator=wcc-example%40workspace%3A."
   dependencies:
     jsdom: "npm:^29.0.2"
   bin:
     wcc: ./bin/wcc.js
-  checksum: 10c0/3e6b5d437e061762f8d22e3e1996240e920d527fddf8f32b8d3be01baae95ce84b811dabd60e624f877e99aaa4e844900db84e61f25ba0676c84916f6cc9cde7
+  checksum: 10c0/83de9df713bb29a1f4f9b5bdbc1a4ec6433225e41fe85e1a0b4f7002fe399fd2323d453665ad1a0752331118357bdd1dfd6f3955522c0bcbf740ccbe9ac0cffe
   languageName: node
   linkType: hard
 
