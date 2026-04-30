@@ -1,0 +1,136 @@
+[     672ms] TypeError: Cannot read properties of undefined (reading 'childNodes')
+    at http://localhost:4200/dist/wcc-list.js:156:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-list.js:153:14
+    at run (http://localhost:4200/dist/wcc-list.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-list.js:46:3)
+    at WccList.connectedCallback (http://localhost:4200/dist/wcc-list.js:143:5)
+    at http://localhost:4200/dist/wcc-list.js:192:16
+[     675ms] TypeError: Cannot read properties of undefined (reading 'addEventListener')
+    at http://localhost:4200/dist/wcc-slots.js:185:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-slots.js:182:14
+    at run (http://localhost:4200/dist/wcc-slots.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-slots.js:46:3)
+    at WccSlots.connectedCallback (http://localhost:4200/dist/wcc-slots.js:172:5)
+    at http://localhost:4200/dist/wcc-slots.js:209:16
+[     664ms] [LOG] wcc-lifecycle mounted! Focusing input. @ http://localhost:4200/dist/wcc-lifecycle.js:160
+[  252137ms] TypeError: Cannot read properties of undefined (reading 'childNodes')
+    at http://localhost:4200/dist/wcc-list.js:156:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-list.js:153:14
+    at run (http://localhost:4200/dist/wcc-list.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-list.js:46:3)
+    at WccList.connectedCallback (http://localhost:4200/dist/wcc-list.js:143:5)
+    at http://localhost:4200/dist/wcc-list.js:192:16
+[  252137ms] TypeError: Cannot read properties of undefined (reading 'addEventListener')
+    at http://localhost:4200/dist/wcc-slots.js:185:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-slots.js:182:14
+    at run (http://localhost:4200/dist/wcc-slots.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-slots.js:46:3)
+    at WccSlots.connectedCallback (http://localhost:4200/dist/wcc-slots.js:172:5)
+    at http://localhost:4200/dist/wcc-slots.js:209:16
+[  252139ms] [LOG] wcc-lifecycle mounted! Focusing input. @ http://localhost:4200/dist/wcc-lifecycle.js:160
+[  418147ms] TypeError: Cannot read properties of undefined (reading 'childNodes')
+    at http://localhost:4200/dist/wcc-list.js:156:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-list.js:153:14
+    at run (http://localhost:4200/dist/wcc-list.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-list.js:46:3)
+    at WccList.connectedCallback (http://localhost:4200/dist/wcc-list.js:143:5)
+    at http://localhost:4200/dist/wcc-list.js:192:16
+[  418147ms] TypeError: Cannot read properties of undefined (reading 'addEventListener')
+    at http://localhost:4200/dist/wcc-slots.js:185:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-slots.js:182:14
+    at run (http://localhost:4200/dist/wcc-slots.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-slots.js:46:3)
+    at WccSlots.connectedCallback (http://localhost:4200/dist/wcc-slots.js:172:5)
+    at http://localhost:4200/dist/wcc-slots.js:209:16
+[  418149ms] [LOG] wcc-lifecycle mounted! Focusing input. @ http://localhost:4200/dist/wcc-lifecycle.js:160
+[  463143ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  463644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  464144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  464644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  465144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  465644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  466144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  466644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  467144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  467644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  468145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  468644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  469144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  469644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  470147ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  470645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  471145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  471645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  472144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  472644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  473145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  473644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  474145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  474646ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  475145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  475645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  476145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  476645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  477145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  477646ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  478145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  478644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  479144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  479645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  480144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  480646ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  481145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  481645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  482145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  482644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  483144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  483645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  484144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  484645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  485145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  485645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  486144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  486644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  487145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  487645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  488145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  488645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  489144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  489645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  490144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  490645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  491144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  491644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  492146ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  492645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  493144ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  493645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  494146ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  494645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  495146ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  495645ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  496145ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  496644ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  497155ms] TypeError: Cannot read properties of undefined (reading 'childNodes')
+    at http://localhost:4200/dist/wcc-list.js:156:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-list.js:153:14
+    at run (http://localhost:4200/dist/wcc-list.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-list.js:46:3)
+    at WccList.connectedCallback (http://localhost:4200/dist/wcc-list.js:143:5)
+    at http://localhost:4200/dist/wcc-list.js:192:16
+[  497156ms] TypeError: Cannot read properties of undefined (reading 'addEventListener')
+    at http://localhost:4200/dist/wcc-slots.js:185:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-slots.js:182:14
+    at run (http://localhost:4200/dist/wcc-slots.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-slots.js:46:3)
+    at WccSlots.connectedCallback (http://localhost:4200/dist/wcc-slots.js:172:5)
+    at http://localhost:4200/dist/wcc-slots.js:209:16
+[  497157ms] [LOG] wcc-lifecycle mounted! Focusing input. @ http://localhost:4200/dist/wcc-lifecycle.js:160

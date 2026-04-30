@@ -1,131 +1,96 @@
 #!/usr/bin/env node
 
-/**
- * wcc CLI — entry point for the wcCompiler.
- *
- * Commands:
- *   wcc build  — Compile all .html files from input/ to .js in output/
- *   wcc dev    — Build + watch input/ for changes + start dev server
- */
-
-import { readdir, writeFile, mkdir, watch, copyFile } from 'node:fs/promises';
-import { existsSync, watchFile } from 'node:fs';
-import { resolve, join, basename, dirname } from 'node:path';
+import { readdirSync, writeFileSync, mkdirSync, existsSync, watch, copyFileSync } from 'node:fs';
+import { resolve, relative, extname, basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadConfig } from '../lib/config.js';
 import { compile } from '../lib/compiler.js';
 import { startDevServer } from '../lib/dev-server.js';
 
-const projectRoot = process.cwd();
+const command = process.argv[2];
 
-/**
- * Compile a single file and write the output.
- * Returns true on success, false on error.
- */
-async function compileFile(filePath, outputDir) {
-  const fileName = basename(filePath, '.html');
-  try {
-    const code = compile(filePath);
-    const outPath = join(outputDir, `${fileName}.js`);
-    await writeFile(outPath, code, 'utf-8');
-    return true;
-  } catch (err) {
-    console.error(`Error compilando '${basename(filePath)}': ${err.message}`);
-    return false;
-  }
-}
+async function build(config, cwd) {
+  const inputDir = resolve(cwd, config.input);
+  const outputDir = resolve(cwd, config.output);
 
-/**
- * Compile all .html files from inputDir to outputDir.
- * Returns { success, errors } counts.
- */
-async function buildAll(inputDir, outputDir) {
-  // Create output dir if needed
-  if (!existsSync(outputDir)) {
-    await mkdir(outputDir, { recursive: true });
-  }
+  if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
 
-  // Find all .html files
-  let files;
-  try {
-    const entries = await readdir(inputDir);
-    files = entries.filter(f => f.endsWith('.html'));
-  } catch {
-    console.error(`Error: la carpeta de entrada '${inputDir}' no existe`);
-    process.exit(1);
-  }
-
-  let success = 0;
+  // Discover source files
+  const files = discoverFiles(inputDir);
   let errors = 0;
 
   for (const file of files) {
-    const filePath = join(inputDir, file);
-    const ok = await compileFile(filePath, outputDir);
-    if (ok) success++;
-    else errors++;
+    try {
+      const output = await compile(file);
+      const relPath = relative(inputDir, file);
+      const outPath = resolve(outputDir, relPath.replace(/\.ts$/, '.js'));
+      const outDir = dirname(outPath);
+      if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
+      writeFileSync(outPath, output);
+    } catch (err) {
+      console.error(`Error compiling ${file}: ${err.message}`);
+      errors++;
+    }
   }
 
-  // Copy optional wcc-runtime.js to output
+  // Copy wcc-runtime.js to output directory
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
   const runtimeSrc = resolve(__dirname, '../lib/wcc-runtime.js');
   const runtimeDest = join(outputDir, 'wcc-runtime.js');
-  await copyFile(runtimeSrc, runtimeDest);
+  copyFileSync(runtimeSrc, runtimeDest);
 
-  return { success, errors };
+  return errors;
 }
 
-// ── Main ──
+function discoverFiles(dir) {
+  const results = [];
+  const entries = readdirSync(dir, { withFileTypes: true, recursive: true });
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    const ext = extname(entry.name);
+    if (ext !== '.ts' && ext !== '.js') continue;
+    if (entry.name.includes('.test.')) continue;
+    if (entry.name.endsWith('.d.ts')) continue;
+    const fullPath = resolve(dir, entry.parentPath ? relative(dir, entry.parentPath) : '', entry.name);
+    results.push(fullPath);
+  }
+  return results;
+}
 
 async function main() {
-  const command = process.argv[2];
-
-  if (!command || (command !== 'build' && command !== 'dev')) {
-    console.log('Usage: wcc <command>');
-    console.log('');
-    console.log('Commands:');
-    console.log('  build   Compile all .html files');
-    console.log('  dev     Build + watch + dev server');
-    process.exit(0);
-  }
-
-  const config = await loadConfig(projectRoot);
-  const inputDir = resolve(projectRoot, config.input);
-  const outputDir = resolve(projectRoot, config.output);
+  const cwd = process.cwd();
+  const config = await loadConfig(cwd);
 
   if (command === 'build') {
-    const { success, errors } = await buildAll(inputDir, outputDir);
-    console.log(`Build complete: ${success} compiled, ${errors} error(s)`);
-    process.exit(errors > 0 ? 1 : 0);
-  }
-
-  if (command === 'dev') {
-    // Initial build
-    const { success, errors } = await buildAll(inputDir, outputDir);
-    console.log(`Initial build: ${success} compiled, ${errors} error(s)`);
-
-    // Watch input/ for changes
-    console.log(`Watching ${config.input}/ for changes...`);
-    const watcher = watch(inputDir, { recursive: true });
-    (async () => {
-      for await (const event of watcher) {
-        if (event.filename && event.filename.endsWith('.html')) {
-          const filePath = join(inputDir, event.filename);
-          if (existsSync(filePath)) {
-            console.log(`Change detected: ${event.filename}`);
-            const ok = await compileFile(filePath, outputDir);
-            if (ok) console.log(`Recompiled: ${event.filename}`);
-          }
-        }
+    const errors = await build(config, cwd);
+    if (errors > 0) process.exit(1);
+  } else if (command === 'dev') {
+    await build(config, cwd);
+    const outputDir = resolve(cwd, config.output);
+    startDevServer({ port: config.port, root: cwd, outputDir });
+    const inputDir = resolve(cwd, config.input);
+    console.log(`Watching ${inputDir} for changes...`);
+    watch(inputDir, { recursive: true }, async (eventType, filename) => {
+      if (!filename) return;
+      const ext = extname(filename);
+      if (ext !== '.ts' && ext !== '.js') return;
+      if (filename.includes('.test.')) return;
+      const filePath = resolve(inputDir, filename);
+      try {
+        const output = await compile(filePath);
+        const outPath = resolve(outputDir, filename.replace(/\.ts$/, '.js'));
+        const outDir = dirname(outPath);
+        if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
+        writeFileSync(outPath, output);
+        console.log(`Compiled: ${filename}`);
+      } catch (err) {
+        console.error(`Error compiling ${filename}: ${err.message}`);
       }
-    })();
-
-    // Start dev server
-    startDevServer({
-      port: config.port,
-      root: projectRoot,
-      outputDir,
     });
+  } else {
+    console.error('Usage: wcc <build|dev>');
+    process.exit(1);
   }
 }
 

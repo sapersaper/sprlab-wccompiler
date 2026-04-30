@@ -1,0 +1,5 @@
+[      19ms] [LOG] wcc-lifecycle mounted! Focusing input. @ http://localhost:4200/dist/wcc-lifecycle.js:160
+[   45837ms] ReferenceError: items is not defined
+    at WccList._addItem (http://localhost:4200/dist/wcc-list.js:185:21)
+[   82526ms] [LOG] wcc-lifecycle mounted! Focusing input. @ http://localhost:4200/dist/wcc-lifecycle.js:160
+[   99035ms] [LOG] wcc-lifecycle mounted! Focusing input. @ http://localhost:4200/dist/wcc-lifecycle.js:160

@@ -1,0 +1,180 @@
+- generic [ref=e1]:
+  - heading "wcCompiler v2 Showcase" [level=1] [ref=e2]
+  - generic [ref=e3]:
+    - heading "Counter" [level=2] [ref=e4]
+    - generic [ref=e5]:
+      - generic [ref=e6]: signal
+      - generic [ref=e7]: computed
+      - generic [ref=e8]: defineProps
+      - generic [ref=e9]: defineEmits
+      - generic [ref=e10]: "@event"
+      - generic [ref=e11]: "{{interpolation}}"
+      - generic [ref=e12]: CSS scoping
+    - generic [ref=e14]:
+      - generic [ref=e15]: "Clicks:"
+      - generic [ref=e16]: "2"
+      - generic [ref=e17]: (×2 = 4)
+      - button "+" [ref=e18] [cursor=pointer]
+      - button "−" [ref=e19] [cursor=pointer]
+  - generic [ref=e20]:
+    - heading "Form" [level=2] [ref=e21]
+    - generic [ref=e22]:
+      - generic [ref=e23]: model (text)
+      - generic [ref=e24]: model (number)
+      - generic [ref=e25]: model (checkbox)
+      - generic [ref=e26]: model (radio)
+      - generic [ref=e27]: model (select)
+      - generic [ref=e28]: model (textarea)
+      - generic [ref=e29]: computed
+    - generic [ref=e31]:
+      - heading "Form Demo" [level=2] [ref=e32]
+      - generic [ref=e33]:
+        - generic [ref=e34]: "Name:"
+        - textbox [ref=e35]
+      - generic [ref=e36]:
+        - generic [ref=e37]: "Age:"
+        - spinbutton [ref=e38]: "0"
+        - generic [ref=e39]: "0"
+      - generic [ref=e40]:
+        - generic [ref=e41]: "Agree:"
+        - checkbox [ref=e42]
+        - generic [ref=e43]: "false"
+      - generic [ref=e44]:
+        - generic [ref=e45]: "Color:"
+        - radio [checked] [ref=e46]
+        - text: Red
+        - radio [ref=e47]
+        - text: Green
+        - radio [ref=e48]
+        - text: Blue
+        - generic [ref=e49]: red
+      - generic [ref=e50]:
+        - generic [ref=e51]: "Country:"
+        - combobox [ref=e52]:
+          - option "Argentina" [selected]
+          - option "Chile"
+          - option "Uruguay"
+        - generic [ref=e53]: ar
+      - generic [ref=e54]:
+        - generic [ref=e55]: "Bio:"
+        - textbox [ref=e56]
+      - generic [ref=e57]:
+        - strong [ref=e58]: "Summary:"
+        - text: "| 0 yrs | red"
+  - generic [ref=e59]:
+    - heading "Conditional" [level=2] [ref=e60]
+    - generic [ref=e61]:
+      - generic [ref=e62]: if
+      - generic [ref=e63]: else-if
+      - generic [ref=e64]: else
+      - generic [ref=e65]: show
+      - generic [ref=e66]: :class
+      - generic [ref=e67]: :style
+    - generic [ref=e69]:
+      - 'heading "Status: active" [level=2] [ref=e70]'
+      - generic [ref=e71]: active
+      - generic [ref=e73]: Welcome back, User!
+      - paragraph [ref=e75]: These are the details section. It toggles with show.
+      - generic [ref=e76]:
+        - button "Cycle Status" [ref=e77] [cursor=pointer]
+        - button "Toggle Details" [ref=e78] [cursor=pointer]
+  - generic [ref=e79]:
+    - heading "List" [level=2] [ref=e80]
+    - generic [ref=e81]:
+      - generic [ref=e82]: each
+      - generic [ref=e83]: :key
+      - generic [ref=e84]: "@event in loop"
+      - generic [ref=e85]: model
+      - generic [ref=e86]: :attr binding
+    - generic [ref=e87]:
+      - heading "My List" [level=2] [ref=e88]
+      - generic [ref=e89]:
+        - textbox "New item name" [ref=e90]
+        - button "Add Item" [ref=e91] [cursor=pointer]
+      - list [ref=e92]:
+        - listitem "Learn wcCompiler" [ref=e93]:
+          - generic [ref=e94]: "0: Learn wcCompiler"
+          - button "×" [ref=e95] [cursor=pointer]
+        - listitem "Build components" [ref=e96]:
+          - generic [ref=e97]: "1: Build components"
+          - button "×" [ref=e98] [cursor=pointer]
+        - listitem "Ship it" [ref=e99]:
+          - generic [ref=e100]: "2: Ship it"
+          - button "×" [ref=e101] [cursor=pointer]
+  - generic [ref=e102]:
+    - heading "Slots" [level=2] [ref=e103]
+    - generic [ref=e104]:
+      - generic [ref=e105]: default slot
+      - generic [ref=e106]: named slot
+      - generic [ref=e107]: scoped slot
+      - generic [ref=e108]: fallback content
+      - generic [ref=e109]: light DOM
+    - heading "With fallback content (no children)" [level=3] [ref=e110]
+    - generic [ref=e112]:
+      - generic [ref=e113]: Default Card Header
+      - generic [ref=e114]: No content provided.
+      - generic [ref=e115]:
+        - button "👍 Like" [ref=e116] [cursor=pointer]
+        - generic [ref=e117]: "Likes: 0"
+      - generic [ref=e118]: Default footer text
+    - heading "With named slots + default slot" [level=3] [ref=e119]
+    - generic [ref=e121]:
+      - strong [ref=e124]: Custom Header via Named Slot
+      - paragraph [ref=e127]: This is custom default slot content passed from the consumer.
+      - generic [ref=e128]:
+        - button "👍 Like" [ref=e129] [cursor=pointer]
+        - generic [ref=e130]: "Likes: 0"
+      - generic [ref=e132]: Custom footer — powered by wcCompiler v2
+    - heading "With scoped slot (receives reactive data)" [level=3] [ref=e133]
+    - generic [ref=e135]:
+      - strong [ref=e138]: Scoped Slot Demo
+      - paragraph [ref=e141]: Click the Like button — the scoped slot below receives the count reactively.
+      - generic [ref=e142]:
+        - button "👍 Like" [active] [ref=e143] [cursor=pointer]
+        - emphasis [ref=e190]: 🔥 1 likes so far!
+      - generic [ref=e146]: Default footer text
+  - generic [ref=e147]:
+    - heading "Lifecycle" [level=2] [ref=e148]
+    - generic [ref=e149]:
+      - generic [ref=e150]: onMount
+      - generic [ref=e151]: onDestroy
+      - generic [ref=e152]: useRef
+      - generic [ref=e153]: defineProps
+      - generic [ref=e154]: signal
+    - generic [ref=e156]:
+      - heading "Lifecycle Hooks Demo" [level=2] [ref=e157]
+      - generic [ref=e158]: "Status: mounted"
+      - generic [ref=e159]:
+        - text: "Timer:"
+        - generic [ref=e160]: 32s
+      - textbox "Type your name" [ref=e161]
+      - generic [ref=e162]:
+        - text: Hello,
+        - text: World!
+      - button "Reset Timer" [ref=e163] [cursor=pointer]
+  - generic [ref=e164]:
+    - heading "TypeScript" [level=2] [ref=e165]
+    - generic [ref=e166]:
+      - generic [ref=e167]: TypeScript
+      - generic [ref=e168]: generics
+      - generic [ref=e169]: interfaces
+      - generic [ref=e170]: defineProps<T>
+      - generic [ref=e171]: defineEmits<T>
+      - generic [ref=e172]: signal<T>
+      - generic [ref=e173]: computed<T>
+    - generic "Demo" [ref=e174]:
+      - generic [ref=e175]:
+        - heading "TypeScript Component" [level=2] [ref=e176]
+        - generic [ref=e177]:
+          - generic [ref=e178]: "Title:"
+          - generic [ref=e179]: Demo
+        - generic [ref=e180]:
+          - generic [ref=e181]: "Count:"
+          - generic [ref=e182]: "5"
+        - generic [ref=e183]:
+          - generic [ref=e184]: "Doubled:"
+          - generic [ref=e185]: "10"
+        - generic [ref=e186]:
+          - generic [ref=e187]: "Last change:"
+          - generic [ref=e188]: none
+        - button "Update" [ref=e189] [cursor=pointer]

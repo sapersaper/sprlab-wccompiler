@@ -1,0 +1,105 @@
+- generic [ref=e1]:
+  - heading "wcCompiler Showcase" [level=1] [ref=e2]
+  - generic [ref=e3]:
+    - heading "Counter" [level=2] [ref=e4]
+    - generic [ref=e6]:
+      - generic [ref=e7]: "Clicks:"
+      - generic [ref=e8]: "0"
+      - button "+" [ref=e9] [cursor=pointer]
+      - button "-" [ref=e10] [cursor=pointer]
+  - generic [ref=e11]:
+    - heading "Form" [level=2] [ref=e12]
+    - generic [ref=e14]:
+      - heading "Form Demo" [level=2] [ref=e15]
+      - generic [ref=e16]:
+        - generic [ref=e17]: "Name:"
+        - textbox [ref=e18]
+      - generic [ref=e19]:
+        - generic [ref=e20]: "Age:"
+        - spinbutton [ref=e21]: "0"
+        - generic [ref=e22]: "0"
+      - generic [ref=e23]:
+        - generic [ref=e24]: "Agree:"
+        - checkbox [ref=e25]
+        - generic [ref=e26]: "false"
+      - generic [ref=e27]:
+        - generic [ref=e28]: "Color:"
+        - radio [checked] [ref=e29]
+        - text: Red
+        - radio [ref=e30]
+        - text: Green
+        - radio [ref=e31]
+        - text: Blue
+        - generic [ref=e32]: red
+      - generic [ref=e33]:
+        - generic [ref=e34]: "Country:"
+        - combobox [ref=e35]:
+          - option "Argentina" [selected]
+          - option "Chile"
+          - option "Uruguay"
+        - generic [ref=e36]: ar
+      - generic [ref=e37]:
+        - generic [ref=e38]: "Bio:"
+        - textbox [ref=e39]
+      - generic [ref=e40]:
+        - strong [ref=e41]: "Summary:"
+        - text: ", this._age() 0, this._color(): red"
+  - generic [ref=e42]:
+    - heading "Conditional" [level=2] [ref=e43]
+    - generic [ref=e45]:
+      - 'heading "Status: active" [level=2] [ref=e46]'
+      - generic [ref=e47]: active
+      - generic [ref=e49]: Welcome back, User!
+      - generic [ref=e50]:
+        - paragraph [ref=e51]: Your account is pending approval.
+        - button "Activate Now" [ref=e52] [cursor=pointer]
+      - paragraph [ref=e54]: Account inactive. Contact support.
+      - paragraph [ref=e56]: These are the details section. It toggles with v-show.
+      - generic [ref=e57]:
+        - button "Cycle Status" [ref=e58] [cursor=pointer]
+        - button "Toggle Details" [ref=e59] [cursor=pointer]
+  - generic [ref=e60]:
+    - heading "List" [level=2] [ref=e61]
+    - generic [ref=e62]:
+      - heading "My List" [level=2] [ref=e63]
+      - generic [ref=e64]:
+        - textbox "New item name" [ref=e65]
+        - button "Add Item" [ref=e66] [cursor=pointer]
+      - list
+  - generic [ref=e67]:
+    - heading "Slots" [level=2] [ref=e68]
+    - generic [ref=e70]:
+      - generic [ref=e71]:
+        - heading "Default Slot" [level=3] [ref=e72]
+        - paragraph [ref=e74]: This is custom default slot content.
+      - generic [ref=e75]:
+        - heading "Named Slot" [level=3] [ref=e76]
+        - strong [ref=e78]: Custom Header via Named Slot
+      - generic [ref=e79]:
+        - heading "Scoped Slots" [level=3] [ref=e80]
+        - list
+      - heading "Selected" [level=3] [ref=e82]
+  - generic [ref=e83]:
+    - heading "Lifecycle" [level=2] [ref=e84]
+    - generic [ref=e86]:
+      - heading "Lifecycle Hooks Demo" [level=2] [ref=e87]
+      - generic [ref=e88]: "Status: mounted"
+      - generic [ref=e89]:
+        - text: "Timer:"
+        - generic [ref=e90]: "0"
+      - textbox "Type your name" [active] [ref=e91]
+      - generic [ref=e92]: Hello, World!
+      - button "Reset Timer" [ref=e93] [cursor=pointer]
+  - generic [ref=e94]:
+    - heading "TypeScript" [level=2] [ref=e95]
+    - generic "Demo" [ref=e96]:
+      - generic [ref=e97]:
+        - heading "TypeScript Component" [level=2] [ref=e98]
+        - generic [ref=e99]:
+          - generic [ref=e100]: "Title:"
+          - generic [ref=e101]: Demo
+        - generic [ref=e103]: "Count:"
+        - generic [ref=e104]:
+          - generic [ref=e105]: "Doubled:"
+          - generic [ref=e106]: "0"
+        - button "Update" [ref=e107] [cursor=pointer]

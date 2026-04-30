@@ -1,0 +1,252 @@
+[     796ms] ReferenceError: props is not defined
+    at new WccCounter (http://localhost:4200/dist/wcc-counter.js:110:28)
+    at http://localhost:4200/dist/wcc-counter.js:157:16
+[     801ms] TypeError: this._name(...) is not a function
+    at http://localhost:4200/dist/wcc-form.js:181:52
+    at WccForm._c_summary (http://localhost:4200/dist/wcc-form.js:31:17)
+    at http://localhost:4200/dist/wcc-form.js:206:36
+    at run (http://localhost:4200/dist/wcc-form.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-form.js:46:3)
+    at WccForm.connectedCallback (http://localhost:4200/dist/wcc-form.js:205:5)
+    at http://localhost:4200/dist/wcc-form.js:244:16
+[     801ms] TypeError: this._status(...) is not a function
+    at http://localhost:4200/dist/wcc-conditional.js:154:56
+    at WccConditional._c_textColor (http://localhost:4200/dist/wcc-conditional.js:31:17)
+    at http://localhost:4200/dist/wcc-conditional.js:194:35
+    at run (http://localhost:4200/dist/wcc-conditional.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-conditional.js:46:3)
+    at WccConditional.connectedCallback (http://localhost:4200/dist/wcc-conditional.js:193:5)
+    at http://localhost:4200/dist/wcc-conditional.js:250:16
+[     801ms] TypeError: this._title is not a function
+    at http://localhost:4200/dist/wcc-list.js:135:36
+    at run (http://localhost:4200/dist/wcc-list.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-list.js:46:3)
+    at WccList.connectedCallback (http://localhost:4200/dist/wcc-list.js:134:5)
+    at http://localhost:4200/dist/wcc-list.js:184:16
+[     801ms] ReferenceError: nameInput is not defined
+    at WccLifecycle.connectedCallback (http://localhost:4200/dist/wcc-lifecycle.js:152:5)
+    at http://localhost:4200/dist/wcc-lifecycle.js:179:16
+[     802ms] TypeError: this._history(...) is not a function
+    at http://localhost:4200/dist/wcc-typescript.js:137:28
+    at WccTypescript._c_lastChange (http://localhost:4200/dist/wcc-typescript.js:31:17)
+    at http://localhost:4200/dist/wcc-typescript.js:157:36
+    at run (http://localhost:4200/dist/wcc-typescript.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-typescript.js:46:3)
+    at WccTypescript.connectedCallback (http://localhost:4200/dist/wcc-typescript.js:156:5)
+    at http://localhost:4200/dist/wcc-typescript.js:185:16
+[   31767ms] TypeError: this._count(...) is not a function
+    at http://localhost:4200/dist/wcc-counter.js:111:53
+    at WccCounter._c_doubled (http://localhost:4200/dist/wcc-counter.js:31:17)
+    at http://localhost:4200/dist/wcc-counter.js:124:36
+    at run (http://localhost:4200/dist/wcc-counter.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-counter.js:46:3)
+    at WccCounter.connectedCallback (http://localhost:4200/dist/wcc-counter.js:123:5)
+    at http://localhost:4200/dist/wcc-counter.js:157:16
+[   31767ms] TypeError: this._name(...) is not a function
+    at http://localhost:4200/dist/wcc-form.js:181:52
+    at WccForm._c_summary (http://localhost:4200/dist/wcc-form.js:31:17)
+    at http://localhost:4200/dist/wcc-form.js:206:36
+    at run (http://localhost:4200/dist/wcc-form.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-form.js:46:3)
+    at WccForm.connectedCallback (http://localhost:4200/dist/wcc-form.js:205:5)
+    at http://localhost:4200/dist/wcc-form.js:244:16
+[   31768ms] TypeError: this._status(...) is not a function
+    at http://localhost:4200/dist/wcc-conditional.js:154:56
+    at WccConditional._c_textColor (http://localhost:4200/dist/wcc-conditional.js:31:17)
+    at http://localhost:4200/dist/wcc-conditional.js:194:35
+    at run (http://localhost:4200/dist/wcc-conditional.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-conditional.js:46:3)
+    at WccConditional.connectedCallback (http://localhost:4200/dist/wcc-conditional.js:193:5)
+    at http://localhost:4200/dist/wcc-conditional.js:250:16
+[   31768ms] TypeError: this._title is not a function
+    at http://localhost:4200/dist/wcc-list.js:135:36
+    at run (http://localhost:4200/dist/wcc-list.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-list.js:46:3)
+    at WccList.connectedCallback (http://localhost:4200/dist/wcc-list.js:134:5)
+    at http://localhost:4200/dist/wcc-list.js:184:16
+[   31768ms] ReferenceError: nameInput is not defined
+    at WccLifecycle.connectedCallback (http://localhost:4200/dist/wcc-lifecycle.js:152:5)
+    at http://localhost:4200/dist/wcc-lifecycle.js:179:16
+[   31768ms] TypeError: this._history(...) is not a function
+    at http://localhost:4200/dist/wcc-typescript.js:137:28
+    at WccTypescript._c_lastChange (http://localhost:4200/dist/wcc-typescript.js:31:17)
+    at http://localhost:4200/dist/wcc-typescript.js:157:36
+    at run (http://localhost:4200/dist/wcc-typescript.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-typescript.js:46:3)
+    at WccTypescript.connectedCallback (http://localhost:4200/dist/wcc-typescript.js:156:5)
+    at http://localhost:4200/dist/wcc-typescript.js:185:16
+[   93776ms] TypeError: this._count(...) is not a function
+    at http://localhost:4200/dist/wcc-counter.js:111:53
+    at WccCounter._c_doubled (http://localhost:4200/dist/wcc-counter.js:31:17)
+    at http://localhost:4200/dist/wcc-counter.js:124:36
+    at run (http://localhost:4200/dist/wcc-counter.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-counter.js:46:3)
+    at WccCounter.connectedCallback (http://localhost:4200/dist/wcc-counter.js:123:5)
+    at http://localhost:4200/dist/wcc-counter.js:157:16
+[   93776ms] TypeError: this._name(...) is not a function
+    at http://localhost:4200/dist/wcc-form.js:181:52
+    at WccForm._c_summary (http://localhost:4200/dist/wcc-form.js:31:17)
+    at http://localhost:4200/dist/wcc-form.js:206:36
+    at run (http://localhost:4200/dist/wcc-form.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-form.js:46:3)
+    at WccForm.connectedCallback (http://localhost:4200/dist/wcc-form.js:205:5)
+    at http://localhost:4200/dist/wcc-form.js:244:16
+[   93776ms] TypeError: this._status(...) is not a function
+    at http://localhost:4200/dist/wcc-conditional.js:154:56
+    at WccConditional._c_textColor (http://localhost:4200/dist/wcc-conditional.js:31:17)
+    at http://localhost:4200/dist/wcc-conditional.js:194:35
+    at run (http://localhost:4200/dist/wcc-conditional.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-conditional.js:46:3)
+    at WccConditional.connectedCallback (http://localhost:4200/dist/wcc-conditional.js:193:5)
+    at http://localhost:4200/dist/wcc-conditional.js:250:16
+[   93776ms] ReferenceError: nameInput is not defined
+    at WccLifecycle.connectedCallback (http://localhost:4200/dist/wcc-lifecycle.js:152:5)
+    at http://localhost:4200/dist/wcc-lifecycle.js:179:16
+[   93777ms] TypeError: this._history(...) is not a function
+    at http://localhost:4200/dist/wcc-typescript.js:137:28
+    at WccTypescript._c_lastChange (http://localhost:4200/dist/wcc-typescript.js:31:17)
+    at http://localhost:4200/dist/wcc-typescript.js:157:36
+    at run (http://localhost:4200/dist/wcc-typescript.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-typescript.js:46:3)
+    at WccTypescript.connectedCallback (http://localhost:4200/dist/wcc-typescript.js:156:5)
+    at http://localhost:4200/dist/wcc-typescript.js:185:16
+[  111282ms] TypeError: this._count(...) is not a function
+    at http://localhost:4200/dist/wcc-counter.js:111:53
+    at WccCounter._c_doubled (http://localhost:4200/dist/wcc-counter.js:31:17)
+    at http://localhost:4200/dist/wcc-counter.js:124:36
+    at run (http://localhost:4200/dist/wcc-counter.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-counter.js:46:3)
+    at WccCounter.connectedCallback (http://localhost:4200/dist/wcc-counter.js:123:5)
+    at http://localhost:4200/dist/wcc-counter.js:157:16
+[  111283ms] TypeError: this._name(...) is not a function
+    at http://localhost:4200/dist/wcc-form.js:181:52
+    at WccForm._c_summary (http://localhost:4200/dist/wcc-form.js:31:17)
+    at http://localhost:4200/dist/wcc-form.js:206:36
+    at run (http://localhost:4200/dist/wcc-form.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-form.js:46:3)
+    at WccForm.connectedCallback (http://localhost:4200/dist/wcc-form.js:205:5)
+    at http://localhost:4200/dist/wcc-form.js:244:16
+[  111283ms] TypeError: this._status(...) is not a function
+    at http://localhost:4200/dist/wcc-conditional.js:154:56
+    at WccConditional._c_textColor (http://localhost:4200/dist/wcc-conditional.js:31:17)
+    at http://localhost:4200/dist/wcc-conditional.js:194:35
+    at run (http://localhost:4200/dist/wcc-conditional.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-conditional.js:46:3)
+    at WccConditional.connectedCallback (http://localhost:4200/dist/wcc-conditional.js:193:5)
+    at http://localhost:4200/dist/wcc-conditional.js:250:16
+[  111284ms] ReferenceError: tick is not defined
+    at WccLifecycle.connectedCallback (http://localhost:4200/dist/wcc-lifecycle.js:153:25)
+    at http://localhost:4200/dist/wcc-lifecycle.js:179:16
+[  111284ms] TypeError: this._history(...) is not a function
+    at http://localhost:4200/dist/wcc-typescript.js:137:28
+    at WccTypescript._c_lastChange (http://localhost:4200/dist/wcc-typescript.js:31:17)
+    at http://localhost:4200/dist/wcc-typescript.js:157:36
+    at run (http://localhost:4200/dist/wcc-typescript.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-typescript.js:46:3)
+    at WccTypescript.connectedCallback (http://localhost:4200/dist/wcc-typescript.js:156:5)
+    at http://localhost:4200/dist/wcc-typescript.js:185:16
+[  132794ms] TypeError: this._count(...) is not a function
+    at http://localhost:4200/dist/wcc-counter.js:111:53
+    at WccCounter._c_doubled (http://localhost:4200/dist/wcc-counter.js:31:17)
+    at http://localhost:4200/dist/wcc-counter.js:124:36
+    at run (http://localhost:4200/dist/wcc-counter.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-counter.js:46:3)
+    at WccCounter.connectedCallback (http://localhost:4200/dist/wcc-counter.js:123:5)
+    at http://localhost:4200/dist/wcc-counter.js:157:16
+[  132794ms] TypeError: this._name(...) is not a function
+    at http://localhost:4200/dist/wcc-form.js:181:52
+    at WccForm._c_summary (http://localhost:4200/dist/wcc-form.js:31:17)
+    at http://localhost:4200/dist/wcc-form.js:206:36
+    at run (http://localhost:4200/dist/wcc-form.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-form.js:46:3)
+    at WccForm.connectedCallback (http://localhost:4200/dist/wcc-form.js:205:5)
+    at http://localhost:4200/dist/wcc-form.js:244:16
+[  132794ms] TypeError: this._status(...) is not a function
+    at http://localhost:4200/dist/wcc-conditional.js:154:56
+    at WccConditional._c_textColor (http://localhost:4200/dist/wcc-conditional.js:31:17)
+    at http://localhost:4200/dist/wcc-conditional.js:194:35
+    at run (http://localhost:4200/dist/wcc-conditional.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-conditional.js:46:3)
+    at WccConditional.connectedCallback (http://localhost:4200/dist/wcc-conditional.js:193:5)
+    at http://localhost:4200/dist/wcc-conditional.js:250:16
+[  132796ms] ReferenceError: timer is not defined
+    at WccLifecycle.connectedCallback (http://localhost:4200/dist/wcc-lifecycle.js:153:11)
+    at http://localhost:4200/dist/wcc-lifecycle.js:179:16
+[  132796ms] TypeError: this._history(...) is not a function
+    at http://localhost:4200/dist/wcc-typescript.js:137:28
+    at WccTypescript._c_lastChange (http://localhost:4200/dist/wcc-typescript.js:31:17)
+    at http://localhost:4200/dist/wcc-typescript.js:157:36
+    at run (http://localhost:4200/dist/wcc-typescript.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-typescript.js:46:3)
+    at WccTypescript.connectedCallback (http://localhost:4200/dist/wcc-typescript.js:156:5)
+    at http://localhost:4200/dist/wcc-typescript.js:185:16
+[  146299ms] TypeError: this._count(...) is not a function
+    at http://localhost:4200/dist/wcc-counter.js:111:53
+    at WccCounter._c_doubled (http://localhost:4200/dist/wcc-counter.js:31:17)
+    at http://localhost:4200/dist/wcc-counter.js:124:36
+    at run (http://localhost:4200/dist/wcc-counter.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-counter.js:46:3)
+    at WccCounter.connectedCallback (http://localhost:4200/dist/wcc-counter.js:123:5)
+    at http://localhost:4200/dist/wcc-counter.js:157:16
+[  146300ms] TypeError: this._name(...) is not a function
+    at http://localhost:4200/dist/wcc-form.js:181:52
+    at WccForm._c_summary (http://localhost:4200/dist/wcc-form.js:31:17)
+    at http://localhost:4200/dist/wcc-form.js:206:36
+    at run (http://localhost:4200/dist/wcc-form.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-form.js:46:3)
+    at WccForm.connectedCallback (http://localhost:4200/dist/wcc-form.js:205:5)
+    at http://localhost:4200/dist/wcc-form.js:244:16
+[  146300ms] TypeError: this._status(...) is not a function
+    at http://localhost:4200/dist/wcc-conditional.js:154:56
+    at WccConditional._c_textColor (http://localhost:4200/dist/wcc-conditional.js:31:17)
+    at http://localhost:4200/dist/wcc-conditional.js:194:35
+    at run (http://localhost:4200/dist/wcc-conditional.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-conditional.js:46:3)
+    at WccConditional.connectedCallback (http://localhost:4200/dist/wcc-conditional.js:193:5)
+    at http://localhost:4200/dist/wcc-conditional.js:250:16
+[  146301ms] ReferenceError: timer is not defined
+    at WccLifecycle.connectedCallback (http://localhost:4200/dist/wcc-lifecycle.js:153:11)
+    at http://localhost:4200/dist/wcc-lifecycle.js:179:16
+[  146301ms] TypeError: this._history(...) is not a function
+    at http://localhost:4200/dist/wcc-typescript.js:137:28
+    at WccTypescript._c_lastChange (http://localhost:4200/dist/wcc-typescript.js:31:17)
+    at http://localhost:4200/dist/wcc-typescript.js:157:36
+    at run (http://localhost:4200/dist/wcc-typescript.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-typescript.js:46:3)
+    at WccTypescript.connectedCallback (http://localhost:4200/dist/wcc-typescript.js:156:5)
+    at http://localhost:4200/dist/wcc-typescript.js:185:16
+[  155307ms] TypeError: this._count(...) is not a function
+    at http://localhost:4200/dist/wcc-counter.js:111:53
+    at WccCounter._c_doubled (http://localhost:4200/dist/wcc-counter.js:31:17)
+    at http://localhost:4200/dist/wcc-counter.js:124:36
+    at run (http://localhost:4200/dist/wcc-counter.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-counter.js:46:3)
+    at WccCounter.connectedCallback (http://localhost:4200/dist/wcc-counter.js:123:5)
+    at http://localhost:4200/dist/wcc-counter.js:157:16
+[  155308ms] TypeError: this._name(...) is not a function
+    at http://localhost:4200/dist/wcc-form.js:181:52
+    at WccForm._c_summary (http://localhost:4200/dist/wcc-form.js:31:17)
+    at http://localhost:4200/dist/wcc-form.js:206:36
+    at run (http://localhost:4200/dist/wcc-form.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-form.js:46:3)
+    at WccForm.connectedCallback (http://localhost:4200/dist/wcc-form.js:205:5)
+    at http://localhost:4200/dist/wcc-form.js:244:16
+[  155308ms] TypeError: this._status(...) is not a function
+    at http://localhost:4200/dist/wcc-conditional.js:154:56
+    at WccConditional._c_textColor (http://localhost:4200/dist/wcc-conditional.js:31:17)
+    at http://localhost:4200/dist/wcc-conditional.js:194:35
+    at run (http://localhost:4200/dist/wcc-conditional.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-conditional.js:46:3)
+    at WccConditional.connectedCallback (http://localhost:4200/dist/wcc-conditional.js:193:5)
+    at http://localhost:4200/dist/wcc-conditional.js:250:16
+[  155309ms] ReferenceError: timer is not defined
+    at WccLifecycle.connectedCallback (http://localhost:4200/dist/wcc-lifecycle.js:153:11)
+    at http://localhost:4200/dist/wcc-lifecycle.js:179:16
+[  155310ms] TypeError: this._history(...) is not a function
+    at http://localhost:4200/dist/wcc-typescript.js:137:28
+    at WccTypescript._c_lastChange (http://localhost:4200/dist/wcc-typescript.js:31:17)
+    at http://localhost:4200/dist/wcc-typescript.js:157:36
+    at run (http://localhost:4200/dist/wcc-typescript.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-typescript.js:46:3)
+    at WccTypescript.connectedCallback (http://localhost:4200/dist/wcc-typescript.js:156:5)
+    at http://localhost:4200/dist/wcc-typescript.js:185:16

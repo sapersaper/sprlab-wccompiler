@@ -1,0 +1,17 @@
+[      19ms] [LOG] wcc-lifecycle mounted! Focusing input. @ http://localhost:4200/dist/wcc-lifecycle.js:160
+[   51523ms] [LOG] wcc-lifecycle mounted! Focusing input. @ http://localhost:4200/dist/wcc-lifecycle.js:160
+[   57018ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   57519ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   58019ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   58519ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   59019ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   59519ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   60019ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   60519ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   61018ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   61520ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   62018ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   62518ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   63018ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   63518ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   64034ms] [LOG] wcc-lifecycle mounted! Focusing input. @ http://localhost:4200/dist/wcc-lifecycle.js:160

@@ -1,0 +1,62 @@
+[      16ms] TypeError: Cannot read properties of undefined (reading 'childNodes')
+    at http://localhost:4200/dist/wcc-list.js:156:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-list.js:153:14
+    at run (http://localhost:4200/dist/wcc-list.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-list.js:46:3)
+    at WccList.connectedCallback (http://localhost:4200/dist/wcc-list.js:143:5)
+    at http://localhost:4200/dist/wcc-list.js:192:16
+[      16ms] TypeError: Cannot read properties of undefined (reading 'addEventListener')
+    at http://localhost:4200/dist/wcc-slots.js:185:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-slots.js:182:14
+    at run (http://localhost:4200/dist/wcc-slots.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-slots.js:46:3)
+    at WccSlots.connectedCallback (http://localhost:4200/dist/wcc-slots.js:172:5)
+    at http://localhost:4200/dist/wcc-slots.js:209:16
+[      17ms] [LOG] wcc-lifecycle mounted! Focusing input. @ http://localhost:4200/dist/wcc-lifecycle.js:160
+[  351537ms] TypeError: Cannot read properties of undefined (reading 'childNodes')
+    at http://localhost:4200/dist/wcc-list.js:156:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-list.js:153:14
+    at run (http://localhost:4200/dist/wcc-list.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-list.js:46:3)
+    at WccList.connectedCallback (http://localhost:4200/dist/wcc-list.js:143:5)
+    at http://localhost:4200/dist/wcc-list.js:192:16
+[  351537ms] TypeError: Cannot read properties of undefined (reading 'addEventListener')
+    at http://localhost:4200/dist/wcc-slots.js:185:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-slots.js:182:14
+    at run (http://localhost:4200/dist/wcc-slots.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-slots.js:46:3)
+    at WccSlots.connectedCallback (http://localhost:4200/dist/wcc-slots.js:172:5)
+    at http://localhost:4200/dist/wcc-slots.js:209:16
+[  351538ms] [LOG] wcc-lifecycle mounted! Focusing input. @ http://localhost:4200/dist/wcc-lifecycle.js:160
+[  363023ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  363524ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  364024ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  364523ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  365024ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  365524ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  366024ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  366523ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  367023ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  367522ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  368022ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[  368532ms] TypeError: Cannot read properties of undefined (reading 'childNodes')
+    at http://localhost:4200/dist/wcc-list.js:156:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-list.js:153:14
+    at run (http://localhost:4200/dist/wcc-list.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-list.js:46:3)
+    at WccList.connectedCallback (http://localhost:4200/dist/wcc-list.js:143:5)
+    at http://localhost:4200/dist/wcc-list.js:192:16
+[  368533ms] TypeError: Cannot read properties of undefined (reading 'addEventListener')
+    at http://localhost:4200/dist/wcc-slots.js:185:42
+    at Array.forEach (<anonymous>)
+    at http://localhost:4200/dist/wcc-slots.js:182:14
+    at run (http://localhost:4200/dist/wcc-slots.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-slots.js:46:3)
+    at WccSlots.connectedCallback (http://localhost:4200/dist/wcc-slots.js:172:5)
+    at http://localhost:4200/dist/wcc-slots.js:209:16
+[  368534ms] [LOG] wcc-lifecycle mounted! Focusing input. @ http://localhost:4200/dist/wcc-lifecycle.js:160

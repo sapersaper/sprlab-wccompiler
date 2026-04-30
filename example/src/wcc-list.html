@@ -1,0 +1,11 @@
+<h2>{{title}}</h2>
+<div class="add-section">
+  <input type="text" model="newItemName" placeholder="New item name">
+  <button @click="addItem">Add Item</button>
+</div>
+<ul>
+  <li each="(item, index) in items" :key="item.id" :data-id="item.id" :title="item.name">
+    <span>{{index}}: {{item.name}}</span>
+    <button @click="removeItem">×</button>
+  </li>
+</ul>
