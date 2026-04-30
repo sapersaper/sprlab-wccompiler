@@ -1,0 +1,743 @@
+[ 3172533ms] ReferenceError: props is not defined
+    at http://localhost:4200/dist/wcc-typescript.js:132:62
+    at WccTypescript._c_doubled (http://localhost:4200/dist/wcc-typescript.js:31:17)
+    at http://localhost:4200/dist/wcc-typescript.js:139:36
+    at run (http://localhost:4200/dist/wcc-typescript.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-typescript.js:46:3)
+    at WccTypescript.connectedCallback (http://localhost:4200/dist/wcc-typescript.js:136:5)
+    at http://localhost:4200/dist/wcc-typescript.js:165:16
+[ 3172533ms] ReferenceError: props is not defined
+    at http://localhost:4200/dist/wcc-typescript.js:132:62
+    at WccTypescript._c_doubled (http://localhost:4200/dist/wcc-typescript.js:31:17)
+    at http://localhost:4200/dist/wcc-typescript.js:139:36
+    at run (http://localhost:4200/dist/wcc-typescript.js:43:5)
+    at WccTypescript._s_count (http://localhost:4200/dist/wcc-typescript.js:14:36)
+    at set count (http://localhost:4200/dist/wcc-typescript.js:153:25)
+    at http://localhost:4200/dist/wcc-runtime.js:24:36
+    at NodeList.forEach (<anonymous>)
+    at init (http://localhost:4200/dist/wcc-runtime.js:18:34)
+    at http://localhost:4200/:94:5
+[ 6477576ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6478576ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6479577ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6480576ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6481576ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6483586ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6484586ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6485585ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6486585ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6487585ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6488585ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6489585ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6491109ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6492110ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6493110ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6494110ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6495110ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6496109ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6497114ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6498133ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6499132ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6500133ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6501133ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6502131ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6503631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6504631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6505631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6506631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6507632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6508631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6509631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6510631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6511630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6512630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6513630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6514631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6515631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6516631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6517631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6518630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6519631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6520631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6521631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6522630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6523631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6524631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6525630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6526631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6527631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6528630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6529630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6530630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6531632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6532632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6533631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6534633ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6535632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6536631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6537632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6538631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6539631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6540632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6541631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6542632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6543632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6544631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6545630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6546632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6547631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6548632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6549631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6550632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6551631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6552631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6553631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6554632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6555631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6556631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6557631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6558631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6559630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6560631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6561631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6562631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6563631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6564630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6565631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6566631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6567631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6568631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6569630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6570631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6571631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6572631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6573631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6574631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6575631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6576631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6577631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6578631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6579631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6580631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6581631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6582630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6583632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6584630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6585631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6586631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6587631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6588631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6589631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6590631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6591631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6592630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6593631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6594631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6595631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6596664ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6597630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6598631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6599632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6600630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6601630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6602631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6603631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6604631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6605631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6606631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6607631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6608631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6609632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6610631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6611632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6612630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6613631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6614631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6615631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6616631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6617631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6618631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6619631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6620631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6621631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6622631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6623631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6624632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6625631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6626631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6627631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6628631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6629631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6630631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6631631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6632632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6633631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6634631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6635631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6636632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6637634ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6638630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6639631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6640631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6641631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6642631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6643631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6644631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6645631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6646631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6647631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6648631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6649631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6650657ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6651632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6652631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6653631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6654631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6655631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6656631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6657631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6658631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6659631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6660631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6661631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6662631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6663631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6664631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6665631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6666631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6667631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6668631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6669631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6670631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6671632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6672631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6673632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6674631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6675631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6676632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6677631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6678631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6679631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6680631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6681632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6682631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6683632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6684631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6685631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6686632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6687631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6688632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6689631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6690631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6691632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6692632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6693631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6694631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6695631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6696631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6697632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6698631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6699632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6700631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6701632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6702631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6703631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6704634ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6705637ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6706655ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6707632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6708631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6709631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6710632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6711631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6712631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6713632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6714632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6715631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6716632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6717632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6718631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6719631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6720631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6721631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6722631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6723631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6724632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6725631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6726631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6727631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6728632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6729631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6730631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6731632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6732631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6733632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6734631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6735631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6736631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6737631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6738632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6739632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6740632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6741632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6742631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6743632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6744631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6745631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6746632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6747632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6748632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6749631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6750633ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6751631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6752632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6753631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6754631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6755632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6756632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6757633ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6758631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6759631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6760632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6761631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6762631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6763631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6764631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6765631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6766631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6767631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6768630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6769669ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6770631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6771631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6772631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6773630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6774631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6775631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6776631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6777631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6778631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6779631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6780631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6781631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6782631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6783631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6784631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6785630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6786631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6787630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6788630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6789631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6790631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6791631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6792630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6793631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6794630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6795630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6796630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6797631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6798632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6799631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6800631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6801632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6802631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6803633ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6804630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6805631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6806631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6807630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6808632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6809630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6810630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6811631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6812630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6813631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6814631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6815631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6816632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6817632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6818631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6819633ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6820633ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6821631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6822631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6823631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6824634ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6825631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6826631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6827632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6828632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6829632ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6830631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6831631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6832631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6833630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6834631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6835631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6836631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6837631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6838631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6839630ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)
+[ 6840631ms] TypeError: Cannot create property 'value' on number '0'
+    at WccLifecycle._tick (http://localhost:4200/dist/wcc-lifecycle.js:188:27)

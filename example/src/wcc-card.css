@@ -1,0 +1,42 @@
+.card {
+  font-family: sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 400px;
+}
+
+.card-header {
+  padding: 12px 16px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  font-weight: bold;
+}
+
+.card-body {
+  padding: 16px;
+}
+
+.card-actions {
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid #eee;
+}
+
+.card-actions button {
+  padding: 4px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.card-footer {
+  padding: 12px 16px;
+  background: #fafafa;
+  border-top: 1px solid #ddd;
+  font-size: 0.9em;
+  color: #666;
+}

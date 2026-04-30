@@ -1,7 +1,7 @@
 {
   "name": "@sprlab/wccompiler",
-  "version": "0.0.3",
-  "description": "Zero-runtime compiler that transforms .html files with Vue-like syntax into 100% native web components",
+  "version": "0.2.0",
+  "description": "Zero-runtime compiler that transforms .ts/.js component files into native web components with signals-based reactivity",
   "type": "module",
   "bin": {
     "wcc": "./bin/wcc.js"
@@ -10,29 +10,31 @@
     "bin/",
     "lib/*.js",
     "!lib/*.test.js",
+    "types/",
     "README.md"
   ],
+  "types": "./types/wcc.d.ts",
   "scripts": {
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "typecheck": "tsc --project jsconfig.json --noEmit"
   },
   "keywords": [
     "web-components",
     "compiler",
     "custom-elements",
     "zero-runtime",
-    "native",
-    "vue-like"
+    "signals",
+    "native"
   ],
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": ""
-  },
   "dependencies": {
+    "esbuild": "^0.27.0",
     "jsdom": "^29.0.2"
   },
   "devDependencies": {
+    "@types/jsdom": "^28.0.1",
     "fast-check": "^4.1.1",
+    "typescript": "^6.0.3",
     "vitest": "^3.2.1"
   },
   "volta": {

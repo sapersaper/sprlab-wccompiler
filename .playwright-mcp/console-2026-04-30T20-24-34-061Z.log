@@ -1,0 +1,32 @@
+[      13ms] TypeError: this._name is not a function
+    at http://localhost:4200/dist/wcc-conditional.js:240:48
+    at run (http://localhost:4200/dist/wcc-conditional.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-conditional.js:46:3)
+    at WccConditional.__if0_setup (http://localhost:4200/dist/wcc-conditional.js:240:7)
+    at http://localhost:4200/dist/wcc-conditional.js:212:14
+    at run (http://localhost:4200/dist/wcc-conditional.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-conditional.js:46:3)
+    at WccConditional.connectedCallback (http://localhost:4200/dist/wcc-conditional.js:199:5)
+    at http://localhost:4200/dist/wcc-conditional.js:250:16
+[      15ms] ReferenceError: timer is not defined
+    at WccLifecycle.connectedCallback (http://localhost:4200/dist/wcc-lifecycle.js:153:11)
+    at http://localhost:4200/dist/wcc-lifecycle.js:179:16
+[   19018ms] TypeError: this._status(...) is not a function
+    at http://localhost:4200/dist/wcc-conditional.js:155:56
+    at WccConditional._c_textColor (http://localhost:4200/dist/wcc-conditional.js:31:17)
+    at http://localhost:4200/dist/wcc-conditional.js:195:35
+    at run (http://localhost:4200/dist/wcc-conditional.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-conditional.js:46:3)
+    at WccConditional.connectedCallback (http://localhost:4200/dist/wcc-conditional.js:194:5)
+    at http://localhost:4200/dist/wcc-conditional.js:251:16
+[   19020ms] ReferenceError: timer is not defined
+    at WccLifecycle.connectedCallback (http://localhost:4200/dist/wcc-lifecycle.js:153:11)
+    at http://localhost:4200/dist/wcc-lifecycle.js:179:16
+[   39032ms] TypeError: this._status(...) is not a function
+    at http://localhost:4200/dist/wcc-conditional.js:155:56
+    at WccConditional._c_textColor (http://localhost:4200/dist/wcc-conditional.js:31:17)
+    at http://localhost:4200/dist/wcc-conditional.js:195:35
+    at run (http://localhost:4200/dist/wcc-conditional.js:43:5)
+    at __effect (http://localhost:4200/dist/wcc-conditional.js:46:3)
+    at WccConditional.connectedCallback (http://localhost:4200/dist/wcc-conditional.js:194:5)
+    at http://localhost:4200/dist/wcc-conditional.js:251:16

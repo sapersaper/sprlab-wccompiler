@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "strict": false,
+    "noEmit": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "paths": {
+      "wcc": ["./node_modules/wccompiler/types/wcc.d.ts"]
+    }
+  },
+  "include": ["src/**/*"]
+}

@@ -1,0 +1,15 @@
+<div class="card">
+  <div class="card-header">
+    <slot name="header">Default Card Header</slot>
+  </div>
+  <div class="card-body">
+    <slot>No content provided.</slot>
+  </div>
+  <div class="card-actions">
+    <button @click="like">👍 Like</button>
+    <slot name="stats" :likes="likes">Likes: {{likes}}</slot>
+  </div>
+  <div class="card-footer">
+    <slot name="footer">Default footer text</slot>
+  </div>
+</div>

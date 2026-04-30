@@ -3,36 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>wcc-example</title>
+  <title>wcCompiler v2 Showcase</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px;
+      color: #222;
+      background: #fafafa;
+    }
+
+    h1 {
+      margin-bottom: 32px;
+    }
+
+    section {
+      margin-bottom: 40px;
+    }
+
+    section > h2 {
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+    }
+
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .feature-tags span {
+      font-size: 11px;
+      padding: 2px 6px;
+      background: #e8e8e8;
+      border-radius: 3px;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
-  <h1>wcCompiler Example</h1>
+  <h1>wcCompiler v2 Showcase</h1>
 
-  <wcc-counter label="Clicks:"></wcc-counter>
+  <section>
+    <h2>Counter</h2>
+    <div class="feature-tags">
+      <span>signal</span>
+      <span>computed</span>
+      <span>defineProps</span>
+      <span>defineEmits</span>
+      <span>@event</span>
+      <span>{{interpolation}}</span>
+      <span>CSS scoping</span>
+    </div>
+    <wcc-counter label="Clicks:"></wcc-counter>
+  </section>
 
-  <hr>
+  <section>
+    <h2>Form</h2>
+    <div class="feature-tags">
+      <span>model (text)</span>
+      <span>model (number)</span>
+      <span>model (checkbox)</span>
+      <span>model (radio)</span>
+      <span>model (select)</span>
+      <span>model (textarea)</span>
+      <span>computed</span>
+    </div>
+    <wcc-form></wcc-form>
+  </section>
 
-  <wcc-hi :value="counter" :value2="counter2" @on-click="handleClick">
-    <template #title><strong>Título custom!</strong></template>
-    <template #info="{ count, label }">
-      <em>Count: {{count}} | Label: {{label}}</em>
-    </template>
-    <p>Este es contenido default del slot</p>
-  </wcc-hi>
+  <section>
+    <h2>Conditional</h2>
+    <div class="feature-tags">
+      <span>if</span>
+      <span>else-if</span>
+      <span>else</span>
+      <span>show</span>
+      <span>:class</span>
+      <span>:style</span>
+    </div>
+    <wcc-conditional></wcc-conditional>
+  </section>
+
+  <section>
+    <h2>List</h2>
+    <div class="feature-tags">
+      <span>each</span>
+      <span>:key</span>
+      <span>@event in loop</span>
+      <span>model</span>
+      <span>:attr binding</span>
+    </div>
+    <wcc-list></wcc-list>
+  </section>
+
+  <section>
+    <h2>Slots</h2>
+    <div class="feature-tags">
+      <span>default slot</span>
+      <span>named slot</span>
+      <span>scoped slot</span>
+      <span>fallback content</span>
+      <span>light DOM</span>
+    </div>
+
+    <h3>With fallback content (no children)</h3>
+    <wcc-card></wcc-card>
+
+    <h3 style="margin-top: 16px;">With named slots + default slot</h3>
+    <wcc-card>
+      <template #header><strong>Custom Header via Named Slot</strong></template>
+      <p>This is custom default slot content passed from the consumer.</p>
+      <template #footer><span>Custom footer — powered by wcCompiler v2</span></template>
+    </wcc-card>
+
+    <h3 style="margin-top: 16px;">With scoped slot (receives reactive data)</h3>
+    <wcc-card>
+      <template #header><strong>Scoped Slot Demo</strong></template>
+      <p>Click the Like button — the scoped slot below receives the count reactively.</p>
+      <template #stats="{ likes }"><em>🔥 {{likes}} likes so far!</em></template>
+    </wcc-card>
+  </section>
+
+  <section>
+    <h2>Lifecycle</h2>
+    <div class="feature-tags">
+      <span>onMount</span>
+      <span>onDestroy</span>
+      <span>useRef</span>
+      <span>defineProps</span>
+      <span>signal</span>
+    </div>
+    <wcc-lifecycle name="World"></wcc-lifecycle>
+  </section>
+
+  <section>
+    <h2>TypeScript</h2>
+    <div class="feature-tags">
+      <span>TypeScript</span>
+      <span>generics</span>
+      <span>interfaces</span>
+      <span>defineProps&lt;T&gt;</span>
+      <span>defineEmits&lt;T&gt;</span>
+      <span>signal&lt;T&gt;</span>
+      <span>computed&lt;T&gt;</span>
+    </div>
+    <wcc-typescript title="Demo" :count="count" @update="handleUpdate"></wcc-typescript>
+  </section>
 
   <script type="module">
     import './dist/wcc-counter.js';
-    import './dist/wcc-hi.js';
-    import { init, set, get, on } from './dist/wcc-runtime.js';
+    import './dist/wcc-form.js';
+    import './dist/wcc-conditional.js';
+    import './dist/wcc-list.js';
+    import './dist/wcc-card.js';
+    import './dist/wcc-lifecycle.js';
+    import './dist/wcc-typescript.js';
+    import { init, on, set, get } from './dist/wcc-runtime.js';
 
-    on('handleClick', (e) => {
-      console.log('Evento recibido:', e.detail);
+    on('handleUpdate', (e) => {
+      set('count', get('count') + 1);
     });
 
-    init({ counter: 100, counter2: 0 });
-
-    setInterval(() => set('counter', get('counter') + 1), 1000);
-    setInterval(() => set('counter2', get('counter2') + 1), 500);
+    init({ count: 5 });
   </script>
 </body>
 </html>

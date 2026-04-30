@@ -1,18 +1,17 @@
 {
-  "name": "wcc-example",
+  "name": "wcc-v2-example",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "wcc build",
-    "dev": "wcc dev",
-    "dev:local": "WCC_LOCAL=1 wcc dev",
-    "use:local": "yarn add -D wccompiler@file:.. && echo 'Using local version'",
+    "build": "cd .. && yarn node -e \"process.chdir('example'); process.argv=['node','wcc','build']; await import('./bin/wcc.js');\"",
+    "dev": "cd .. && yarn node -e \"process.chdir('example'); process.argv=['node','wcc','dev']; await import('./bin/wcc.js');\"",
     "use:npm": "yarn add -D @sprlab/wccompiler && echo 'Using npm version'"
   },
   "devDependencies": {
-    "@sprlab/wccompiler": "^0.0.2",
-    "wccompiler": "file:.."
+    "esbuild": "^0.27.0",
+    "jsdom": "^29.0.2",
+    "wccompiler": "link:.."
   },
   "volta": {
     "node": "24.0.0",

@@ -1,0 +1,110 @@
+- generic [ref=e1]:
+  - heading "wcCompiler Showcase" [level=1] [ref=e2]
+  - generic [ref=e3]:
+    - heading "Counter" [level=2] [ref=e4]
+    - generic [ref=e6]:
+      - generic [ref=e7]: "Clicks:"
+      - generic [ref=e8]: "0"
+      - button "+" [ref=e9] [cursor=pointer]
+      - button "-" [ref=e10] [cursor=pointer]
+  - generic [ref=e11]:
+    - heading "Form" [level=2] [ref=e12]
+    - generic [ref=e14]:
+      - heading "Form Demo" [level=2] [ref=e15]
+      - generic [ref=e16]:
+        - generic [ref=e17]: "Name:"
+        - textbox [ref=e18]
+      - generic [ref=e19]:
+        - generic [ref=e20]: "Age:"
+        - spinbutton [ref=e21]: "0"
+        - generic [ref=e22]: "0"
+      - generic [ref=e23]:
+        - generic [ref=e24]: "Agree:"
+        - checkbox [ref=e25]
+        - generic [ref=e26]: "false"
+      - generic [ref=e27]:
+        - generic [ref=e28]: "Color:"
+        - radio [checked] [ref=e29]
+        - text: Red
+        - radio [ref=e30]
+        - text: Green
+        - radio [ref=e31]
+        - text: Blue
+        - generic [ref=e32]: red
+      - generic [ref=e33]:
+        - generic [ref=e34]: "Country:"
+        - combobox [ref=e35]:
+          - option "Argentina" [selected]
+          - option "Chile"
+          - option "Uruguay"
+        - generic [ref=e36]: ar
+      - generic [ref=e37]:
+        - generic [ref=e38]: "Bio:"
+        - textbox [ref=e39]
+      - generic [ref=e40]:
+        - strong [ref=e41]: "Summary:"
+        - text: ", this._age() 0, this._color(): red"
+  - heading "Conditional" [level=2] [ref=e43]
+  - generic [ref=e44]:
+    - heading "List" [level=2] [ref=e45]
+    - generic [ref=e46]:
+      - heading "My List" [level=2] [ref=e47]
+      - generic [ref=e48]:
+        - textbox "New item name" [ref=e49]
+        - button "Add Item" [ref=e50] [cursor=pointer]
+      - list [ref=e51]:
+        - listitem "Learn wcCompiler" [ref=e52]:
+          - generic [ref=e53]: "0: Learn wcCompiler"
+          - button "×" [ref=e54] [cursor=pointer]
+        - listitem "Build components" [ref=e55]:
+          - generic [ref=e56]: "1: Build components"
+          - button "×" [ref=e57] [cursor=pointer]
+        - listitem "Ship it" [ref=e58]:
+          - generic [ref=e59]: "2: Ship it"
+          - button "×" [ref=e60] [cursor=pointer]
+  - generic [ref=e61]:
+    - heading "Slots" [level=2] [ref=e62]
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - heading "Default Slot" [level=3] [ref=e66]
+        - paragraph [ref=e68]: This is custom default slot content.
+      - generic [ref=e69]:
+        - heading "Named Slot" [level=3] [ref=e70]
+        - strong [ref=e72]: Custom Header via Named Slot
+      - generic [ref=e73]:
+        - heading "Scoped Slots" [level=3] [ref=e74]
+        - list [ref=e75]:
+          - listitem [ref=e76]:
+            - generic [ref=e77]: "{{index}}: {{item.label}}"
+            - button "Select" [ref=e78] [cursor=pointer]
+          - listitem [ref=e79]:
+            - generic [ref=e80]: "{{index}}: {{item.label}}"
+            - button "Select" [ref=e81] [cursor=pointer]
+          - listitem [ref=e82]:
+            - generic [ref=e83]: "{{index}}: {{item.label}}"
+            - button "Select" [ref=e84] [cursor=pointer]
+      - heading "Selected" [level=3] [ref=e86]
+  - generic [ref=e87]:
+    - heading "Lifecycle" [level=2] [ref=e88]
+    - generic [ref=e90]:
+      - heading "Lifecycle Hooks Demo" [level=2] [ref=e91]
+      - generic [ref=e92]: "Status: mounted"
+      - generic [ref=e93]:
+        - text: "Timer:"
+        - generic [ref=e94]: 0s
+      - textbox "Type your name" [active] [ref=e95]
+      - generic [ref=e96]: Hello, World!
+      - button "Reset Timer" [ref=e97] [cursor=pointer]
+  - generic [ref=e98]:
+    - heading "TypeScript" [level=2] [ref=e99]
+    - generic "Demo" [ref=e100]:
+      - generic [ref=e101]:
+        - heading "TypeScript Component" [level=2] [ref=e102]
+        - generic [ref=e103]:
+          - generic [ref=e104]: "Title:"
+          - generic [ref=e105]: Demo
+        - generic [ref=e107]: "Count:"
+        - generic [ref=e108]:
+          - generic [ref=e109]: "Doubled:"
+          - generic [ref=e110]: "0"
+        - button "Update" [ref=e111] [cursor=pointer]
