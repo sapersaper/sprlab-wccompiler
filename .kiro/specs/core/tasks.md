@@ -393,3 +393,23 @@ Note: Batching of updates was considered but deferred — it would change the ex
 
 Files modified:
 - `lib/reactive-runtime.js` — Added `_cleanup` variable and cleanup call in `__effect`
+
+### 2026-05-01: Synchronous batching with `__batch()`
+
+Added `__batch(fn)` to the reactive runtime. When multiple signal writes happen inside a batch, effects are deferred and deduplicated, then flushed synchronously at the end of the batch. This avoids redundant re-renders.
+
+```js
+__batch(() => {
+  count.set(1)
+  name.set('John')
+  // effects run once here, not twice
+})
+```
+
+The approach is synchronous (no microtask) so existing tests and the mental model are preserved. Without `__batch`, signal writes still trigger effects immediately as before.
+
+Nested batches are supported — effects only flush when the outermost batch completes.
+
+Files modified:
+- `lib/reactive-runtime.js` — Added `__batchDepth`, `__pendingEffects`, `__batch()`, updated `__signal` and `__computed` to defer notifications during batch
+- `lib/compiler.if.test.js` — Fixed overly broad `not.toContain('else {')` assertion
