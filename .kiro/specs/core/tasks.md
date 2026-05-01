@@ -361,3 +361,17 @@ Files modified:
 - `types/wcc.d.ts` — Added `templateBindings()` declaration
 - `lib/parser.js` — Added `templateBindings` to `REACTIVE_CALLS` exclusion pattern
 - `example/src/wcc-typescript.ts` — Added `templateBindings()` usage
+
+### 2026-05-01: `watch()` — observe changes with old/new value
+
+Added `watch('target', (newVal, oldVal) => { ... })` for observing specific signal/prop/computed changes with access to both old and new values. Unlike `effect()` which re-runs on any dependency change without old value access, `watch()` targets a specific variable and skips the initial run (only fires on subsequent changes).
+
+The codegen generates a `__prev_target` variable in the constructor and an `__effect` in connectedCallback that compares against the previous value.
+
+Files modified:
+- `lib/types.js` — Added `WatcherDef` typedef, added `watchers: WatcherDef[]` to ParseResult
+- `lib/parser.js` — Added `extractWatchers()`, added `watch` to `REACTIVE_CALLS` and hook stripping pattern
+- `lib/codegen.js` — Added `__prev_target` init in constructor, watcher effects in connectedCallback
+- `types/wcc.d.ts` — Added `watch<T>()` declaration
+- `FEATURES.md` — Added watch to Script API table
+- `README.md` — Added Watch section with example
