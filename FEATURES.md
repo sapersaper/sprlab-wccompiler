@@ -37,7 +37,7 @@ Complete list of features supported by the compiler for building native web comp
 | `else` | `else` | Default branch |
 | `each` | `each="item in list"` | List iteration |
 | `each` (index) | `each="(item, i) in list"` | Iteration with index |
-| `:key` | `:key="item.id"` | Key expression for each |
+| `:key` | `:key="item.id"` | Key expression for keyed reconciliation (reuses DOM nodes) |
 | `show` | `show="expr"` | Visibility toggle (CSS display) |
 | `model` | `model="signal"` | Two-way binding (input, textarea, select, checkbox, radio) |
 | `:attr` | `:href="url"` | Generic attribute binding |
