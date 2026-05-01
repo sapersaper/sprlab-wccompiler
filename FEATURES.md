@@ -9,7 +9,7 @@ Complete list of features supported by the compiler for building native web comp
 | `signal()` | `const x = signal(value)` | Reactive variable. Read via `x()`, write via `x.set(value)` |
 | Constants | `const x = value` | Non-reactive variable (no `signal()` wrapper) |
 | `computed()` | `const x = computed(() => expr)` | Derived value with caching and auto-invalidation |
-| `effect()` | `effect(() => { ... })` | Side effect that re-runs when dependencies change |
+| `effect()` | `effect(() => { ... })` | Side effect that re-runs when dependencies change (supports cleanup via return function) |
 | `watch()` | `watch('count', (n, o) => { ... })` | Side effect with old/new value when a specific variable changes |
 | `defineComponent()` | `defineComponent({ tag, template, styles })` | Component metadata with external file references |
 | `defineProps()` | `const props = defineProps({ key: default })` | External component props with defaults |

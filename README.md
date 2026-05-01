@@ -82,6 +82,15 @@ effect(() => {
 })
 ```
 
+Effects support cleanup — return a function to run before re-execution:
+
+```js
+effect(() => {
+  const id = setInterval(() => tick.set(tick() + 1), 1000)
+  return () => clearInterval(id)  // called before re-run
+})
+```
+
 ### Watch
 
 ```js

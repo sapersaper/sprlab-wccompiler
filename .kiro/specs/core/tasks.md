@@ -375,3 +375,21 @@ Files modified:
 - `types/wcc.d.ts` — Added `watch<T>()` declaration
 - `FEATURES.md` — Added watch to Script API table
 - `README.md` — Added Watch section with example
+
+### 2026-05-01: Effect cleanup support
+
+`__effect(fn)` now captures the return value of `fn()`. If it returns a function, that function is called before the effect re-runs. This enables cleanup patterns like clearing timers, aborting fetch requests, or removing event listeners.
+
+```js
+effect(() => {
+  const id = setInterval(() => tick.set(tick() + 1), 1000)
+  return () => clearInterval(id)
+})
+```
+
+Backward compatible — effects that don't return anything work exactly as before.
+
+Note: Batching of updates was considered but deferred — it would change the execution model from synchronous to asynchronous, breaking existing tests and the mental model. A synchronous flush queue approach needs more design.
+
+Files modified:
+- `lib/reactive-runtime.js` — Added `_cleanup` variable and cleanup call in `__effect`
