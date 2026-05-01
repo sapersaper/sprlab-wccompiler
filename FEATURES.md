@@ -19,6 +19,7 @@ Complete list of features supported by the compiler for building native web comp
 | `emit()` | `emit('event', data)` | Dispatch CustomEvent (validated against `defineEmits`) |
 | `templateRef()` | `const el = templateRef('name')` | DOM element reference from template |
 | `onMount()` | `onMount(() => { ... })` | Lifecycle hook: connectedCallback |
+| `onMount()` (async) | `onMount(async () => { await ... })` | Async lifecycle hook (wrapped in IIFE) |
 | `onDestroy()` | `onDestroy(() => { ... })` | Lifecycle hook: disconnectedCallback |
 | `templateBindings()` | `templateBindings({ count, doubled })` | Declare which variables/functions are used in the template (eliminates TS unused warnings) |
 | TypeScript | `.ts` file extension | TS support with type stripping via esbuild |

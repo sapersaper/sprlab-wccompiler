@@ -238,10 +238,17 @@ onMount(() => {
   console.log('Component connected to DOM')
 })
 
+onMount(async () => {
+  const data = await fetch('/api/items').then(r => r.json())
+  items.set(data)
+})
+
 onDestroy(() => {
   console.log('Component removed from DOM')
 })
 ```
+
+Async callbacks are wrapped in an IIFE — `connectedCallback` itself stays synchronous.
 
 ## CSS Scoping
 

@@ -146,3 +146,22 @@ All code extends existing modules in `v2/lib/`. Tests use vitest + fast-check. T
 - The parser uses the same brace-depth tracking pattern as `effect()` extraction
 - No tree walker changes are needed — this is a purely script-level feature
 - `disconnectedCallback` is only generated when destroy hooks exist, matching the v1 pattern
+
+## Changelog
+
+### 2026-05-01: Async onMount/onDestroy support
+
+Added support for `async` callbacks in `onMount` and `onDestroy`. The parser now matches `onMount(async () => { ... })` in addition to the sync form. The codegen wraps async hooks in an IIFE: `(async () => { body })()` to avoid making `connectedCallback`/`disconnectedCallback` themselves async.
+
+```js
+onMount(async () => {
+  const data = await fetch('/api/items').then(r => r.json())
+  items.set(data)
+})
+```
+
+Files modified:
+- `lib/types.js` — Added `async: boolean` to `LifecycleHook` typedef
+- `lib/parser.js` — Updated regex to match `async () =>` pattern, stores `async` flag
+- `lib/codegen.js` — Wraps async hooks in `(async () => { ... })()` IIFE
+- `types/wcc.d.ts` — Updated `onMount`/`onDestroy` signatures to accept `() => void | Promise<void>`

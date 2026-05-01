@@ -21,7 +21,7 @@ declare module 'wcc' {
 
   export function templateRef(name: string): { value: HTMLElement | null };
 
-  export function onMount(fn: () => void): void;
-  export function onDestroy(fn: () => void): void;
+  export function onMount(fn: () => void | Promise<void>): void;
+  export function onDestroy(fn: () => void | Promise<void>): void;
   export function templateBindings(bindings: Record<string, any>): void;
 }
