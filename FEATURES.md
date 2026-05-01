@@ -73,7 +73,7 @@ Complete list of features supported by the compiler for building native web comp
 | Command | Description |
 |---|---|
 | `wcc build` | Compile all `.ts`/`.js` → `.js` + copy `wcc-runtime.js` |
-| `wcc dev` | Build + watch + live-reload dev server |
+| `wcc dev` | Build + watch + SSE live-reload dev server |
 | `wcc.config.js` | Port, input dir, output dir |
 | `wcc-runtime.js` | Optional declarative binding helper for host pages |
 
