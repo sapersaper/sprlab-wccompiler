@@ -1,6 +1,6 @@
 // Features: TypeScript with generics, interfaces, type annotations,
-// defineProps<T>, defineEmits<T>, signal<T>, computed<T>
-import { defineComponent, defineProps, defineEmits, signal, computed, templateBindings } from 'wcc'
+// defineProps<T>, defineEmits<T>, signal<T>, computed<T>, watch()
+import { defineComponent, defineProps, defineEmits, signal, computed, watch, templateBindings } from 'wcc'
 
 interface CounterState {
   current: number
@@ -25,10 +25,16 @@ const lastChange = computed<string>(() => {
   return last.previous + ' → ' + last.current
 })
 
+const watchLog = signal<string>('(no changes yet)')
+
+watch('count', (newVal, oldVal) => {
+  watchLog.set(`count changed: ${oldVal} → ${newVal}`)
+})
+
 function handleUpdate(): void {
   const prev: number = props.count
   emit('update', doubled())
   history.set(history().concat([{ current: props.count, previous: prev }]))
 }
 
-templateBindings({ doubled, lastChange, handleUpdate })
+templateBindings({ doubled, lastChange, handleUpdate, watchLog })
