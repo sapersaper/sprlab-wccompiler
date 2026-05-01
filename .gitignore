@@ -15,3 +15,5 @@ example/dist/
 example/.pnp.cjs
 example/.pnp.loader.mjs
 example/.yarn/
+
+playground/
