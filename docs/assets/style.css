@@ -1,0 +1,220 @@
+/* ── Reset & Base ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #e0e0e0;
+  background: #0d1117;
+  line-height: 1.6;
+}
+
+a { color: #58a6ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+code {
+  background: #1c2128;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 0.9em;
+}
+
+/* ── Nav ── */
+.nav {
+  position: sticky;
+  top: 0;
+  background: rgba(13, 17, 23, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #21262d;
+  z-index: 100;
+}
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: #e0e0e0;
+}
+.logo span { color: #58a6ff; }
+.logo:hover { text-decoration: none; }
+.nav-links { display: flex; gap: 20px; align-items: center; }
+.nav-links a { color: #8b949e; font-size: 14px; }
+.nav-links a:hover { color: #e0e0e0; text-decoration: none; }
+.btn-playground, .btn-github {
+  padding: 4px 12px !important;
+  border-radius: 6px;
+  font-weight: 500;
+}
+.btn-playground {
+  background: #238636 !important;
+  color: #fff !important;
+}
+.btn-playground:hover { background: #2ea043 !important; }
+.btn-github {
+  background: #21262d !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #30363d;
+}
+
+/* ── Hero ── */
+.hero {
+  text-align: center;
+  padding: 80px 24px 60px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.hero h1 {
+  font-size: 48px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #58a6ff, #3fb950);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+}
+.tagline {
+  font-size: 20px;
+  color: #c9d1d9;
+  margin-bottom: 8px;
+}
+.sub {
+  font-size: 15px;
+  color: #8b949e;
+  margin-bottom: 32px;
+}
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+.btn {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  display: inline-block;
+}
+.btn.primary {
+  background: #238636;
+  color: #fff;
+}
+.btn.primary:hover { background: #2ea043; text-decoration: none; }
+.btn.secondary {
+  background: #21262d;
+  color: #c9d1d9;
+  border: 1px solid #30363d;
+}
+.btn.secondary:hover { background: #30363d; text-decoration: none; }
+.install-cmd {
+  display: inline-block;
+  background: #161b22;
+  border: 1px solid #30363d;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-family: 'Cascadia Code', monospace;
+  font-size: 14px;
+  color: #8b949e;
+}
+
+/* ── Sections ── */
+.section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 24px;
+}
+.section h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #21262d;
+}
+.section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 24px 0 12px;
+  color: #c9d1d9;
+}
+
+/* ── Feature Grid ── */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+.feature-card {
+  background: #161b22;
+  border: 1px solid #21262d;
+  border-radius: 8px;
+  padding: 20px;
+}
+.feature-card h3 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+.feature-card p {
+  font-size: 14px;
+  color: #8b949e;
+  margin: 0;
+}
+
+/* ── Code Blocks ── */
+.code-block {
+  background: #161b22;
+  border: 1px solid #21262d;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #c9d1d9;
+  margin-bottom: 16px;
+}
+
+/* ── API Tables ── */
+.api-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+.api-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: #161b22;
+  border-bottom: 2px solid #30363d;
+  color: #8b949e;
+  font-weight: 600;
+}
+.api-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #21262d;
+}
+.api-table tr:hover td {
+  background: #161b22;
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 32px 24px;
+  color: #484f58;
+  font-size: 13px;
+  border-top: 1px solid #21262d;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .hero h1 { font-size: 32px; }
+  .tagline { font-size: 16px; }
+  .hero-actions { flex-direction: column; align-items: center; }
+  .nav-links { gap: 12px; }
+  .feature-grid { grid-template-columns: 1fr; }
+}

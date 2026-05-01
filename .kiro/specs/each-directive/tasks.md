@@ -227,3 +227,20 @@ Files modified:
 - `v2/lib/types.js` — Added `slots: SlotBinding[]` to `ForBlock` typedef
 - `v2/lib/tree-walker.js` — `walkBranch()` includes `slots` in return value; `processForBlocks` passes them through
 - `v2/lib/codegen.js` — Each effect generates per-item scoped slot resolution (builds props object from slot props, replaces `{{propName}}` patterns in slot innerHTML)
+
+### 2026-05-01: Keyed reconciliation
+
+When `:key` is present on an `each` element, the codegen now generates keyed reconciliation instead of destroy-all/recreate-all. The algorithm:
+
+1. Builds a `Map<key, node>` from existing nodes (`__keyMap`)
+2. For each item in the new list, checks if a node with that key exists
+3. If yes: reuses the DOM node (moves to correct position)
+4. If no: creates a new node from template with full binding setup
+5. Removes leftover nodes not in the new list
+6. Reorders all nodes before the anchor
+
+This preserves DOM state (focus, scroll, animations) for items that haven't changed. Without `:key`, the original destroy-all/recreate-all behavior is preserved.
+
+Files modified:
+- `lib/codegen.js` — Added `generateItemSetup()` helper, split each effect into keyed/non-keyed paths
+- `lib/compiler.each.test.js` — Updated assertion for keyed removal pattern

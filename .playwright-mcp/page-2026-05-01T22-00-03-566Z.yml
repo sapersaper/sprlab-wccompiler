@@ -1,0 +1,278 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "wcCompiler" [ref=e4] [cursor=pointer]:
+        - /url: "#"
+      - generic [ref=e5]:
+        - link "Features" [ref=e6] [cursor=pointer]:
+          - /url: "#features"
+        - link "Guide" [ref=e7] [cursor=pointer]:
+          - /url: "#guide"
+        - link "API" [ref=e8] [cursor=pointer]:
+          - /url: "#api"
+        - link "Playground" [ref=e9] [cursor=pointer]:
+          - /url: playground/
+        - link "GitHub" [ref=e10] [cursor=pointer]:
+          - /url: https://github.com/sapersaper/sprlab-wccompiler
+  - banner [ref=e11]:
+    - heading "wcCompiler" [level=1] [ref=e12]
+    - paragraph [ref=e13]: Zero-runtime compiler that transforms TypeScript/JavaScript into native web components.
+    - paragraph [ref=e14]: No framework. No virtual DOM. No runtime. Just vanilla custom elements with signals-based reactivity.
+    - generic [ref=e15]:
+      - link "Try the Playground" [ref=e16] [cursor=pointer]:
+        - /url: playground/
+      - link "Get Started" [ref=e17] [cursor=pointer]:
+        - /url: "#guide"
+    - generic [ref=e18]: npm install -D @sprlab/wccompiler
+  - main [ref=e19]:
+    - generic [ref=e20]:
+      - heading "Features" [level=2] [ref=e21]
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - heading "⚡ Signals Reactivity" [level=3] [ref=e24]
+          - paragraph [ref=e25]:
+            - code [ref=e26]: signal()
+            - text: ","
+            - code [ref=e27]: computed()
+            - text: ","
+            - code [ref=e28]: effect()
+            - text: — fine-grained reactivity with automatic dependency tracking.
+        - generic [ref=e29]:
+          - heading "📝 Template Directives" [level=3] [ref=e30]
+          - paragraph [ref=e31]:
+            - code [ref=e32]: if
+            - text: /
+            - code [ref=e33]: else
+            - text: ","
+            - code [ref=e34]: each
+            - text: ","
+            - code [ref=e35]: show
+            - text: ","
+            - code [ref=e36]: model
+            - text: ","
+            - code [ref=e37]: :attr
+            - text: ","
+            - code [ref=e38]: "@event"
+            - text: — declarative template syntax.
+        - generic [ref=e39]:
+          - heading "🔌 Scoped Slots" [level=3] [ref=e40]
+          - paragraph [ref=e41]:
+            - text: Named slots, default slots, and scoped slots with reactive prop passing via
+            - code [ref=e42]: "<template #name=\"{ prop }\">"
+            - text: .
+        - generic [ref=e43]:
+          - heading "🎨 CSS Scoping" [level=3] [ref=e44]
+          - paragraph [ref=e45]: Automatic tag-name prefixing. No Shadow DOM — styles are scoped but composable.
+        - generic [ref=e46]:
+          - heading "🔷 TypeScript" [level=3] [ref=e47]
+          - paragraph [ref=e48]: Full TypeScript support with type stripping via esbuild. Generics for props and emits.
+        - generic [ref=e49]:
+          - heading "📦 Zero Output" [level=3] [ref=e50]
+          - paragraph [ref=e51]: Compiled components are self-contained vanilla JS. No runtime library, no imports, no dependencies.
+        - generic [ref=e52]:
+          - heading "🧩 Nested Components" [level=3] [ref=e53]
+          - paragraph [ref=e54]:
+            - text: Auto-import child components. Reactive prop binding with
+            - code [ref=e55]: "{{interpolation}}"
+            - text: in attributes.
+        - generic [ref=e56]:
+          - heading "🔄 Dev Server" [level=3] [ref=e57]
+          - paragraph [ref=e58]:
+            - text: SSE live-reload, file watching, instant recompilation.
+            - code [ref=e59]: wcc dev
+            - text: and you're running.
+    - generic [ref=e60]:
+      - heading "Quick Start" [level=2] [ref=e61]
+      - heading "1. Install" [level=3] [ref=e62]
+      - generic [ref=e63]: npm install -D @sprlab/wccompiler
+      - heading "2. Create a component" [level=3] [ref=e64]
+      - generic [ref=e66]: counter.js counter.html counter.css
+      - code [ref=e68]: "import { defineComponent, signal, computed } from 'wcc' export default defineComponent({ tag: 'wcc-counter', template: './counter.html', styles: './counter.css', }) const count = signal(0) const doubled = computed(() => count() * 2) function increment() { count.set(count() + 1) }"
+      - code [ref=e70]: "<div class=\"counter\"> <span>{{count}}</span> <span>(×2 = {{doubled}})</span> <button @click=\"increment\">+</button> </div>"
+      - heading "3. Build" [level=3] [ref=e71]
+      - generic [ref=e72]: npx wcc build
+      - heading "4. Use" [level=3] [ref=e73]
+      - code [ref=e75]: <script type="module" src="dist/counter.js"></script> <wcc-counter></wcc-counter>
+    - generic [ref=e76]:
+      - heading "API Reference" [level=2] [ref=e77]
+      - heading "Script API" [level=3] [ref=e78]
+      - table [ref=e79]:
+        - rowgroup [ref=e80]:
+          - row "Function Description" [ref=e81]:
+            - columnheader "Function" [ref=e82]
+            - columnheader "Description" [ref=e83]
+        - rowgroup [ref=e84]:
+          - 'row "signal(value) Create a reactive variable. Read: x(), Write: x.set(val)" [ref=e85]':
+            - cell "signal(value)" [ref=e86]:
+              - code [ref=e87]: signal(value)
+            - 'cell "Create a reactive variable. Read: x(), Write: x.set(val)" [ref=e88]':
+              - text: "Create a reactive variable. Read:"
+              - code [ref=e89]: x()
+              - text: ", Write:"
+              - code [ref=e90]: x.set(val)
+          - row "computed(() => expr) Derived value with caching and auto-invalidation" [ref=e91]:
+            - cell "computed(() => expr)" [ref=e92]:
+              - code [ref=e93]: computed(() => expr)
+            - cell "Derived value with caching and auto-invalidation" [ref=e94]
+          - 'row "effect(() => { ... }) Side effect that re-runs when dependencies change. Supports cleanup via return function." [ref=e95]':
+            - 'cell "effect(() => { ... })" [ref=e96]':
+              - code [ref=e97]: "effect(() => { ... })"
+            - cell "Side effect that re-runs when dependencies change. Supports cleanup via return function." [ref=e98]
+          - 'row "watch(''name'', (n, o) => {}) Observe a specific variable with old/new values" [ref=e99]':
+            - 'cell "watch(''name'', (n, o) => {})" [ref=e100]':
+              - code [ref=e101]: "watch('name', (n, o) => {})"
+            - cell "Observe a specific variable with old/new values" [ref=e102]
+          - 'row "defineProps({ key: default }) Declare external props with defaults" [ref=e103]':
+            - 'cell "defineProps({ key: default })" [ref=e104]':
+              - code [ref=e105]: "defineProps({ key: default })"
+            - cell "Declare external props with defaults" [ref=e106]
+          - row "defineEmits(['event']) Declare custom events (validated at compile time)" [ref=e107]:
+            - cell "defineEmits(['event'])" [ref=e108]:
+              - code [ref=e109]: defineEmits(['event'])
+            - cell "Declare custom events (validated at compile time)" [ref=e110]
+          - row "templateRef('name') Get a DOM element reference from the template" [ref=e111]:
+            - cell "templateRef('name')" [ref=e112]:
+              - code [ref=e113]: templateRef('name')
+            - cell "Get a DOM element reference from the template" [ref=e114]
+          - 'row "onMount(() => {}) Lifecycle: connectedCallback (supports async)" [ref=e115]':
+            - 'cell "onMount(() => {})" [ref=e116]':
+              - code [ref=e117]: "onMount(() => {})"
+            - 'cell "Lifecycle: connectedCallback (supports async)" [ref=e118]'
+          - 'row "onDestroy(() => {}) Lifecycle: disconnectedCallback" [ref=e119]':
+            - 'cell "onDestroy(() => {})" [ref=e120]':
+              - code [ref=e121]: "onDestroy(() => {})"
+            - 'cell "Lifecycle: disconnectedCallback" [ref=e122]'
+          - 'row "templateBindings({ ... }) Declare template-used vars (eliminates TS unused warnings)" [ref=e123]':
+            - 'cell "templateBindings({ ... })" [ref=e124]':
+              - code [ref=e125]: "templateBindings({ ... })"
+            - cell "Declare template-used vars (eliminates TS unused warnings)" [ref=e126]
+      - heading "Template Directives" [level=3] [ref=e127]
+      - table [ref=e128]:
+        - rowgroup [ref=e129]:
+          - row "Directive Example Description" [ref=e130]:
+            - columnheader "Directive" [ref=e131]
+            - columnheader "Example" [ref=e132]
+            - columnheader "Description" [ref=e133]
+        - rowgroup [ref=e134]:
+          - 'row "{{var}} <span>{{count}}</span> Reactive text interpolation" [ref=e135]':
+            - 'cell "{{var}}" [ref=e136]':
+              - code [ref=e137]: "{{var}}"
+            - 'cell "<span>{{count}}</span>" [ref=e138]':
+              - code [ref=e139]: "<span>{{count}}</span>"
+            - cell "Reactive text interpolation" [ref=e140]
+          - row "@event @click=\"handler\" DOM event listener" [ref=e141]:
+            - cell "@event" [ref=e142]:
+              - code [ref=e143]: "@event"
+            - cell "@click=\"handler\"" [ref=e144]:
+              - code [ref=e145]: "@click=\"handler\""
+            - cell "DOM event listener" [ref=e146]
+          - row "if if=\"expr\" Conditional rendering" [ref=e147]:
+            - cell "if" [ref=e148]:
+              - code [ref=e149]: if
+            - cell "if=\"expr\"" [ref=e150]:
+              - code [ref=e151]: if="expr"
+            - cell "Conditional rendering" [ref=e152]
+          - row "else-if else-if=\"expr\" Alternative branch" [ref=e153]:
+            - cell "else-if" [ref=e154]:
+              - code [ref=e155]: else-if
+            - cell "else-if=\"expr\"" [ref=e156]:
+              - code [ref=e157]: else-if="expr"
+            - cell "Alternative branch" [ref=e158]
+          - row "else else Default branch" [ref=e159]:
+            - cell "else" [ref=e160]:
+              - code [ref=e161]: else
+            - cell "else" [ref=e162]:
+              - code [ref=e163]: else
+            - cell "Default branch" [ref=e164]
+          - row "each each=\"item in list\" List rendering (keyed with :key)" [ref=e165]:
+            - cell "each" [ref=e166]:
+              - code [ref=e167]: each
+            - cell "each=\"item in list\"" [ref=e168]:
+              - code [ref=e169]: each="item in list"
+            - cell "List rendering (keyed with :key)" [ref=e170]:
+              - text: List rendering (keyed with
+              - code [ref=e171]: :key
+              - text: )
+          - row "show show=\"expr\" CSS visibility toggle" [ref=e172]:
+            - cell "show" [ref=e173]:
+              - code [ref=e174]: show
+            - cell "show=\"expr\"" [ref=e175]:
+              - code [ref=e176]: show="expr"
+            - cell "CSS visibility toggle" [ref=e177]
+          - row "model model=\"signal\" Two-way binding (input, select, textarea)" [ref=e178]:
+            - cell "model" [ref=e179]:
+              - code [ref=e180]: model
+            - cell "model=\"signal\"" [ref=e181]:
+              - code [ref=e182]: model="signal"
+            - cell "Two-way binding (input, select, textarea)" [ref=e183]
+          - row ":attr :href=\"url\" Attribute binding" [ref=e184]:
+            - cell ":attr" [ref=e185]:
+              - code [ref=e186]: :attr
+            - cell ":href=\"url\"" [ref=e187]:
+              - code [ref=e188]: :href="url"
+            - cell "Attribute binding" [ref=e189]
+          - 'row ":class :class=\"{ active: isOn }\" Class binding (string or object)" [ref=e190]':
+            - cell ":class" [ref=e191]:
+              - code [ref=e192]: :class
+            - 'cell ":class=\"{ active: isOn }\"" [ref=e193]':
+              - code [ref=e194]: ":class=\"{ active: isOn }\""
+            - cell "Class binding (string or object)" [ref=e195]
+          - 'row ":style :style=\"{ color: c }\" Style binding (string or object)" [ref=e196]':
+            - cell ":style" [ref=e197]:
+              - code [ref=e198]: :style
+            - 'cell ":style=\"{ color: c }\"" [ref=e199]':
+              - code [ref=e200]: ":style=\"{ color: c }\""
+            - cell "Style binding (string or object)" [ref=e201]
+          - row "ref ref=\"name\" Mark element for templateRef()" [ref=e202]:
+            - cell "ref" [ref=e203]:
+              - code [ref=e204]: ref
+            - cell "ref=\"name\"" [ref=e205]:
+              - code [ref=e206]: ref="name"
+            - cell "Mark element for templateRef()" [ref=e207]:
+              - text: Mark element for
+              - code [ref=e208]: templateRef()
+      - heading "Slots" [level=3] [ref=e209]
+      - table [ref=e210]:
+        - rowgroup [ref=e211]:
+          - row "Type Component Consumer" [ref=e212]:
+            - columnheader "Type" [ref=e213]
+            - columnheader "Component" [ref=e214]
+            - columnheader "Consumer" [ref=e215]
+        - rowgroup [ref=e216]:
+          - row "Default <slot>fallback</slot> Plain child elements" [ref=e217]:
+            - cell "Default" [ref=e218]
+            - cell "<slot>fallback</slot>" [ref=e219]:
+              - code [ref=e220]: <slot>fallback</slot>
+            - cell "Plain child elements" [ref=e221]
+          - 'row "Named <slot name=\"x\"></slot> <template #x>content</template>" [ref=e222]':
+            - cell "Named" [ref=e223]
+            - cell "<slot name=\"x\"></slot>" [ref=e224]:
+              - code [ref=e225]: <slot name="x"></slot>
+            - 'cell "<template #x>content</template>" [ref=e226]':
+              - code [ref=e227]: "<template #x>content</template>"
+          - 'row "Scoped <slot name=\"x\" :prop=\"val\"></slot> <template #x=\"{ prop }\">{{prop}}</template>" [ref=e228]':
+            - cell "Scoped" [ref=e229]
+            - cell "<slot name=\"x\" :prop=\"val\"></slot>" [ref=e230]:
+              - code [ref=e231]: <slot name="x" :prop="val"></slot>
+            - 'cell "<template #x=\"{ prop }\">{{prop}}</template>" [ref=e232]':
+              - code [ref=e233]: "<template #x=\"{ prop }\">{{prop}}</template>"
+      - heading "CLI" [level=3] [ref=e234]
+      - table [ref=e235]:
+        - rowgroup [ref=e236]:
+          - row "Command Description" [ref=e237]:
+            - columnheader "Command" [ref=e238]
+            - columnheader "Description" [ref=e239]
+        - rowgroup [ref=e240]:
+          - row "wcc build Compile all .ts/.js files + copy wcc-runtime.js" [ref=e241]:
+            - cell "wcc build" [ref=e242]:
+              - code [ref=e243]: wcc build
+            - cell "Compile all .ts/.js files + copy wcc-runtime.js" [ref=e244]
+          - row "wcc dev Build + watch + SSE live-reload dev server" [ref=e245]:
+            - cell "wcc dev" [ref=e246]:
+              - code [ref=e247]: wcc dev
+            - cell "Build + watch + SSE live-reload dev server" [ref=e248]
+  - contentinfo [ref=e249]:
+    - paragraph [ref=e250]:
+      - text: wcCompiler — MIT License —
+      - link "GitHub" [ref=e251] [cursor=pointer]:
+        - /url: https://github.com/sapersaper/sprlab-wccompiler

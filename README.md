@@ -82,6 +82,26 @@ effect(() => {
 })
 ```
 
+Effects support cleanup — return a function to run before re-execution:
+
+```js
+effect(() => {
+  const id = setInterval(() => tick.set(tick() + 1), 1000)
+  return () => clearInterval(id)  // called before re-run
+})
+```
+
+### Watch
+
+```js
+watch('count', (newVal, oldVal) => {
+  console.log(`Changed from ${oldVal} to ${newVal}`)
+  if (newVal > 10) api.save(newVal)
+})
+```
+
+`watch` observes a specific signal/prop/computed and provides both old and new values. The callback does not run on initial mount — only on subsequent changes.
+
 ### Constants
 
 ```js
@@ -238,10 +258,17 @@ onMount(() => {
   console.log('Component connected to DOM')
 })
 
+onMount(async () => {
+  const data = await fetch('/api/items').then(r => r.json())
+  items.set(data)
+})
+
 onDestroy(() => {
   console.log('Component removed from DOM')
 })
 ```
+
+Async callbacks are wrapped in an IIFE — `connectedCallback` itself stays synchronous.
 
 ## CSS Scoping
 

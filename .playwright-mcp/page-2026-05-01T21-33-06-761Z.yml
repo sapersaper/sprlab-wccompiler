@@ -1,0 +1,29 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - heading "wcCompiler Playground" [level=1] [ref=e3]
+    - generic [ref=e5]:
+      - text: "Example:"
+      - combobox "Example:" [ref=e6]:
+        - option "Counter" [selected]
+        - option "Conditional"
+        - option "Form (model)"
+        - option "List (each)"
+        - option "Slots"
+    - generic [ref=e7]: Compiled successfully
+  - generic [ref=e8]:
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - generic [ref=e11] [cursor=pointer]: Script
+        - generic [ref=e12] [cursor=pointer]: Template
+        - generic [ref=e13] [cursor=pointer]: CSS
+      - textbox [ref=e16]: "import { defineComponent, signal, computed } from 'wcc' export default defineComponent({ tag: 'wcc-counter', template: './counter.html', styles: './counter.css', }) const count = signal(0) const doubled = computed(() => count() * 2) function increment() { count.set(count() + 1) } function decrement() { count.set(count() - 1) }"
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20] [cursor=pointer]: Output JS
+        - generic [ref=e21] [cursor=pointer]: Preview
+      - iframe [active] [ref=e24]:
+        - generic [ref=f1e3]:
+          - generic [ref=f1e4]: "1"
+          - generic [ref=f1e5]: (×2 = 2)
+          - button "+" [active] [ref=f1e6] [cursor=pointer]
+          - button "−" [ref=f1e7] [cursor=pointer]

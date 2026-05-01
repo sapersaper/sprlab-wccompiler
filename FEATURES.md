@@ -9,7 +9,8 @@ Complete list of features supported by the compiler for building native web comp
 | `signal()` | `const x = signal(value)` | Reactive variable. Read via `x()`, write via `x.set(value)` |
 | Constants | `const x = value` | Non-reactive variable (no `signal()` wrapper) |
 | `computed()` | `const x = computed(() => expr)` | Derived value with caching and auto-invalidation |
-| `effect()` | `effect(() => { ... })` | Side effect that re-runs when dependencies change |
+| `effect()` | `effect(() => { ... })` | Side effect that re-runs when dependencies change (supports cleanup via return function) |
+| `watch()` | `watch('count', (n, o) => { ... })` | Side effect with old/new value when a specific variable changes |
 | `defineComponent()` | `defineComponent({ tag, template, styles })` | Component metadata with external file references |
 | `defineProps()` | `const props = defineProps({ key: default })` | External component props with defaults |
 | `defineProps()` (TS) | `defineProps<{ key: Type }>()` | Props with TypeScript generics |
@@ -19,6 +20,7 @@ Complete list of features supported by the compiler for building native web comp
 | `emit()` | `emit('event', data)` | Dispatch CustomEvent (validated against `defineEmits`) |
 | `templateRef()` | `const el = templateRef('name')` | DOM element reference from template |
 | `onMount()` | `onMount(() => { ... })` | Lifecycle hook: connectedCallback |
+| `onMount()` (async) | `onMount(async () => { await ... })` | Async lifecycle hook (wrapped in IIFE) |
 | `onDestroy()` | `onDestroy(() => { ... })` | Lifecycle hook: disconnectedCallback |
 | `templateBindings()` | `templateBindings({ count, doubled })` | Declare which variables/functions are used in the template (eliminates TS unused warnings) |
 | TypeScript | `.ts` file extension | TS support with type stripping via esbuild |
@@ -35,7 +37,7 @@ Complete list of features supported by the compiler for building native web comp
 | `else` | `else` | Default branch |
 | `each` | `each="item in list"` | List iteration |
 | `each` (index) | `each="(item, i) in list"` | Iteration with index |
-| `:key` | `:key="item.id"` | Key expression for each |
+| `:key` | `:key="item.id"` | Key expression for keyed reconciliation (reuses DOM nodes) |
 | `show` | `show="expr"` | Visibility toggle (CSS display) |
 | `model` | `model="signal"` | Two-way binding (input, textarea, select, checkbox, radio) |
 | `:attr` | `:href="url"` | Generic attribute binding |
@@ -44,6 +46,7 @@ Complete list of features supported by the compiler for building native web comp
 | `:style` | `:style="expr"` | Style binding (string or object) |
 | Boolean attrs | `:disabled="expr"` | Property assignment for boolean attributes |
 | `ref` | `ref="name"` | Mark element for `templateRef()` |
+| Child components | `<wcc-badge label="{{role}}">` | Auto-import + reactive prop binding to child custom elements |
 | `<slot>` | `<slot>fallback</slot>` | Default slot with fallback content |
 | `<slot name>` | `<slot name="header">` | Named slot |
 | Scoped slots | `<slot name="x" :prop="source">` | Slot with reactive props |
@@ -70,7 +73,7 @@ Complete list of features supported by the compiler for building native web comp
 | Command | Description |
 |---|---|
 | `wcc build` | Compile all `.ts`/`.js` → `.js` + copy `wcc-runtime.js` |
-| `wcc dev` | Build + watch + live-reload dev server |
+| `wcc dev` | Build + watch + SSE live-reload dev server |
 | `wcc.config.js` | Port, input dir, output dir |
 | `wcc-runtime.js` | Optional declarative binding helper for host pages |
 

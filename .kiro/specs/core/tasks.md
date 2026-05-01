@@ -361,3 +361,55 @@ Files modified:
 - `types/wcc.d.ts` — Added `templateBindings()` declaration
 - `lib/parser.js` — Added `templateBindings` to `REACTIVE_CALLS` exclusion pattern
 - `example/src/wcc-typescript.ts` — Added `templateBindings()` usage
+
+### 2026-05-01: `watch()` — observe changes with old/new value
+
+Added `watch('target', (newVal, oldVal) => { ... })` for observing specific signal/prop/computed changes with access to both old and new values. Unlike `effect()` which re-runs on any dependency change without old value access, `watch()` targets a specific variable and skips the initial run (only fires on subsequent changes).
+
+The codegen generates a `__prev_target` variable in the constructor and an `__effect` in connectedCallback that compares against the previous value.
+
+Files modified:
+- `lib/types.js` — Added `WatcherDef` typedef, added `watchers: WatcherDef[]` to ParseResult
+- `lib/parser.js` — Added `extractWatchers()`, added `watch` to `REACTIVE_CALLS` and hook stripping pattern
+- `lib/codegen.js` — Added `__prev_target` init in constructor, watcher effects in connectedCallback
+- `types/wcc.d.ts` — Added `watch<T>()` declaration
+- `FEATURES.md` — Added watch to Script API table
+- `README.md` — Added Watch section with example
+
+### 2026-05-01: Effect cleanup support
+
+`__effect(fn)` now captures the return value of `fn()`. If it returns a function, that function is called before the effect re-runs. This enables cleanup patterns like clearing timers, aborting fetch requests, or removing event listeners.
+
+```js
+effect(() => {
+  const id = setInterval(() => tick.set(tick() + 1), 1000)
+  return () => clearInterval(id)
+})
+```
+
+Backward compatible — effects that don't return anything work exactly as before.
+
+Note: Batching of updates was considered but deferred — it would change the execution model from synchronous to asynchronous, breaking existing tests and the mental model. A synchronous flush queue approach needs more design.
+
+Files modified:
+- `lib/reactive-runtime.js` — Added `_cleanup` variable and cleanup call in `__effect`
+
+### 2026-05-01: Synchronous batching with `__batch()`
+
+Added `__batch(fn)` to the reactive runtime. When multiple signal writes happen inside a batch, effects are deferred and deduplicated, then flushed synchronously at the end of the batch. This avoids redundant re-renders.
+
+```js
+__batch(() => {
+  count.set(1)
+  name.set('John')
+  // effects run once here, not twice
+})
+```
+
+The approach is synchronous (no microtask) so existing tests and the mental model are preserved. Without `__batch`, signal writes still trigger effects immediately as before.
+
+Nested batches are supported — effects only flush when the outermost batch completes.
+
+Files modified:
+- `lib/reactive-runtime.js` — Added `__batchDepth`, `__pendingEffects`, `__batch()`, updated `__signal` and `__computed` to defer notifications during batch
+- `lib/compiler.if.test.js` — Fixed overly broad `not.toContain('else {')` assertion

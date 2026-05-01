@@ -308,6 +308,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sprlab/wccompiler@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "@sprlab/wccompiler@npm:0.2.0"
+  dependencies:
+    esbuild: "npm:^0.27.0"
+    jsdom: "npm:^29.0.2"
+  bin:
+    wcc: ./bin/wcc.js
+  checksum: 10c0/7b5812155b6184e06ea32a599ad997e6350187d0d7831584c802567dfbabdde04599a3232613a62df5df115f6e105f8c6fb858d8f2bb43df89d1c4b0659e4c7b
+  languageName: node
+  linkType: hard
+
 "bidi-js@npm:^1.0.3":
   version: 1.0.3
   resolution: "bidi-js@npm:1.0.3"
@@ -606,6 +618,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "wcc-v2-example@workspace:."
   dependencies:
+    "@sprlab/wccompiler": "npm:^0.2.0"
     esbuild: "npm:^0.27.0"
     jsdom: "npm:^29.0.2"
     wccompiler: "link:.."

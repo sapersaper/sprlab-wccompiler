@@ -7,6 +7,7 @@ declare module 'wcc' {
   export function signal<T>(value: T): Signal<T>;
   export function computed<T>(fn: () => T): () => T;
   export function effect(fn: () => void): void;
+  export function watch<T>(target: string, fn: (newVal: T, oldVal: T) => void): void;
   export function defineComponent(options: {
     tag: string;
     template: string;
@@ -21,7 +22,7 @@ declare module 'wcc' {
 
   export function templateRef(name: string): { value: HTMLElement | null };
 
-  export function onMount(fn: () => void): void;
-  export function onDestroy(fn: () => void): void;
+  export function onMount(fn: () => void | Promise<void>): void;
+  export function onDestroy(fn: () => void | Promise<void>): void;
   export function templateBindings(bindings: Record<string, any>): void;
 }
