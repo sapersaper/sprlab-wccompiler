@@ -129,6 +129,16 @@
   </section>
 
   <section>
+    <h2>Nested Components</h2>
+    <div class="feature-tags">
+      <span>child component</span>
+      <span>auto-import</span>
+      <span>reactive prop binding</span>
+    </div>
+    <wcc-profile name="John Doe" role="admin"></wcc-profile>
+  </section>
+
+  <section>
     <h2>Lifecycle</h2>
     <div class="feature-tags">
       <span>onMount</span>
@@ -160,6 +170,7 @@
     import './dist/wcc-conditional.js';
     import './dist/wcc-list.js';
     import './dist/wcc-card.js';
+    import './dist/nested/wcc-profile.js';
     import './dist/wcc-lifecycle.js';
     import './dist/wcc-typescript.js';
     import { init, on, set, get } from './dist/wcc-runtime.js';

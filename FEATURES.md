@@ -44,6 +44,7 @@ Complete list of features supported by the compiler for building native web comp
 | `:style` | `:style="expr"` | Style binding (string or object) |
 | Boolean attrs | `:disabled="expr"` | Property assignment for boolean attributes |
 | `ref` | `ref="name"` | Mark element for `templateRef()` |
+| Child components | `<wcc-badge label="{{role}}">` | Auto-import + reactive prop binding to child custom elements |
 | `<slot>` | `<slot>fallback</slot>` | Default slot with fallback content |
 | `<slot name>` | `<slot name="header">` | Named slot |
 | Scoped slots | `<slot name="x" :prop="source">` | Slot with reactive props |

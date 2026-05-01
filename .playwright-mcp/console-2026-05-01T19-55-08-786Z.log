@@ -1,0 +1,25 @@
+[      23ms] ReferenceError: color is not defined
+    at http://localhost:4200/dist/nested/wcc-badge.js:84:40
+    at run (http://localhost:4200/dist/nested/wcc-badge.js:43:5)
+    at __effect (http://localhost:4200/dist/nested/wcc-badge.js:46:3)
+    at HTMLElement.connectedCallback (http://localhost:4200/dist/nested/wcc-badge.js:83:5)
+    at new WccProfile (http://localhost:4200/dist/nested/wcc-profile.js:95:10)
+    at http://localhost:4200/dist/nested/wcc-profile.js:128:16
+[   90029ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   90529ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   91029ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   91530ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   92029ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   92537ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   93030ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   93530ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   94030ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   94530ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   95030ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   95530ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   96030ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   96529ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   97030ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   97529ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   98028ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
+[   98529ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:4200/__poll:0
