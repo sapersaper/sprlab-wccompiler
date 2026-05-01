@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>wcCompiler Playground</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: #252526;
+      border-bottom: 1px solid #3c3c3c;
+    }
+    .header h1 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #cccccc;
+    }
+    .header select {
+      padding: 4px 8px;
+      background: #3c3c3c;
+      color: #d4d4d4;
+      border: 1px solid #555;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .header .status {
+      font-size: 12px;
+      color: #888;
+    }
+
+    /* ── Main layout ── */
+    .main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .divider {
+      width: 4px;
+      background: #3c3c3c;
+      cursor: col-resize;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      background: #2d2d2d;
+      border-bottom: 1px solid #3c3c3c;
+    }
+    .tab {
+      padding: 6px 16px;
+      font-size: 12px;
+      color: #888;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      user-select: none;
+    }
+    .tab:hover { color: #ccc; }
+    .tab.active {
+      color: #fff;
+      border-bottom-color: #007acc;
+    }
+
+    /* ── Editor container ── */
+    .editor-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .editor-container > div,
+    .editor-container > pre,
+    .editor-container > iframe {
+      position: absolute;
+      inset: 0;
+      overflow: auto;
+    }
+
+    /* ── Preview ── */
+    .preview-frame {
+      flex: 1;
+      border: none;
+      background: white;
+    }
+
+    /* ── Output ── */
+    .output-text {
+      flex: 1;
+      padding: 12px;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow: auto;
+      white-space: pre-wrap;
+      background: #1e1e1e;
+      color: #d4d4d4;
+    }
+
+    .error {
+      color: #f44747;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>wcCompiler Playground</h1>
+    <div>
+      <label>
+        Example:
+        <select id="preset-select">
+          <option value="blank">— Blank —</option>
+          <option value="counter">Counter</option>
+          <option value="conditional">Conditional</option>
+          <option value="form">Form (model)</option>
+          <option value="list">List (each)</option>
+          <option value="slots">Slots</option>
+        </select>
+      </label>
+    </div>
+    <div class="status" id="status">Ready</div>
+  </div>
+
+  <div class="main">
+    <!-- Left pane: editors -->
+    <div class="pane" id="left-pane">
+      <div class="tabs">
+        <div class="tab active" data-tab="script">Script</div>
+        <div class="tab" data-tab="template">Template</div>
+        <div class="tab" data-tab="style">CSS</div>
+      </div>
+      <div class="editor-container">
+        <div id="editor-script"></div>
+        <div id="editor-template" class="hidden"></div>
+        <div id="editor-style" class="hidden"></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Right pane: output -->
+    <div class="pane" id="right-pane">
+      <div class="tabs">
+        <div class="tab active" data-tab="output">Output JS</div>
+        <div class="tab" data-tab="preview">Preview</div>
+      </div>
+      <div class="editor-container">
+        <pre class="output-text" id="output-text"></pre>
+        <iframe class="preview-frame hidden" id="preview-frame" sandbox="allow-scripts"></iframe>
+        <div class="error hidden" id="error-display"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
