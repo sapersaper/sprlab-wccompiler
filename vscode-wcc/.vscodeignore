@@ -1,2 +1,32 @@
-.vscode/**
-.gitignore
+# Exclude everything by default
+**
+
+# Include compiled client extension
+!packages/client/dist/**
+
+# Include TextMate grammar
+!packages/client/syntaxes/**
+
+# Include extension icons
+!packages/client/icons/**
+
+# Include language configuration
+!packages/client/language-configuration.json
+
+# Include client package.json (extension manifest)
+!packages/client/package.json
+
+# Include compiled server
+!packages/server/dist/**
+
+# Include server entry point
+!packages/server/bin/**
+
+# Include server package.json
+!packages/server/package.json
+
+# Include root package.json
+!package.json
+
+# Include node_modules (needed for runtime dependencies)
+!node_modules/**

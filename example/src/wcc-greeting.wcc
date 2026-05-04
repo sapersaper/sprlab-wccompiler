@@ -1,21 +1,23 @@
-<script>
+<script lang="ts">
 import { defineComponent, signal, computed } from 'wcc'
 
 export default defineComponent({
   tag: 'wcc-greeting'
 })
 
+const tete = signal<string>('tete')
+
 const name = signal('World')
 const greeting = computed(() => `Hello, ${name()}!`)
 
-function updateName(e) {
-  name.set(e.target.value)
+function updateName(e: Event) {
+  name.set((e.target as HTMLInputElement).value)
 }
 </script>
 
 <template>
   <div class="greeting">
-    <label class="label">Name:</label>
+    <label class="label">Name: {{tete}}</label>
     <input class="input" type="text" value="World" @input="updateName" />
     <p class="message">{{greeting}}</p>
   </div>

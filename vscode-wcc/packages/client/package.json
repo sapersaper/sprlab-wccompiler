@@ -5,7 +5,8 @@
   "version": "0.1.0",
   "publisher": "sprlab",
   "license": "MIT",
-  "main": "./packages/client/dist/extension.js",
+  "icon": "icons/wcc-icon.svg",
+  "main": "./dist/extension.js",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -21,10 +22,10 @@
         "id": "wcc",
         "aliases": ["WCC", "wcc"],
         "extensions": [".wcc"],
-        "configuration": "./packages/client/language-configuration.json",
+        "configuration": "./language-configuration.json",
         "icon": {
-          "light": "./packages/client/icons/wcc-file.svg",
-          "dark": "./packages/client/icons/wcc-file.svg"
+          "light": "./icons/wcc-file.svg",
+          "dark": "./icons/wcc-file.svg"
         }
       }
     ],
@@ -32,7 +33,7 @@
       {
         "language": "wcc",
         "scopeName": "source.wcc",
-        "path": "./packages/client/syntaxes/wcc.tmLanguage.json",
+        "path": "./syntaxes/wcc.tmLanguage.json",
         "embeddedLanguages": {
           "source.js": "javascript",
           "source.ts": "typescript",
@@ -41,13 +42,6 @@
         }
       }
     ]
-  },
-  "workspaces": [
-    "packages/client",
-    "packages/server"
-  ],
-  "scripts": {
-    "build": "tsc --build packages/client packages/server"
   },
   "dependencies": {
     "@volar/vscode": "~2.4.0",
