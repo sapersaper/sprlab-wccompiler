@@ -151,6 +151,20 @@
   </section>
 
   <section>
+    <h2>Single File Component (.wcc)</h2>
+    <div class="feature-tags">
+      <span>SFC</span>
+      <span>.wcc format</span>
+      <span>signal</span>
+      <span>computed</span>
+      <span>@event</span>
+      <span>{{interpolation}}</span>
+      <span>CSS scoping</span>
+    </div>
+    <wcc-greeting></wcc-greeting>
+  </section>
+
+  <section>
     <h2>TypeScript</h2>
     <div class="feature-tags">
       <span>TypeScript</span>
@@ -174,6 +188,7 @@
     import './dist/nested/wcc-profile.js';
     import './dist/wcc-lifecycle.js';
     import './dist/wcc-typescript.js';
+    import './dist/wcc-greeting.js';
     import { init, on, set, get } from './dist/wcc-runtime.js';
 
     on('handleUpdate', (e) => {

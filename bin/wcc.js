@@ -23,7 +23,7 @@ async function build(config, cwd) {
     try {
       const output = await compile(file);
       const relPath = relative(inputDir, file);
-      const outPath = resolve(outputDir, relPath.replace(/\.ts$/, '.js'));
+      const outPath = resolve(outputDir, relPath.replace(/\.ts$/, '.js').replace(/\.wcc$/, '.js'));
       const outDir = dirname(outPath);
       if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
       writeFileSync(outPath, output);
@@ -49,7 +49,7 @@ function discoverFiles(dir) {
   for (const entry of entries) {
     if (!entry.isFile()) continue;
     const ext = extname(entry.name);
-    if (ext !== '.ts' && ext !== '.js') continue;
+    if (ext !== '.ts' && ext !== '.js' && ext !== '.wcc') continue;
     if (entry.name.includes('.test.')) continue;
     if (entry.name.endsWith('.d.ts')) continue;
     const fullPath = resolve(dir, entry.parentPath ? relative(dir, entry.parentPath) : '', entry.name);
@@ -74,12 +74,12 @@ async function main() {
     watch(inputDir, { recursive: true }, async (eventType, filename) => {
       if (!filename) return;
       const ext = extname(filename);
-      if (ext !== '.ts' && ext !== '.js') return;
+      if (ext !== '.ts' && ext !== '.js' && ext !== '.wcc') return;
       if (filename.includes('.test.')) return;
       const filePath = resolve(inputDir, filename);
       try {
         const output = await compile(filePath);
-        const outPath = resolve(outputDir, filename.replace(/\.ts$/, '.js'));
+        const outPath = resolve(outputDir, filename.replace(/\.ts$/, '.js').replace(/\.wcc$/, '.js'));
         const outDir = dirname(outPath);
         if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
         writeFileSync(outPath, output);
