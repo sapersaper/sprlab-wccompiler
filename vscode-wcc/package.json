@@ -1,0 +1,37 @@
+{
+  "name": "wcc-language",
+  "displayName": "WCC Language Support",
+  "description": "Syntax highlighting for wcCompiler Single File Components (.wcc)",
+  "version": "0.1.0",
+  "publisher": "sprlab",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "wcc",
+        "aliases": ["WCC", "wcc"],
+        "extensions": [".wcc"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "wcc",
+        "scopeName": "source.wcc",
+        "path": "./syntaxes/wcc.tmLanguage.json",
+        "embeddedLanguages": {
+          "source.js": "javascript",
+          "source.ts": "typescript",
+          "text.html.basic": "html",
+          "source.css": "css"
+        }
+      }
+    ]
+  }
+}
