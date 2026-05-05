@@ -626,14 +626,14 @@ __metadata:
   linkType: soft
 
 "wccompiler@file:..::locator=wcc-v2-example%40workspace%3A.":
-  version: 0.3.0
-  resolution: "wccompiler@file:..#..::hash=e7c91c&locator=wcc-v2-example%40workspace%3A."
+  version: 0.4.0
+  resolution: "wccompiler@file:..#..::hash=23df63&locator=wcc-v2-example%40workspace%3A."
   dependencies:
     esbuild: "npm:^0.27.0"
     jsdom: "npm:^29.0.2"
   bin:
     wcc: ./bin/wcc.js
-  checksum: 10c0/ba362a93ad062c27c5ee0643a15b76b48718cee51870eaff11628cf1142bace83edd49a8026e23f54a28f889cc0dff0ac8ff3e716ac0e9a3f68a5c1a335b1f01
+  checksum: 10c0/974f88c97fcad89ce9d377bd289d34a48724fa7bb93ce8f28313bbd804935ba8be705ec4121f4251a45918c4b0925a8e4ab34a7e27b6077cee3dda2529e332f8
   languageName: node
   linkType: hard
 

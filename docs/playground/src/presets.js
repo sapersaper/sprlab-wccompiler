@@ -1,27 +1,31 @@
 export const presets = {
   blank: {
     label: 'Blank',
-    tag: 'wcc-app',
-    lang: 'js',
-    script: `import { defineComponent, signal } from 'wcc'
+    source: `<script>
+import { defineComponent, signal } from 'wcc'
 
 export default defineComponent({
   tag: 'wcc-app',
 })
-`,
-    template: `<div class="app">
+</script>
 
-</div>`,
-    style: `.app {
+<template>
+<div class="app">
+
+</div>
+</template>
+
+<style>
+.app {
   font-family: sans-serif;
-}`,
+}
+</style>`,
   },
 
   counter: {
     label: 'Counter',
-    tag: 'wcc-counter',
-    lang: 'js',
-    script: `import { defineComponent, signal, computed } from 'wcc'
+    source: `<script>
+import { defineComponent, signal, computed } from 'wcc'
 
 export default defineComponent({
   tag: 'wcc-counter',
@@ -36,14 +40,20 @@ function increment() {
 
 function decrement() {
   count.set(count() - 1)
-}`,
-    template: `<div class="counter">
+}
+</script>
+
+<template>
+<div class="counter">
   <span class="value">{{count()}}</span>
   <span class="doubled">(×2 = {{doubled()}})</span>
   <button @click="increment">+</button>
   <button @click="decrement">−</button>
-</div>`,
-    style: `.counter {
+</div>
+</template>
+
+<style>
+.counter {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -63,14 +73,14 @@ button {
   border-radius: 4px;
   background: #f5f5f5;
 }
-button:hover { background: #e0e0e0; }`,
+button:hover { background: #e0e0e0; }
+</style>`,
   },
 
   conditional: {
     label: 'Conditional',
-    tag: 'wcc-demo',
-    lang: 'js',
-    script: `import { defineComponent, signal } from 'wcc'
+    source: `<script>
+import { defineComponent, signal } from 'wcc'
 
 export default defineComponent({
   tag: 'wcc-demo',
@@ -81,26 +91,32 @@ const status = signal('active')
 function cycle() {
   const s = status()
   status.set(s === 'active' ? 'pending' : s === 'pending' ? 'inactive' : 'active')
-}`,
-    template: `<div class="demo">
+}
+</script>
+
+<template>
+<div class="demo">
   <h3>Status: {{status()}}</h3>
   <div if="status() === 'active'" class="active">Welcome!</div>
   <div else-if="status() === 'pending'" class="pending">Pending...</div>
   <div else class="inactive">Inactive</div>
   <button @click="cycle">Cycle</button>
-</div>`,
-    style: `.demo { font-family: sans-serif; }
+</div>
+</template>
+
+<style>
+.demo { font-family: sans-serif; }
 .active { color: green; }
 .pending { color: orange; }
 .inactive { color: red; }
-button { margin-top: 8px; padding: 4px 12px; cursor: pointer; }`,
+button { margin-top: 8px; padding: 4px 12px; cursor: pointer; }
+</style>`,
   },
 
   form: {
     label: 'Form (model)',
-    tag: 'wcc-form',
-    lang: 'js',
-    script: `import { defineComponent, signal, computed } from 'wcc'
+    source: `<script>
+import { defineComponent, signal, computed } from 'wcc'
 
 export default defineComponent({
   tag: 'wcc-form',
@@ -108,8 +124,11 @@ export default defineComponent({
 
 const name = signal('')
 const age = signal(0)
-const summary = computed(() => name() + ' | ' + age() + ' yrs')`,
-    template: `<div class="form">
+const summary = computed(() => name() + ' | ' + age() + ' yrs')
+</script>
+
+<template>
+<div class="form">
   <div class="field">
     <label>Name:</label>
     <input type="text" model="name">
@@ -121,18 +140,21 @@ const summary = computed(() => name() + ' | ' + age() + ' yrs')`,
     <span>{{age()}}</span>
   </div>
   <p><strong>Summary:</strong> {{summary()}}</p>
-</div>`,
-    style: `.form { font-family: sans-serif; }
+</div>
+</template>
+
+<style>
+.form { font-family: sans-serif; }
 .field { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 label { font-weight: bold; min-width: 50px; }
-input { padding: 4px 8px; }`,
+input { padding: 4px 8px; }
+</style>`,
   },
 
   list: {
     label: 'List (each)',
-    tag: 'wcc-list',
-    lang: 'js',
-    script: `import { defineComponent, signal } from 'wcc'
+    source: `<script>
+import { defineComponent, signal } from 'wcc'
 
 export default defineComponent({
   tag: 'wcc-list',
@@ -146,23 +168,29 @@ const items = signal([
 
 function removeItem(item) {
   items.set(items().filter(i => i.id !== item.id))
-}`,
-    template: `<ul>
+}
+</script>
+
+<template>
+<ul>
   <li each="(item, index) in items" :key="item.id" :data-id="item.id">
     <span>{{index}}: {{item.name}}</span>
     <button @click="removeItem(item)">×</button>
   </li>
-</ul>`,
-    style: `ul { font-family: sans-serif; padding: 0; list-style: none; }
+</ul>
+</template>
+
+<style>
+ul { font-family: sans-serif; padding: 0; list-style: none; }
 li { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
-button { cursor: pointer; color: red; border: none; background: none; font-size: 16px; }`,
+button { cursor: pointer; color: red; border: none; background: none; font-size: 16px; }
+</style>`,
   },
 
   slots: {
     label: 'Slots',
-    tag: 'wcc-card',
-    lang: 'js',
-    script: `import { defineComponent, signal } from 'wcc'
+    source: `<script>
+import { defineComponent, signal } from 'wcc'
 
 export default defineComponent({
   tag: 'wcc-card',
@@ -172,8 +200,11 @@ const likes = signal(0)
 
 function like() {
   likes.set(likes() + 1)
-}`,
-    template: `<div class="card">
+}
+</script>
+
+<template>
+<div class="card">
   <div class="header">
     <slot name="header">Default Header</slot>
   </div>
@@ -184,8 +215,11 @@ function like() {
     <button @click="like">👍</button>
     <slot name="stats" :likes="likes">{{likes}} likes</slot>
   </div>
-</div>`,
-    style: `.card {
+</div>
+</template>
+
+<style>
+.card {
   font-family: sans-serif;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -195,6 +229,7 @@ function like() {
 .header { padding: 12px; background: #f5f5f5; font-weight: bold; }
 .body { padding: 12px; }
 .footer { padding: 8px 12px; display: flex; align-items: center; gap: 8px; border-top: 1px solid #eee; }
-button { cursor: pointer; }`,
+button { cursor: pointer; }
+</style>`,
   },
 };

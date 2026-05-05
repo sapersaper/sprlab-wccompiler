@@ -1,5 +1,6 @@
 ---
 inclusion: auto
+description: Project context and architecture overview for wcCompiler
 ---
 
 # wcCompiler v2 — Project Context
