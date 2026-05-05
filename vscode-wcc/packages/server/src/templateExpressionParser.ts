@@ -29,11 +29,13 @@ export interface EachVariable {
   itemVar: string;
   /** Name of the index variable (e.g., "index"), or null if not destructured */
   indexVar: string | null;
+  /** Source expression (e.g., "items()" or "items") */
+  source: string;
 }
 
 /**
  * Extracts iteration variables from all `each` directives in the template.
- * Parses expressions like `each="item in items"` and `each="(item, index) in items"`.
+ * Parses expressions like `each="item in items()"` and `each="(item, index) in items()"`.
  */
 export function extractEachVariables(templateContent: string): EachVariable[] {
   const variables: EachVariable[] = [];
@@ -44,16 +46,16 @@ export function extractEachVariables(templateContent: string): EachVariable[] {
     const expr = match[1];
 
     // Try destructured form: (item, index) in source
-    const destructuredMatch = /^\s*\(\s*(\w+)\s*,\s*(\w+)\s*\)\s+in\s+/.exec(expr);
+    const destructuredMatch = /^\s*\(\s*(\w+)\s*,\s*(\w+)\s*\)\s+in\s+(.+)\s*$/.exec(expr);
     if (destructuredMatch) {
-      variables.push({ itemVar: destructuredMatch[1], indexVar: destructuredMatch[2] });
+      variables.push({ itemVar: destructuredMatch[1], indexVar: destructuredMatch[2], source: destructuredMatch[3].trim() });
       continue;
     }
 
     // Try simple form: item in source
-    const simpleMatch = /^\s*(\w+)\s+in\s+/.exec(expr);
+    const simpleMatch = /^\s*(\w+)\s+in\s+(.+)\s*$/.exec(expr);
     if (simpleMatch) {
-      variables.push({ itemVar: simpleMatch[1], indexVar: null });
+      variables.push({ itemVar: simpleMatch[1], indexVar: null, source: simpleMatch[2].trim() });
     }
   }
 
@@ -143,6 +145,28 @@ export function extractTemplateExpressions(templateContent: string): TemplateExp
         startOffset: quoteOffset,
         attributeName: match[1],
       });
+    }
+  }
+
+  // Extract each source expressions: each="(item, index) in source" or each="item in source"
+  const eachSourceRe = /\beach="([^"]*)"/g;
+  while ((match = eachSourceRe.exec(templateContent)) !== null) {
+    const expr = match[1];
+    // Extract the source part (after "in ")
+    const inMatch = /\s+in\s+(.+)\s*$/.exec(expr);
+    if (inMatch) {
+      const source = inMatch[1].trim();
+      if (source.length > 0) {
+        // Calculate offset: position of source within the each attribute value
+        const attrValueStart = match.index + 'each="'.length;
+        const sourceStartInExpr = expr.indexOf(inMatch[1]);
+        expressions.push({
+          type: 'bind',
+          content: source,
+          startOffset: attrValueStart + sourceStartInExpr,
+          attributeName: 'each',
+        });
+      }
     }
   }
 

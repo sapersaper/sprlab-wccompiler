@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 // Features: each directive, :key, @event in loop, signal
 import { defineComponent, signal } from 'wcc'
 
@@ -6,8 +6,13 @@ export default defineComponent({
   tag: 'wcc-list',
 })
 
+interface ListItem {
+  id: number
+  name: string
+}
+
 const title = signal('My List')
-const items = signal([
+const items = signal<ListItem[]>([
   { id: 1, name: 'Learn wcCompiler' },
   { id: 2, name: 'Build components' },
   { id: 3, name: 'Ship it' },
@@ -15,7 +20,7 @@ const items = signal([
 const nextId = signal(4)
 const newItemName = signal('')
 
-function removeItem(item) {
+function removeItem(item: ListItem) {
   items.set(items().filter(i => i.id !== item.id))
 }
 
@@ -35,7 +40,7 @@ function addItem() {
   <button @click="addItem">Add Item</button>
 </div>
 <ul>
-  <li each="(item, index) in items" :key="item.id" :data-id="item.id" :title="item.name">
+  <li each="(item, index) in items()" :key="item.id" :data-id="item.id" :title="item.name">
     <span>{{index}}: {{item.name}}</span>
     <button @click="removeItem(item)">×</button>
   </li>

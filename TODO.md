@@ -2,16 +2,18 @@
 
 ## 🔴 Prioridad máxima
 
-- [ ] Soporte para expresiones con argumentos en event handlers — `@click="removeItem(item)"` en vez de solo `@click="removeItem"`
-  - Hoy solo se soporta pasar el nombre de la función; el handler recibe el Event nativo
-  - Necesario para trabajar con datos del modelo en loops (`each`) sin acceder al DOM
-  - Requiere cambios en: tree-walker (parsear la expresión), codegen (generar el handler con argumentos)
+- [x] Soporte para expresiones con argumentos en event handlers — `@click="removeItem(item)"`
+- [x] Soporte para `items()` en `each` source (consistencia con el resto del template)
+- [x] Inferencia de tipos para variables de iteración en `each` (`item` infiere tipo del array)
 - [ ] Mejorar API de `watch` para inferir tipo del target automáticamente
-  - Hoy `watch('count', (newVal, oldVal) => ...)` infiere `unknown` porque TypeScript no conecta el string con el tipo
   - Opciones: aceptar la referencia directa `watch(count, ...)` o requerir `watch<number>('count', ...)`
 - [ ] Renombrar `templateBindings` → `defineExpose` — exponer métodos/propiedades del componente para acceso externo vía ref
-  - En `.wcc` todas las variables del script ya son accesibles en el template sin `templateBindings`
-  - `defineExpose` tendría la semántica de exponer al padre (como Vue), no al template
+
+## 🟡 Prioridad media
+
+- [ ] Hover/intellisense sobre variables de iteración dentro del atributo `each` — `each="(item, index) in items()"`
+  - Hoy funciona en las expresiones del template (`{{item.name}}`, `:key="item.id"`) pero no dentro del propio `each="..."`
+  - Requiere mappings bidireccionales entre la declaración en el `each` y el virtual script
 
 ## DX
 - [ ] Source maps — compiled output maps back to original source for debugging

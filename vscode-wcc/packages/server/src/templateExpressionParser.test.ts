@@ -145,18 +145,20 @@ describe('templateExpressionParser - extractTemplateExpressions', () => {
 </ul>`;
       const result = extractTemplateExpressions(template);
 
-      // Should find: :key="item.id" and {{item.name}}
+      // Should find: :key="item.id", {{item.name}}, and each source "items"
       const interpolations = result.filter(e => e.type === 'interpolation');
       const bindings = result.filter(e => e.type === 'bind');
 
       expect(interpolations).toHaveLength(1);
       expect(interpolations[0].content).toBe('item.name');
-      expect(bindings).toHaveLength(1);
+      expect(bindings).toHaveLength(2); // :key="item.id" + each source "items"
       expect(bindings[0].content).toBe('item.id');
+      expect(bindings[1].content).toBe('items');
 
       // Verify offsets
       expect(template.slice(interpolations[0].startOffset, interpolations[0].startOffset + interpolations[0].content.length)).toBe('item.name');
       expect(template.slice(bindings[0].startOffset, bindings[0].startOffset + bindings[0].content.length)).toBe('item.id');
+      expect(template.slice(bindings[1].startOffset, bindings[1].startOffset + bindings[1].content.length)).toBe('items');
     });
 
     it('extracts expressions inside if/else-if blocks', () => {

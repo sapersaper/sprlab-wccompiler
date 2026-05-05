@@ -142,13 +142,21 @@ export function generateTemplateExpressionsCode(
     }
   }
 
-  // Add declarations for each iteration variables so TypeScript knows about them
-  // This suppresses "Cannot find name" errors and enables basic intellisense
+  // Add declarations for each iteration variables with inferred types
   for (const each of eachVariables) {
-    // Declare item as any (type inference from source would require full type analysis)
-    prefix += `declare const ${each.itemVar}: any;\n`;
+    const source = each.source;
+    if (source.endsWith('()')) {
+      // Source is a signal/computed call like items()
+      const varName = source.slice(0, -2); // strip ()
+      prefix += `const __each_arr_${varName} = ${source};\n`;
+      prefix += `const ${each.itemVar} = __each_arr_${varName}[0];\n`;
+    } else {
+      // Source is a bare name
+      prefix += `const __each_arr_${source} = ${source}();\n`;
+      prefix += `const ${each.itemVar} = __each_arr_${source}[0];\n`;
+    }
     if (each.indexVar) {
-      prefix += `declare const ${each.indexVar}: number;\n`;
+      prefix += `const ${each.indexVar} = 0;\n`;
     }
   }
 
