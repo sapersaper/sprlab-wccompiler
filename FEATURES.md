@@ -10,8 +10,9 @@ Complete list of features supported by the compiler for building native web comp
 | Constants | `const x = value` | Non-reactive variable (no `signal()` wrapper) |
 | `computed()` | `const x = computed(() => expr)` | Derived value with caching and auto-invalidation |
 | `effect()` | `effect(() => { ... })` | Side effect that re-runs when dependencies change (supports cleanup via return function) |
-| `watch()` | `watch('count', (n, o) => { ... })` | Side effect with old/new value when a specific variable changes |
-| `defineComponent()` | `defineComponent({ tag, template, styles })` | Component metadata with external file references |
+| `watch()` | `watch(signal, (n, o) => { ... })` | Observe a signal with old/new values |
+| `watch()` (getter) | `watch(() => expr, (n, o) => { ... })` | Observe a getter expression with old/new values |
+| `defineComponent()` | `defineComponent({ tag })` | Component metadata (tag name) |
 | `defineProps()` | `const props = defineProps({ key: default })` | External component props with defaults |
 | `defineProps()` (TS) | `defineProps<{ key: Type }>()` | Props with TypeScript generics |
 | `defineEmits()` | `const emit = defineEmits(['event'])` | Custom event declarations |
@@ -22,7 +23,7 @@ Complete list of features supported by the compiler for building native web comp
 | `onMount()` | `onMount(() => { ... })` | Lifecycle hook: connectedCallback |
 | `onMount()` (async) | `onMount(async () => { await ... })` | Async lifecycle hook (wrapped in IIFE) |
 | `onDestroy()` | `onDestroy(() => { ... })` | Lifecycle hook: disconnectedCallback |
-| `templateBindings()` | `templateBindings({ count, doubled })` | Declare which variables/functions are used in the template (eliminates TS unused warnings) |
+| `defineExpose()` | `defineExpose({ count, doubled })` | Expose methods/properties for external access via ref |
 | TypeScript | `.ts` file extension | TS support with type stripping via esbuild |
 | Macro imports | `import { signal } from 'wcc'` | Optional ES import for IDE DX (stripped at compile time) |
 
@@ -46,7 +47,7 @@ Complete list of features supported by the compiler for building native web comp
 | `:style` | `:style="expr"` | Style binding (string or object) |
 | Boolean attrs | `:disabled="expr"` | Property assignment for boolean attributes |
 | `ref` | `ref="name"` | Mark element for `templateRef()` |
-| Child components | `<wcc-badge label="{{role}}">` | Auto-import + reactive prop binding to child custom elements |
+| Child components | `<wcc-badge :label="role">` | Auto-import + reactive prop binding to child custom elements |
 | `<slot>` | `<slot>fallback</slot>` | Default slot with fallback content |
 | `<slot name>` | `<slot name="header">` | Named slot |
 | Scoped slots | `<slot name="x" :prop="source">` | Slot with reactive props |
@@ -72,7 +73,7 @@ Complete list of features supported by the compiler for building native web comp
 
 | Command | Description |
 |---|---|
-| `wcc build` | Compile all `.ts`/`.js` → `.js` + copy `wcc-runtime.js` |
+| `wcc build` | Compile all `.wcc` → `.js` + copy `wcc-runtime.js` |
 | `wcc dev` | Build + watch + SSE live-reload dev server |
 | `wcc.config.js` | Port, input dir, output dir |
 | `wcc-runtime.js` | Optional declarative binding helper for host pages |
@@ -82,15 +83,11 @@ Complete list of features supported by the compiler for building native web comp
 | Error Code | Condition |
 |---|---|
 | `MISSING_DEFINE_COMPONENT` | Source file has no `defineComponent()` |
-| `TEMPLATE_NOT_FOUND` | Template file path doesn't resolve |
-| `STYLES_NOT_FOUND` | Styles file path doesn't resolve |
+| `SFC_MISSING_TEMPLATE` | `.wcc` file has no `<template>` block |
 | `DUPLICATE_PROPS` | Duplicate props in `defineProps` |
 | `DUPLICATE_EMITS` | Duplicate emits in `defineEmits` |
 | `UNDECLARED_EMIT` | `emit()` references event not in `defineEmits` |
 | `EMITS_ASSIGNMENT_REQUIRED` | `defineEmits` without variable assignment |
-| `EMITS_OBJECT_CONFLICT` | Emits variable name conflicts with existing declaration |
-| `PROPS_ASSIGNMENT_REQUIRED` | `defineProps` without variable assignment |
-| `PROPS_OBJECT_CONFLICT` | Props variable name conflicts with existing declaration |
 | `MODEL_READONLY` | `model` on prop, computed, or constant |
 | `MODEL_UNKNOWN_VAR` | `model` on undeclared variable |
 | `INVALID_MODEL_ELEMENT` | `model` on non-form element |

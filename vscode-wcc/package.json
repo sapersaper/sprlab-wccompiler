@@ -1,0 +1,82 @@
+{
+  "name": "wcc-language",
+  "displayName": "wcCompiler (.wcc) Language Support",
+  "description": "Syntax highlighting and intellisense for wcCompiler Single File Components (.wcc)",
+  "version": "0.1.0",
+  "publisher": "SPRLab",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sapersaper/sprlab-wccompiler"
+  },
+  "icon": "./packages/client/icons/wcc-icon.png",
+  "main": "./packages/client/dist/extension.js",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:wcc"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "wcc",
+        "aliases": ["WCC", "wcc"],
+        "extensions": [".wcc"],
+        "configuration": "./packages/client/language-configuration.json",
+        "icon": {
+          "light": "./packages/client/icons/wcc-file.png",
+          "dark": "./packages/client/icons/wcc-file.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "wcc",
+        "scopeName": "source.wcc",
+        "path": "./packages/client/syntaxes/wcc.tmLanguage.json",
+        "embeddedLanguages": {
+          "source.js": "javascript",
+          "source.ts": "typescript",
+          "text.html.basic": "html",
+          "source.css": "css"
+        }
+      }
+    ],
+    "configurationDefaults": {
+      "editor.tokenColorCustomizations": {
+        "textMateRules": [
+          {
+            "scope": "keyword.control.wcc",
+            "settings": { "foreground": "#C586C0" }
+          },
+          {
+            "scope": "punctuation.section.interpolation.begin.wcc, punctuation.section.interpolation.end.wcc",
+            "settings": { "foreground": "#C586C0" }
+          },
+          {
+            "scope": "variable.other.event.wcc, variable.other.binding.wcc, variable.other.slot.wcc",
+            "settings": { "foreground": "#9CDCFE", "fontStyle": "italic" }
+          }
+        ]
+      }
+    }
+  },
+  "workspaces": [
+    "packages/client",
+    "packages/server"
+  ],
+  "scripts": {
+    "build": "tsc --build packages/client packages/server"
+  },
+  "dependencies": {
+    "@volar/vscode": "~2.4.0",
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0"
+  }
+}

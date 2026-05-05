@@ -30,8 +30,8 @@ describe('type declarations (wcc.d.ts)', () => {
     const content = readFileSync(dtsPath, 'utf-8');
     expect(content).toContain('function defineComponent');
     expect(content).toContain('tag: string');
-    expect(content).toContain('template: string');
-    expect(content).toContain('styles?: string');
+    expect(content).not.toContain('template?: string');
+    expect(content).not.toContain('styles?: string');
   });
 
   it('Signal<T> interface has call signature (): T', () => {

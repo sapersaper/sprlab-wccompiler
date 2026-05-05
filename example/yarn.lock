@@ -308,15 +308,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sprlab/wccompiler@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@sprlab/wccompiler@npm:0.2.0"
+"@sprlab/wccompiler@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@sprlab/wccompiler@npm:0.3.0"
   dependencies:
     esbuild: "npm:^0.27.0"
     jsdom: "npm:^29.0.2"
   bin:
     wcc: ./bin/wcc.js
-  checksum: 10c0/7b5812155b6184e06ea32a599ad997e6350187d0d7831584c802567dfbabdde04599a3232613a62df5df115f6e105f8c6fb858d8f2bb43df89d1c4b0659e4c7b
+  checksum: 10c0/b33d23d37f04ac9eab3b8929dccc86ca5d6a5541a45220c5ea7b0e9bd4c3dd82540511bdd6c0528884ba3e1b51abc511ce48aa15325ae39dfe0e9093e2044a67
   languageName: node
   linkType: hard
 
@@ -618,18 +618,24 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "wcc-v2-example@workspace:."
   dependencies:
-    "@sprlab/wccompiler": "npm:^0.2.0"
+    "@sprlab/wccompiler": "npm:^0.3.0"
     esbuild: "npm:^0.27.0"
     jsdom: "npm:^29.0.2"
-    wccompiler: "link:.."
+    wccompiler: "file:.."
   languageName: unknown
   linkType: soft
 
-"wccompiler@link:..::locator=wcc-v2-example%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "wccompiler@link:..::locator=wcc-v2-example%40workspace%3A."
+"wccompiler@file:..::locator=wcc-v2-example%40workspace%3A.":
+  version: 0.3.0
+  resolution: "wccompiler@file:..#..::hash=e7c91c&locator=wcc-v2-example%40workspace%3A."
+  dependencies:
+    esbuild: "npm:^0.27.0"
+    jsdom: "npm:^29.0.2"
+  bin:
+    wcc: ./bin/wcc.js
+  checksum: 10c0/ba362a93ad062c27c5ee0643a15b76b48718cee51870eaff11628cf1142bace83edd49a8026e23f54a28f889cc0dff0ac8ff3e716ac0e9a3f68a5c1a335b1f01
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "webidl-conversions@npm:^8.0.1":
   version: 8.0.1

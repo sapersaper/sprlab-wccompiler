@@ -1,0 +1,43 @@
+<script>
+import { defineComponent, defineProps, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-profile',
+})
+
+defineProps({ name: 'Anonymous', role: 'user' })
+const clicks = signal(0)
+
+function greet() {
+  clicks.set(clicks() + 1)
+}
+</script>
+
+<template>
+<div class="profile">
+  <h3>{{name}}</h3>
+  <wcc-badge :label="role" color="#28a745"></wcc-badge>
+  <p>Greeted {{clicks()}} times</p>
+  <button @click="greet">Say Hi</button>
+</div>
+</template>
+
+<style>
+.profile {
+  font-family: sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 300px;
+}
+
+.profile h3 {
+  margin: 0 0 8px 0;
+}
+
+.profile button {
+  margin-top: 8px;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+</style>

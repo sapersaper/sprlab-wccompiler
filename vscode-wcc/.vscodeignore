@@ -1,0 +1,53 @@
+# Exclude everything by default
+**
+
+# Include compiled client extension
+!packages/client/dist/**
+
+# Include TextMate grammar
+!packages/client/syntaxes/**
+
+# Include extension icons
+!packages/client/icons/**
+
+# Include language configuration
+!packages/client/language-configuration.json
+
+# Include client package.json (extension manifest)
+!packages/client/package.json
+
+# Include compiled server
+!packages/server/dist/**
+
+# Include server entry point
+!packages/server/bin/**
+
+# Include server package.json
+!packages/server/package.json
+
+# Include root package.json
+!package.json
+
+# Include node_modules (needed for runtime dependencies)
+!node_modules/@volar/**
+!node_modules/@vscode/**
+!node_modules/balanced-match/**
+!node_modules/brace-expansion/**
+!node_modules/minimatch/**
+!node_modules/path-browserify/**
+!node_modules/request-light/**
+!node_modules/semver/**
+!node_modules/typescript-auto-import-cache/**
+!node_modules/volar-service-css/**
+!node_modules/volar-service-html/**
+!node_modules/volar-service-typescript/**
+!node_modules/vscode-css-languageservice/**
+!node_modules/vscode-html-languageservice/**
+!node_modules/vscode-jsonrpc/**
+!node_modules/vscode-languageclient/**
+!node_modules/vscode-languageserver/**
+!node_modules/vscode-languageserver-protocol/**
+!node_modules/vscode-languageserver-textdocument/**
+!node_modules/vscode-languageserver-types/**
+!node_modules/vscode-nls/**
+!node_modules/vscode-uri/**

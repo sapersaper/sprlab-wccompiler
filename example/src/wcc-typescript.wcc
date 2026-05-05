@@ -1,0 +1,115 @@
+<script lang="ts">
+// Features: TypeScript with generics, interfaces, type annotations,
+// defineProps<T>, defineEmits<T>, signal<T>, computed<T>, watch()
+import { defineComponent, defineProps, defineEmits, signal, computed, watch, defineExpose } from 'wcc'
+
+interface CounterState {
+  current: number
+  previous: number
+}
+
+export default defineComponent({
+  tag: 'wcc-typescript',
+})
+
+const props = defineProps<{ title: string, count: number }>({ title: 'Demo', count: 0 })
+const emit = defineEmits<{ (e: 'update', value: number): void }>()
+
+const history = signal<CounterState[]>([])
+const doubled = computed<number>(() => props.count * 2)
+const lastChange = computed<string>(() => {
+  const h = history()
+  if (h.length === 0) return 'none'
+  const last = h[h.length - 1]
+  return last.previous + ' → ' + last.current
+})
+
+const watchLog = signal<string>('(no changes yet)')
+
+watch(() => props.count, (newVal, oldVal) => {
+  watchLog.set(`count changed: ${oldVal} → ${newVal}`)
+})
+
+function handleUpdate(): void {
+  const prev: number = props.count
+  emit('update', doubled())
+  history.set(history().concat([{ current: props.count, previous: prev }]))
+}
+
+defineExpose({ doubled, lastChange, handleUpdate, watchLog })
+</script>
+
+<template>
+<div class="typescript-demo">
+  <h2>TypeScript Component</h2>
+  <div class="info">
+    <span class="label">Title:</span>
+    <span class="title-value">{{title}}</span>
+  </div>
+  <div class="info">
+    <span class="label">Count:</span>
+    <span class="count-value">{{count}}</span>
+  </div>
+  <div class="info">
+    <span class="label">Doubled:</span>
+    <span class="doubled-value">{{doubled()}}</span>
+  </div>
+  <div class="info">
+    <span class="label">Last change:</span>
+    <span class="change-value">{{lastChange()}}</span>
+  </div>
+  <div class="info">
+    <span class="label">Watch:</span>
+    <span class="watch-value">{{watchLog()}}</span>
+  </div>
+  <button @click="handleUpdate">Update</button>
+</div>
+</template>
+
+<style>
+.typescript-demo {
+  font-family: sans-serif;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-width: 400px;
+}
+
+h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.info {
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label {
+  font-weight: bold;
+  min-width: 90px;
+}
+
+.title-value,
+.count-value,
+.doubled-value,
+.change-value {
+  color: #555;
+}
+
+button {
+  margin-top: 12px;
+  padding: 6px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f5f5f5;
+}
+
+button:hover {
+  background: #e0e0e0;
+}
+</style>

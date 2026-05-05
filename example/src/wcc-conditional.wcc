@@ -1,0 +1,139 @@
+<script lang="ts">
+// Features: if/else-if/else, show, :class, :style, signal, computed
+import { defineComponent, signal, computed } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-conditional',
+})
+
+type Status = 'active' | 'pending' | 'inactive'
+
+const status = signal<Status>('active')
+const showDetails = signal(true)
+const name = signal('User')
+
+const textColor = computed(() =>
+  status() === 'active' ? '#155724' : status() === 'pending' ? '#856404' : '#721c24'
+)
+
+function activate() {
+  status.set('active')
+}
+
+function cycle() {
+  const current = status()
+  if (current === 'active') {
+    status.set('pending')
+  } else if (current === 'pending') {
+    status.set('inactive')
+  } else {
+    status.set('active')
+  }
+}
+
+function toggleDetails() {
+  showDetails.set(!showDetails())
+}
+
+function isStatus(target: Status): boolean {
+  return status() === target
+}
+</script>
+
+<template>
+<div class="conditional-demo">
+  <h2>Status: {{status()}}</h2>
+
+  <div class="status-indicator" :class="{ active: status() === 'active', pending: status() === 'pending', inactive: status() === 'inactive' }" :style="{ color: textColor() }">
+    <span>{{status()}}</span>
+  </div>
+
+  <div if="isStatus('active')" class="branch active">
+    <span>Welcome back, {{name()}}!</span>
+  </div>
+  <div else-if="isStatus('pending')" class="branch pending">
+    <p>Your account is pending approval.</p>
+    <button @click="activate">Activate Now</button>
+  </div>
+  <div else class="branch inactive">
+    <p>Account inactive. Contact support.</p>
+  </div>
+
+  <div show="showDetails()" class="details">
+    <p>These are the details section. It toggles with show.</p>
+  </div>
+
+  <div class="actions">
+    <button @click="cycle">Cycle Status</button>
+    <button @click="toggleDetails">Toggle Details</button>
+  </div>
+</div>
+</template>
+
+<style>
+.conditional-demo {
+  font-family: sans-serif;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-width: 400px;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+.status-indicator {
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin: 8px 0;
+  font-weight: bold;
+  border: 1px solid #ccc;
+}
+
+.branch {
+  padding: 12px;
+  border-radius: 4px;
+  margin: 8px 0;
+}
+
+.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.details {
+  padding: 12px;
+  background: #e9ecef;
+  border-radius: 4px;
+  margin: 8px 0;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+button {
+  padding: 8px 16px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f5f5f5;
+}
+
+button:hover {
+  background: #e0e0e0;
+}
+</style>

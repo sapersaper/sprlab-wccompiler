@@ -1,0 +1,95 @@
+<script lang="ts">
+// Features: each directive, :key, @event in loop, signal
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-list',
+})
+
+interface ListItem {
+  id: number
+  name: string
+}
+
+const title = signal('My List')
+const items = signal<ListItem[]>([
+  { id: 1, name: 'Learn wcCompiler' },
+  { id: 2, name: 'Build components' },
+  { id: 3, name: 'Ship it' },
+])
+const nextId = signal(4)
+const newItemName = signal('')
+
+function removeItem(item: ListItem) {
+  items.set(items().filter(i => i.id !== item.id))
+}
+
+function addItem() {
+  const name = newItemName()
+  if (!name) return
+  items.set(items().concat([{ id: nextId(), name: name }]))
+  nextId.set(nextId() + 1)
+  newItemName.set('')
+}
+</script>
+
+<template>
+<h2>{{title()}}</h2>
+<div class="add-section">
+  <input type="text" model="newItemName" placeholder="New item name">
+  <button @click="addItem">Add Item</button>
+</div>
+<ul>
+  <li each="(item, index) in items()" :key="item.id" :data-id="item.id" :title="item.name">
+    <span>{{index}}: {{item.name}}</span>
+    <button @click="removeItem(item)">×</button>
+  </li>
+</ul>
+</template>
+
+<style>
+h2 {
+  margin-top: 0;
+  font-family: sans-serif;
+}
+
+.add-section {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-family: sans-serif;
+}
+
+.add-section input {
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f5f5f5;
+  padding: 2px 8px;
+  font-size: 14px;
+}
+
+button:hover {
+  background: #e0e0e0;
+}
+</style>
