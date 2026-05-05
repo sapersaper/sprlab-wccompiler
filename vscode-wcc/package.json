@@ -5,6 +5,7 @@
   "version": "0.1.0",
   "publisher": "sprlab",
   "license": "MIT",
+  "icon": "./packages/client/icons/wcc-icon.png",
   "main": "./packages/client/dist/extension.js",
   "engines": {
     "vscode": "^1.75.0"
@@ -23,8 +24,8 @@
         "extensions": [".wcc"],
         "configuration": "./packages/client/language-configuration.json",
         "icon": {
-          "light": "./packages/client/icons/wcc-file.svg",
-          "dark": "./packages/client/icons/wcc-file.svg"
+          "light": "./packages/client/icons/wcc-file.png",
+          "dark": "./packages/client/icons/wcc-file.png"
         }
       }
     ],

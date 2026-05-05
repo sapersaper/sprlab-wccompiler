@@ -1,5 +1,3 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <path fill="#7C5CFC" d="M4 8 L7 22 L10 13 L13 22 L16 8 L14 8 L12 16 L10 8 L8 16 L6 8 Z"/>
-  <path fill="#7C5CFC" d="M21 10 A5 5 0 0 0 21 20 L21 18 A3 3 0 0 1 21 12 Z"/>
-  <path fill="#7C5CFC" d="M27 10 A5 5 0 0 0 27 20 L27 18 A3 3 0 0 1 27 12 Z"/>
+  <text x="16" y="22" font-family="SF Pro, Inter, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#7C5CFC" text-anchor="middle" letter-spacing="-0.5">WCC</text>
 </svg>
