@@ -5,7 +5,7 @@ export default defineComponent({
   tag: 'wcc-badge',
 })
 
-const props = defineProps({ label: 'default', color: '#666' })
+defineProps({ label: 'default', color: '#666' })
 </script>
 
 <template>

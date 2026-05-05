@@ -1,5 +1,18 @@
 # TODO — wcCompiler
 
+## 🔴 Prioridad máxima
+
+- [ ] Soporte para expresiones con argumentos en event handlers — `@click="removeItem(item)"` en vez de solo `@click="removeItem"`
+  - Hoy solo se soporta pasar el nombre de la función; el handler recibe el Event nativo
+  - Necesario para trabajar con datos del modelo en loops (`each`) sin acceder al DOM
+  - Requiere cambios en: tree-walker (parsear la expresión), codegen (generar el handler con argumentos)
+- [ ] Mejorar API de `watch` para inferir tipo del target automáticamente
+  - Hoy `watch('count', (newVal, oldVal) => ...)` infiere `unknown` porque TypeScript no conecta el string con el tipo
+  - Opciones: aceptar la referencia directa `watch(count, ...)` o requerir `watch<number>('count', ...)`
+- [ ] Renombrar `templateBindings` → `defineExpose` — exponer métodos/propiedades del componente para acceso externo vía ref
+  - En `.wcc` todas las variables del script ya son accesibles en el template sin `templateBindings`
+  - `defineExpose` tendría la semántica de exponer al padre (como Vue), no al template
+
 ## DX
 - [ ] Source maps — compiled output maps back to original source for debugging
 - [ ] Error overlay in dev server — show compilation errors in the browser instead of terminal only
@@ -57,9 +70,16 @@ Solo queda el formato `.wcc` (Single File Component).
 - [x] `:class`, `:style`, `:attr` — resaltado como attribute binding
 - [x] Directivas: `each`, `if`, `else-if`, `else`, `show`, `model`, `ref`
 - [x] `#nombre` — resaltado como named slot
-- [ ] Aplicar en `<template>` de `.wcc` y en archivos `.html`
 
 ### Fase 5 — Snippets y DX
 - [ ] Snippet `wcc` → scaffold completo de componente `.wcc`
 - [ ] Snippets para directivas comunes
 - [ ] Icono de archivo `.wcc` en el file explorer
+
+### Fase 6 — Mejoras futuras (no requerido)
+- [ ] Semantic tokens para colorear props, signals y computeds con colores distintos en el template
+- [ ] Opciones adicionales en `defineComponent` — posibilidades:
+  - `shadow: true` — usar Shadow DOM en vez de Light DOM
+  - `extends: 'button'` — extender un elemento nativo (customized built-in)
+  - `formAssociated: true` — participar en formularios nativos
+  - `mode: 'open' | 'closed'` — modo del Shadow DOM si shadow está habilitado

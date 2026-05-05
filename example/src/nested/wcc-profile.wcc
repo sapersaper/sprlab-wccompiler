@@ -5,7 +5,7 @@ export default defineComponent({
   tag: 'wcc-profile',
 })
 
-const props = defineProps({ name: 'Anonymous', role: 'user' })
+defineProps({ name: 'Anonymous', role: 'user' })
 const clicks = signal(0)
 
 function greet() {
@@ -16,7 +16,7 @@ function greet() {
 <template>
 <div class="profile">
   <h3>{{name}}</h3>
-  <wcc-badge label="{{role}}" color="#28a745"></wcc-badge>
+  <wcc-badge :label="role" color="#28a745"></wcc-badge>
   <p>Greeted {{clicks()}} times</p>
   <button @click="greet">Say Hi</button>
 </div>

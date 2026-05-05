@@ -26,7 +26,7 @@ const lastChange = computed<string>(() => {
 
 const watchLog = signal<string>('(no changes yet)')
 
-watch('count', (newVal, oldVal) => {
+watch<number>('count', (newVal, oldVal) => {
   watchLog.set(`count changed: ${oldVal} → ${newVal}`)
 })
 

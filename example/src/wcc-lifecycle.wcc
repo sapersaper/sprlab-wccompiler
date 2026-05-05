@@ -6,7 +6,7 @@ export default defineComponent({
   tag: 'wcc-lifecycle',
 })
 
-const props = defineProps({ name: 'World' })
+defineProps({ name: 'World' })
 
 const status = signal('mounted')
 const elapsed = signal(0)

@@ -55,6 +55,63 @@ function getScriptLanguageId(attrs: string): string {
 }
 
 /**
+ * Extracts prop names and their inferred types from a script block's defineProps call.
+ * Supports:
+ * - defineProps<{ name: string, age: number }>(...) — generic form (extracts types directly)
+ * - defineProps({ name: 'default', age: 0 }) — object defaults form (infers from default values)
+ * - defineProps(['name', 'age']) — array form (types as any)
+ */
+function extractPropNamesFromScript(scriptContent: string): { name: string; type: string }[] {
+  const props: { name: string; type: string }[] = [];
+
+  // Generic form: defineProps<{ name: string, age: number }>
+  const genericMatch = scriptContent.match(/defineProps\s*<\s*\{([^}]+)\}\s*>/);
+  if (genericMatch) {
+    const body = genericMatch[1];
+    const propRe = /(\w+)\s*[?]?\s*:\s*([^,}]+)/g;
+    let m: RegExpExecArray | null;
+    while ((m = propRe.exec(body)) !== null) {
+      props.push({ name: m[1], type: m[2].trim() });
+    }
+    if (props.length > 0) return props;
+  }
+
+  // Object defaults form: defineProps({ name: 'default', age: 0 })
+  const objectMatch = scriptContent.match(/defineProps\(\s*\{([^}]+)\}\s*\)/);
+  if (objectMatch) {
+    const body = objectMatch[1];
+    const propRe = /(\w+)\s*:\s*([^,}]+)/g;
+    let m: RegExpExecArray | null;
+    while ((m = propRe.exec(body)) !== null) {
+      const name = m[1];
+      const value = m[2].trim();
+      // Infer type from default value
+      let type = 'any';
+      if (/^['"]/.test(value)) type = 'string';
+      else if (/^\d/.test(value) || value === 'NaN' || value === 'Infinity') type = 'number';
+      else if (value === 'true' || value === 'false') type = 'boolean';
+      else if (value.startsWith('[')) type = 'any[]';
+      else if (value.startsWith('{')) type = 'Record<string, any>';
+      props.push({ name, type });
+    }
+    if (props.length > 0) return props;
+  }
+
+  // Array form: defineProps(['name', 'age'])
+  const arrayMatch = scriptContent.match(/defineProps\(\s*\[([^\]]+)\]\s*\)/);
+  if (arrayMatch) {
+    const body = arrayMatch[1];
+    const strRe = /['"](\w+)['"]/g;
+    let m: RegExpExecArray | null;
+    while ((m = strRe.exec(body)) !== null) {
+      props.push({ name: m[1], type: 'any' });
+    }
+  }
+
+  return props;
+}
+
+/**
  * Generates the VirtualCode for template expressions.
  * The virtual code has the form:
  *
@@ -75,6 +132,15 @@ export function generateTemplateExpressionsCode(
 ): VirtualCode {
   // Build the prefix from the script block content (no mapping for this part)
   let prefix = scriptBlock ? scriptBlock.content + '\n' : '';
+
+  // Extract prop names from defineProps and declare them as variables
+  // so TypeScript knows about them in template expressions
+  if (scriptBlock) {
+    const propDefs = extractPropNamesFromScript(scriptBlock.content);
+    for (const prop of propDefs) {
+      prefix += `declare const ${prop.name}: ${prop.type};\n`;
+    }
+  }
 
   // Add declarations for each iteration variables so TypeScript knows about them
   // This suppresses "Cannot find name" errors and enables basic intellisense

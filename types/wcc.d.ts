@@ -12,7 +12,7 @@ declare module 'wcc' {
     tag: string;
   }): void;
 
-  export function defineProps<T extends Record<string, any>>(defaults?: Partial<T>): T;
+  export function defineProps<T extends Record<string, any>>(defaults: T): T;
   export function defineProps(names: string[]): Record<string, any>;
 
   export function defineEmits<T>(): T;

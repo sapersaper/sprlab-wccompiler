@@ -1,33 +1,37 @@
-<script>
-// Features: if/else-if/else, show, :class, :style, signal, computed
+<script lang="ts">
+// Features: if/else-if/else, show, :class, :style, signal, computed, enum
 import { defineComponent, signal, computed } from 'wcc'
 
 export default defineComponent({
   tag: 'wcc-conditional',
 })
 
-const STATUSES = ['active', 'pending', 'inactive']
+enum Status {
+  Active = 'active',
+  Pending = 'pending',
+  Inactive = 'inactive',
+}
 
-const status = signal('active')
+const status = signal<Status>(Status.Active)
 const showDetails = signal(true)
 const name = signal('User')
 
 const textColor = computed(() =>
-  status() === 'active' ? '#155724' : status() === 'pending' ? '#856404' : '#721c24'
+  status() === Status.Active ? '#155724' : status() === Status.Pending ? '#856404' : '#721c24'
 )
 
 function activate() {
-  status.set('active')
+  status.set(Status.Active)
 }
 
 function cycle() {
   const current = status()
-  if (current === 'active') {
-    status.set('pending')
-  } else if (current === 'pending') {
-    status.set('inactive')
+  if (current === Status.Active) {
+    status.set(Status.Pending)
+  } else if (current === Status.Pending) {
+    status.set(Status.Inactive)
   } else {
-    status.set('active')
+    status.set(Status.Active)
   }
 }
 
@@ -40,14 +44,14 @@ function toggleDetails() {
 <div class="conditional-demo">
   <h2>Status: {{status()}}</h2>
 
-  <div class="status-indicator" :class="{ active: status() === 'active', pending: status() === 'pending', inactive: status() === 'inactive' }" :style="{ color: textColor() }">
+  <div class="status-indicator" :class="{ active: status() === Status.Active, pending: status() === Status.Pending, inactive: status() === Status.Inactive }" :style="{ color: textColor() }">
     <span>{{status()}}</span>
   </div>
 
-  <div if="status() === 'active'" class="branch active">
+  <div if="status() === Status.Active" class="branch active">
     <span>Welcome back, {{name()}}!</span>
   </div>
-  <div else-if="status() === 'pending'" class="branch pending">
+  <div else-if="status() === Status.Pending" class="branch pending">
     <p>Your account is pending approval.</p>
     <button @click="activate">Activate Now</button>
   </div>
