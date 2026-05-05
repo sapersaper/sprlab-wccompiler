@@ -7,6 +7,9 @@
 # Include TextMate grammar
 !packages/client/syntaxes/**
 
+# Include snippets
+!packages/client/snippets/**
+
 # Include extension icons
 !packages/client/icons/**
 
@@ -27,6 +30,10 @@
 
 # Include root package.json
 !package.json
+
+# Include LICENSE and README
+!LICENSE
+!README.md
 
 # Include node_modules (needed for runtime dependencies)
 !node_modules/@volar/**

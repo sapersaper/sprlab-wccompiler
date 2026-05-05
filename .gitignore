@@ -17,3 +17,9 @@ example/.pnp.loader.mjs
 example/.yarn/
 
 /playground/
+
+# Playwright MCP logs
+.playwright-mcp/
+
+# VS Code extension packages
+*.vsix
