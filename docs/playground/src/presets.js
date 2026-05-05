@@ -7,8 +7,6 @@ export const presets = {
 
 export default defineComponent({
   tag: 'wcc-app',
-  template: './app.html',
-  styles: './app.css',
 })
 `,
     template: `<div class="app">
@@ -27,8 +25,6 @@ export default defineComponent({
 
 export default defineComponent({
   tag: 'wcc-counter',
-  template: './counter.html',
-  styles: './counter.css',
 })
 
 const count = signal(0)
@@ -42,8 +38,8 @@ function decrement() {
   count.set(count() - 1)
 }`,
     template: `<div class="counter">
-  <span class="value">{{count}}</span>
-  <span class="doubled">(×2 = {{doubled}})</span>
+  <span class="value">{{count()}}</span>
+  <span class="doubled">(×2 = {{doubled()}})</span>
   <button @click="increment">+</button>
   <button @click="decrement">−</button>
 </div>`,
@@ -78,8 +74,6 @@ button:hover { background: #e0e0e0; }`,
 
 export default defineComponent({
   tag: 'wcc-demo',
-  template: './demo.html',
-  styles: './demo.css',
 })
 
 const status = signal('active')
@@ -89,7 +83,7 @@ function cycle() {
   status.set(s === 'active' ? 'pending' : s === 'pending' ? 'inactive' : 'active')
 }`,
     template: `<div class="demo">
-  <h3>Status: {{status}}</h3>
+  <h3>Status: {{status()}}</h3>
   <div if="status() === 'active'" class="active">Welcome!</div>
   <div else-if="status() === 'pending'" class="pending">Pending...</div>
   <div else class="inactive">Inactive</div>
@@ -110,8 +104,6 @@ button { margin-top: 8px; padding: 4px 12px; cursor: pointer; }`,
 
 export default defineComponent({
   tag: 'wcc-form',
-  template: './form.html',
-  styles: './form.css',
 })
 
 const name = signal('')
@@ -121,14 +113,14 @@ const summary = computed(() => name() + ' | ' + age() + ' yrs')`,
   <div class="field">
     <label>Name:</label>
     <input type="text" model="name">
-    <span>{{name}}</span>
+    <span>{{name()}}</span>
   </div>
   <div class="field">
     <label>Age:</label>
     <input type="number" model="age">
-    <span>{{age}}</span>
+    <span>{{age()}}</span>
   </div>
-  <p><strong>Summary:</strong> {{summary}}</p>
+  <p><strong>Summary:</strong> {{summary()}}</p>
 </div>`,
     style: `.form { font-family: sans-serif; }
 .field { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
@@ -144,8 +136,6 @@ input { padding: 4px 8px; }`,
 
 export default defineComponent({
   tag: 'wcc-list',
-  template: './list.html',
-  styles: './list.css',
 })
 
 const items = signal([
@@ -154,14 +144,13 @@ const items = signal([
   { id: 3, name: 'Ship it' },
 ])
 
-function remove(event) {
-  const id = Number(event.target.closest('li').dataset.id)
-  items.set(items().filter(i => i.id !== id))
+function removeItem(item) {
+  items.set(items().filter(i => i.id !== item.id))
 }`,
     template: `<ul>
   <li each="(item, index) in items" :key="item.id" :data-id="item.id">
     <span>{{index}}: {{item.name}}</span>
-    <button @click="remove">×</button>
+    <button @click="removeItem(item)">×</button>
   </li>
 </ul>`,
     style: `ul { font-family: sans-serif; padding: 0; list-style: none; }
@@ -177,8 +166,6 @@ button { cursor: pointer; color: red; border: none; background: none; font-size:
 
 export default defineComponent({
   tag: 'wcc-card',
-  template: './card.html',
-  styles: './card.css',
 })
 
 const likes = signal(0)

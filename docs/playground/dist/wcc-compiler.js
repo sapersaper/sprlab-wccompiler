@@ -1,4 +1,4 @@
-// ../lib/parser-extractors.js
+// lib/parser-extractors.js
 function stripMacroImport(source) {
   return source.replace(
     /import\s*\{[^}]*\}\s*from\s*['"](?:wcc|@sprlab\/wccompiler)['"]\s*;?/g,
@@ -182,7 +182,7 @@ function extractSignals(source) {
   }
   return signals;
 }
-var REACTIVE_CALLS = /\b(?:signal|computed|effect|watch|defineProps|defineEmits|defineComponent|templateRef|templateBindings|onMount|onDestroy)\s*[<(]/;
+var REACTIVE_CALLS = /\b(?:signal|computed|effect|watch|defineProps|defineEmits|defineComponent|templateRef|defineExpose|onMount|onDestroy)\s*[<(]/;
 function extractConstants(source) {
   const constants = [];
   let depth = 0;
@@ -296,8 +296,11 @@ function extractWatchers(source) {
   let i = 0;
   while (i < lines.length) {
     const line = lines[i];
-    const m = line.match(/\bwatch\(\s*['"](\w+)['"]\s*,\s*\((\w+)\s*,\s*(\w+)\)\s*=>\s*\{/);
+    const mGetter = line.match(/\bwatch\s*\(\s*\(\)\s*=>\s*(.+?)\s*,\s*\((\w+)\s*,\s*(\w+)\)\s*=>\s*\{/);
+    const mSignal = !mGetter ? line.match(/\bwatch\s*\(\s*(\w+)\s*,\s*\((\w+)\s*,\s*(\w+)\)\s*=>\s*\{/) : null;
+    const m = mGetter || mSignal;
     if (m) {
+      const kind = mGetter ? "getter" : "signal";
       const target = m[1];
       const newParam = m[2];
       const oldParam = m[3];
@@ -345,7 +348,7 @@ function extractWatchers(source) {
       }
       if (minIndent === Infinity) minIndent = 0;
       const body = bodyLines.map((bl) => bl.substring(minIndent)).join("\n").trim();
-      watchers.push({ target, newParam, oldParam, body });
+      watchers.push({ kind, target, newParam, oldParam, body });
     }
     i++;
   }
@@ -475,7 +478,7 @@ function extractRefs(source) {
   return refs;
 }
 
-// ../lib/reactive-runtime.js
+// lib/reactive-runtime.js
 var reactiveRuntime = `
 let __currentEffect = null;
 let __batchDepth = 0;
@@ -555,7 +558,7 @@ function __batch(fn) {
 }
 `;
 
-// ../lib/css-scoper.js
+// lib/css-scoper.js
 function scopeCSS(css, tagName) {
   if (!css || !css.trim()) return "";
   const result = [];
@@ -652,7 +655,7 @@ function consumeAtRule(css, start, tagName) {
   };
 }
 
-// ../lib/codegen.js
+// lib/codegen.js
 function pathExpr(parts, rootVar) {
   return parts.length === 0 ? rootVar : rootVar + "." + parts.join(".");
 }
@@ -665,11 +668,17 @@ function slotPropRef(source, signalNames, computedNames, propNames) {
   if (signalNames.includes(source)) return `this._${source}()`;
   return `'${source}'`;
 }
-function transformExpr(expr, signalNames, computedNames, propsObjectName = null, propNames = /* @__PURE__ */ new Set(), emitsObjectName = null, constantNames = []) {
+function transformExpr(expr, signalNames, computedNames, propsObjectName = null, propNames = /* @__PURE__ */ new Set(), emitsObjectName = null, constantNames = [], methodNames2 = []) {
   let result = expr;
   if (emitsObjectName) {
     const emitsRe = new RegExp(`\\b${escapeRegex(emitsObjectName)}\\(`, "g");
     result = result.replace(emitsRe, "this._emit(");
+  }
+  for (const name of methodNames2) {
+    if (propsObjectName && name === propsObjectName) continue;
+    if (emitsObjectName && name === emitsObjectName) continue;
+    const methodRe = new RegExp(`\\b${name}\\(`, "g");
+    result = result.replace(methodRe, `this._${name}(`);
   }
   if (propsObjectName && propNames.size > 0) {
     const propsRe = new RegExp(`\\b${propsObjectName}\\.(\\w+)`, "g");
@@ -761,15 +770,18 @@ function transformForExpr(expr, itemVar, indexVar, propsSet, rootVarNames, compu
   if (indexVar) excludeSet.add(indexVar);
   for (const p of propsSet) {
     if (excludeSet.has(p)) continue;
-    r = r.replace(new RegExp(`\\b${p}\\b`, "g"), `this._s_${p}()`);
+    r = r.replace(new RegExp(`\\b${p}\\(\\)`, "g"), `this._s_${p}()`);
+    r = r.replace(new RegExp(`\\b${p}\\b(?!\\()`, "g"), `this._s_${p}()`);
   }
   for (const n of rootVarNames) {
     if (excludeSet.has(n)) continue;
-    r = r.replace(new RegExp(`\\b${n}\\b`, "g"), `this._${n}()`);
+    r = r.replace(new RegExp(`\\b${n}\\(\\)`, "g"), `this._${n}()`);
+    r = r.replace(new RegExp(`\\b${n}\\b(?!\\()`, "g"), `this._${n}()`);
   }
   for (const n of computedNames) {
     if (excludeSet.has(n)) continue;
-    r = r.replace(new RegExp(`\\b${n}\\b`, "g"), `this._c_${n}()`);
+    r = r.replace(new RegExp(`\\b${n}\\(\\)`, "g"), `this._c_${n}()`);
+    r = r.replace(new RegExp(`\\b${n}\\b(?!\\()`, "g"), `this._c_${n}()`);
   }
   return r;
 }
@@ -795,6 +807,40 @@ function isStaticForExpr(expr, itemVar, indexVar, propsSet, rootVarNames, comput
   }
   return true;
 }
+function generateEventHandler(handler, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames) {
+  if (handler.includes("=>")) {
+    const arrowIdx = handler.indexOf("=>");
+    const params = handler.slice(0, arrowIdx).trim();
+    let body = handler.slice(arrowIdx + 2).trim();
+    body = transformMethodBody(body, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, [], constantNames);
+    return `${params} => { ${body}; }`;
+  } else if (handler.includes("(")) {
+    const parenIdx = handler.indexOf("(");
+    const fnName = handler.slice(0, parenIdx).trim();
+    const args = handler.slice(parenIdx + 1, handler.lastIndexOf(")")).trim();
+    const transformedArgs = args ? transformExpr(args, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames, methodNames) : "";
+    return `(e) => { this._${fnName}(${transformedArgs}); }`;
+  } else {
+    return `this._${handler}.bind(this)`;
+  }
+}
+function generateForEventHandler(handler, itemVar, indexVar, propNames, signalNamesSet, computedNamesSet) {
+  if (handler.includes("=>")) {
+    const arrowIdx = handler.indexOf("=>");
+    const params = handler.slice(0, arrowIdx).trim();
+    let body = handler.slice(arrowIdx + 2).trim();
+    body = transformForExpr(body, itemVar, indexVar, propNames, signalNamesSet, computedNamesSet);
+    return `${params} => { ${body}; }`;
+  } else if (handler.includes("(")) {
+    const parenIdx = handler.indexOf("(");
+    const fnName = handler.slice(0, parenIdx).trim();
+    const args = handler.slice(parenIdx + 1, handler.lastIndexOf(")")).trim();
+    const transformedArgs = args ? transformForExpr(args, itemVar, indexVar, propNames, signalNamesSet, computedNamesSet) : "";
+    return `(e) => { this._${fnName}(${transformedArgs}); }`;
+  } else {
+    return `this._${handler}.bind(this)`;
+  }
+}
 function generateItemSetup(lines, forBlock, itemVar, indexVar, propNames, signalNamesSet, computedNamesSet) {
   const indent = "        ";
   for (const b of forBlock.bindings) {
@@ -808,7 +854,8 @@ function generateItemSetup(lines, forBlock, itemVar, indexVar, propNames, signal
   }
   for (const e of forBlock.events) {
     const nodeRef = pathExpr(e.path, "node");
-    lines.push(`${indent}  ${nodeRef}.addEventListener('${e.event}', this._${e.handler}.bind(this));`);
+    const handlerExpr = generateForEventHandler(e.handler, itemVar, indexVar, propNames, signalNamesSet, computedNamesSet);
+    lines.push(`${indent}  ${nodeRef}.addEventListener('${e.event}', ${handlerExpr});`);
   }
   for (const sb of forBlock.showBindings) {
     const nodeRef = pathExpr(sb.path, "node");
@@ -901,6 +948,7 @@ function generateComponent(parseResult) {
   const signalNames = signals.map((s) => s.name);
   const computedNames = computeds.map((c) => c.name);
   const constantNames = constantVars.map((v) => v.name);
+  const methodNames2 = methods.map((m) => m.name);
   const refVarNames = refs.map((r) => r.varName);
   const propNames = new Set(propDefs.map((p) => p.name));
   const lines = [];
@@ -985,11 +1033,16 @@ function generateComponent(parseResult) {
     lines.push(`    this._const_${c.name} = ${c.value};`);
   }
   for (const c of computeds) {
-    const body = transformExpr(c.body, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames);
+    const body = transformExpr(c.body, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames, methodNames2);
     lines.push(`    this._c_${c.name} = __computed(() => ${body});`);
   }
-  for (const w of watchers) {
-    lines.push(`    this.__prev_${w.target} = undefined;`);
+  for (let idx = 0; idx < watchers.length; idx++) {
+    const w = watchers[idx];
+    if (w.kind === "signal") {
+      lines.push(`    this.__prev_${w.target} = undefined;`);
+    } else {
+      lines.push(`    this.__prev_watch${idx} = undefined;`);
+    }
   }
   for (const ifBlock of ifBlocks) {
     const vn = ifBlock.varName;
@@ -1094,33 +1147,51 @@ function generateComponent(parseResult) {
     }
     lines.push("    });");
   }
-  for (const w of watchers) {
-    let watchRef;
-    if (propNames.has(w.target)) {
-      watchRef = `this._s_${w.target}()`;
-    } else if (computedNames.includes(w.target)) {
-      watchRef = `this._c_${w.target}()`;
-    } else {
-      watchRef = `this._${w.target}()`;
-    }
+  for (let idx = 0; idx < watchers.length; idx++) {
+    const w = watchers[idx];
     const body = transformMethodBody(w.body, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, refVarNames, constantNames);
-    lines.push("    __effect(() => {");
-    lines.push(`      const ${w.newParam} = ${watchRef};`);
-    lines.push(`      if (this.__prev_${w.target} !== undefined) {`);
-    lines.push(`        const ${w.oldParam} = this.__prev_${w.target};`);
-    const bodyLines = body.split("\n");
-    for (const line of bodyLines) {
-      lines.push(`        ${line}`);
+    if (w.kind === "signal") {
+      let watchRef;
+      if (propNames.has(w.target)) {
+        watchRef = `this._s_${w.target}()`;
+      } else if (computedNames.includes(w.target)) {
+        watchRef = `this._c_${w.target}()`;
+      } else {
+        watchRef = `this._${w.target}()`;
+      }
+      lines.push("    __effect(() => {");
+      lines.push(`      const ${w.newParam} = ${watchRef};`);
+      lines.push(`      if (this.__prev_${w.target} !== undefined) {`);
+      lines.push(`        const ${w.oldParam} = this.__prev_${w.target};`);
+      const bodyLines = body.split("\n");
+      for (const line of bodyLines) {
+        lines.push(`        ${line}`);
+      }
+      lines.push("      }");
+      lines.push(`      this.__prev_${w.target} = ${w.newParam};`);
+      lines.push("    });");
+    } else {
+      const getterExpr = transformMethodBody(w.target, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, refVarNames, constantNames);
+      const prevName = `__prev_watch${idx}`;
+      lines.push("    __effect(() => {");
+      lines.push(`      const ${w.newParam} = ${getterExpr};`);
+      lines.push(`      if (this.${prevName} !== undefined) {`);
+      lines.push(`        const ${w.oldParam} = this.${prevName};`);
+      const bodyLines = body.split("\n");
+      for (const line of bodyLines) {
+        lines.push(`        ${line}`);
+      }
+      lines.push("      }");
+      lines.push(`      this.${prevName} = ${w.newParam};`);
+      lines.push("    });");
     }
-    lines.push("      }");
-    lines.push(`      this.__prev_${w.target} = ${w.newParam};`);
-    lines.push("    });");
   }
   for (const e of events) {
-    lines.push(`    this.${e.varName}.addEventListener('${e.event}', this._${e.handler}.bind(this));`);
+    const handlerExpr = generateEventHandler(e.handler, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames);
+    lines.push(`    this.${e.varName}.addEventListener('${e.event}', ${handlerExpr});`);
   }
   for (const sb of showBindings) {
-    const expr = transformExpr(sb.expression, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames);
+    const expr = transformExpr(sb.expression, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames, methodNames2);
     lines.push("    __effect(() => {");
     lines.push(`      this.${sb.varName}.style.display = (${expr}) ? '' : 'none';`);
     lines.push("    });");
@@ -1150,7 +1221,7 @@ function generateComponent(parseResult) {
     }
   }
   for (const ab of attrBindings) {
-    const expr = transformExpr(ab.expression, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames);
+    const expr = transformExpr(ab.expression, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames, methodNames2);
     if (ab.kind === "attr") {
       lines.push("    __effect(() => {");
       lines.push(`      const __v = ${expr};`);
@@ -1196,10 +1267,10 @@ function generateComponent(parseResult) {
     for (let i = 0; i < ifBlock.branches.length; i++) {
       const branch = ifBlock.branches[i];
       if (branch.type === "if") {
-        const expr = transformExpr(branch.expression, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames);
+        const expr = transformExpr(branch.expression, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames, methodNames2);
         lines.push(`      if (${expr}) { __branch = ${i}; }`);
       } else if (branch.type === "else-if") {
-        const expr = transformExpr(branch.expression, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames);
+        const expr = transformExpr(branch.expression, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames, methodNames2);
         lines.push(`      else if (${expr}) { __branch = ${i}; }`);
       } else {
         lines.push(`      else { __branch = ${i}; }`);
@@ -1393,16 +1464,17 @@ function generateComponent(parseResult) {
         }
       }
       for (const e of branch.events) {
+        const handlerExpr = generateEventHandler(e.handler, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames);
         lines.push(`      const ${e.varName} = ${pathExpr(e.path, "node")};`);
-        lines.push(`      ${e.varName}.addEventListener('${e.event}', this._${e.handler}.bind(this));`);
+        lines.push(`      ${e.varName}.addEventListener('${e.event}', ${handlerExpr});`);
       }
       for (const sb of branch.showBindings) {
-        const expr = transformExpr(sb.expression, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames);
+        const expr = transformExpr(sb.expression, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames, methodNames2);
         lines.push(`      const ${sb.varName} = ${pathExpr(sb.path, "node")};`);
         lines.push(`      __effect(() => { ${sb.varName}.style.display = (${expr}) ? '' : 'none'; });`);
       }
       for (const ab of branch.attrBindings) {
-        const expr = transformExpr(ab.expression, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames);
+        const expr = transformExpr(ab.expression, signalNames, computedNames, propsObjectName, propNames, emitsObjectName, constantNames, methodNames2);
         lines.push(`      const ${ab.varName} = ${pathExpr(ab.path, "node")};`);
         lines.push(`      __effect(() => {`);
         lines.push(`        const __val = ${expr};`);
@@ -1441,7 +1513,7 @@ function generateComponent(parseResult) {
   return lines.join("\n");
 }
 
-// ../lib/types.js
+// lib/types.js
 var BOOLEAN_ATTRIBUTES = /* @__PURE__ */ new Set([
   "disabled",
   "checked",
@@ -1459,7 +1531,139 @@ var BOOLEAN_ATTRIBUTES = /* @__PURE__ */ new Set([
   "novalidate"
 ]);
 
-// ../lib/compiler-browser.js
+// lib/sfc-parser.js
+function sfcError(code, message) {
+  const error = new Error(message);
+  error.code = code;
+  return error;
+}
+function findBlocks(source, blockName) {
+  const openRe = new RegExp(`<${blockName}(\\s[^>]*)?>`, "g");
+  const closeTag = `</${blockName}>`;
+  const matches = [];
+  let m;
+  while ((m = openRe.exec(source)) !== null) {
+    const openEnd = m.index + m[0].length;
+    const closeIdx = source.indexOf(closeTag, openEnd);
+    if (closeIdx === -1) continue;
+    matches.push({
+      content: source.slice(openEnd, closeIdx),
+      attrs: m[1] || "",
+      start: m.index,
+      end: closeIdx + closeTag.length
+    });
+  }
+  return matches;
+}
+function extractLang(attrs) {
+  const langMatch = attrs.match(/lang\s*=\s*["']([^"']+)["']/);
+  return langMatch && langMatch[1] === "ts" ? "ts" : "js";
+}
+function extractTagFromDefineComponent(script, fileName) {
+  const dcMatch = script.match(/defineComponent\(\s*\{([^}]*)\}\s*\)/);
+  if (!dcMatch) {
+    throw sfcError(
+      "MISSING_DEFINE_COMPONENT",
+      `Error en '${fileName}': defineComponent() es obligatorio`
+    );
+  }
+  const body = dcMatch[1];
+  if (/\btemplate\s*:/.test(body)) {
+    throw sfcError(
+      "SFC_INLINE_PATHS_FORBIDDEN",
+      `SFC file '${fileName}': template/styles paths are not allowed in SFC mode (content is inline)`
+    );
+  }
+  if (/\bstyles\s*:/.test(body)) {
+    throw sfcError(
+      "SFC_INLINE_PATHS_FORBIDDEN",
+      `SFC file '${fileName}': template/styles paths are not allowed in SFC mode (content is inline)`
+    );
+  }
+  const tagMatch = body.match(/tag\s*:\s*['"]([^'"]+)['"]/);
+  if (!tagMatch) {
+    throw sfcError(
+      "MISSING_DEFINE_COMPONENT",
+      `Error en '${fileName}': defineComponent() must include a tag field`
+    );
+  }
+  return tagMatch[1];
+}
+function validateNoUnexpectedContent(source, blockRanges, fileName) {
+  let cursor = 0;
+  for (const range of blockRanges) {
+    const outside = source.slice(cursor, range.start);
+    if (outside.trim().length > 0) {
+      throw sfcError(
+        "SFC_UNEXPECTED_CONTENT",
+        `SFC file '${fileName}' contains unexpected content outside blocks`
+      );
+    }
+    cursor = range.end;
+  }
+  const trailing = source.slice(cursor);
+  if (trailing.trim().length > 0) {
+    throw sfcError(
+      "SFC_UNEXPECTED_CONTENT",
+      `SFC file '${fileName}' contains unexpected content outside blocks`
+    );
+  }
+}
+function parseSFC(source, fileName = "<unknown>") {
+  const scriptBlocks = findBlocks(source, "script");
+  const templateBlocks = findBlocks(source, "template");
+  const styleBlocks = findBlocks(source, "style");
+  if (scriptBlocks.length > 1) {
+    throw sfcError(
+      "SFC_DUPLICATE_BLOCK",
+      `SFC file '${fileName}' contains duplicate <script> blocks`
+    );
+  }
+  if (templateBlocks.length > 1) {
+    throw sfcError(
+      "SFC_DUPLICATE_BLOCK",
+      `SFC file '${fileName}' contains duplicate <template> blocks`
+    );
+  }
+  if (styleBlocks.length > 1) {
+    throw sfcError(
+      "SFC_DUPLICATE_BLOCK",
+      `SFC file '${fileName}' contains duplicate <style> blocks`
+    );
+  }
+  if (templateBlocks.length === 0) {
+    throw sfcError(
+      "SFC_MISSING_TEMPLATE",
+      `SFC file '${fileName}' is missing a <template> block`
+    );
+  }
+  if (scriptBlocks.length === 0) {
+    throw sfcError(
+      "SFC_MISSING_SCRIPT",
+      `SFC file '${fileName}' is missing a <script> block`
+    );
+  }
+  const allRanges = [
+    ...scriptBlocks,
+    ...templateBlocks,
+    ...styleBlocks
+  ].sort((a, b) => a.start - b.start);
+  validateNoUnexpectedContent(source, allRanges, fileName);
+  const scriptContent = scriptBlocks[0].content;
+  const templateContent = templateBlocks[0].content;
+  const styleContent = styleBlocks.length > 0 ? styleBlocks[0].content : "";
+  const lang = extractLang(scriptBlocks[0].attrs);
+  const tag = extractTagFromDefineComponent(scriptContent, fileName);
+  return {
+    script: scriptContent,
+    template: templateContent,
+    style: styleContent,
+    lang,
+    tag
+  };
+}
+
+// lib/compiler-browser.js
 function createRoot(html) {
   const doc = new DOMParser().parseFromString(
     `<html><body><div id="__root">${html}</div></body></html>`,
@@ -1879,6 +2083,18 @@ async function compileFromStrings({ script, template, style = "", tag, lang = "j
     processedTemplate: rootEl.innerHTML
   });
 }
+async function compileFromSFC(source, options) {
+  const descriptor = parseSFC(source);
+  return compileFromStrings({
+    script: descriptor.script,
+    template: descriptor.template,
+    style: descriptor.style,
+    tag: descriptor.tag,
+    lang: descriptor.lang,
+    stripTypes: options?.stripTypes
+  });
+}
 export {
+  compileFromSFC,
   compileFromStrings
 };
