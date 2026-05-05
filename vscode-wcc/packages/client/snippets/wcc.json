@@ -1,0 +1,128 @@
+{
+  "WCC Component": {
+    "prefix": "wcc",
+    "body": [
+      "<script lang=\"ts\">",
+      "import { defineComponent, signal } from 'wcc'",
+      "",
+      "export default defineComponent({ tag: '${1:wcc-component}' })",
+      "",
+      "const ${2:count} = signal(${3:0})",
+      "",
+      "function ${4:increment}() {",
+      "  ${2:count}.set(${2:count}() + 1)",
+      "}",
+      "</script>",
+      "",
+      "<template>",
+      "<div>",
+      "  <span>{{${2:count}()}}</span>",
+      "  <button @click=\"${4:increment}\">+</button>",
+      "</div>",
+      "</template>",
+      "",
+      "<style>",
+      "$0",
+      "</style>"
+    ],
+    "description": "Scaffold a new .wcc component"
+  },
+  "WCC Component (minimal)": {
+    "prefix": "wccmin",
+    "body": [
+      "<script lang=\"ts\">",
+      "import { defineComponent } from 'wcc'",
+      "",
+      "export default defineComponent({ tag: '${1:wcc-component}' })",
+      "$0",
+      "</script>",
+      "",
+      "<template>",
+      "<div>${2:content}</div>",
+      "</template>"
+    ],
+    "description": "Scaffold a minimal .wcc component (no style)"
+  },
+  "each directive": {
+    "prefix": "each",
+    "body": "each=\"(${1:item}, ${2:index}) in ${3:items}()\"",
+    "description": "each iteration directive"
+  },
+  "each with key": {
+    "prefix": "eachkey",
+    "body": "each=\"(${1:item}, ${2:index}) in ${3:items}()\" :key=\"${1:item}.${4:id}\"",
+    "description": "each iteration with :key"
+  },
+  "if directive": {
+    "prefix": "wif",
+    "body": "if=\"${1:condition}()\"",
+    "description": "if conditional directive"
+  },
+  "show directive": {
+    "prefix": "wshow",
+    "body": "show=\"${1:condition}()\"",
+    "description": "show visibility directive"
+  },
+  "model directive": {
+    "prefix": "wmodel",
+    "body": "model=\"${1:signal}\"",
+    "description": "model two-way binding"
+  },
+  "defineProps": {
+    "prefix": "dprops",
+    "body": "const ${1:props} = defineProps<{ ${2:name}: ${3:string} }>({ ${2:name}: ${4:'default'} })",
+    "description": "defineProps with TypeScript generics"
+  },
+  "defineEmits": {
+    "prefix": "demits",
+    "body": "const ${1:emit} = defineEmits<{ (e: '${2:event}', value: ${3:any}): void }>()",
+    "description": "defineEmits with TypeScript call signatures"
+  },
+  "signal": {
+    "prefix": "sig",
+    "body": "const ${1:name} = signal(${2:0})",
+    "description": "signal reactive variable"
+  },
+  "computed": {
+    "prefix": "comp",
+    "body": "const ${1:name} = computed(() => ${2:expr})",
+    "description": "computed derived value"
+  },
+  "watch": {
+    "prefix": "wat",
+    "body": [
+      "watch(${1:signal}, (newVal, oldVal) => {",
+      "  $0",
+      "})"
+    ],
+    "description": "watch a signal"
+  },
+  "onMount": {
+    "prefix": "mount",
+    "body": [
+      "onMount(() => {",
+      "  $0",
+      "})"
+    ],
+    "description": "onMount lifecycle hook"
+  },
+  "onDestroy": {
+    "prefix": "destroy",
+    "body": [
+      "onDestroy(() => {",
+      "  $0",
+      "})"
+    ],
+    "description": "onDestroy lifecycle hook"
+  },
+  "defineExpose": {
+    "prefix": "dexpose",
+    "body": "defineExpose({ ${1:name} })",
+    "description": "defineExpose methods/properties"
+  },
+  "templateRef": {
+    "prefix": "tref",
+    "body": "const ${1:el} = templateRef<${2:HTMLElement}>('${3:name}')",
+    "description": "templateRef element reference"
+  }
+}

@@ -1,15 +1,24 @@
 <script>
-import { defineComponent, defineProps } from 'wcc'
+import { defineComponent, defineProps, signal, defineExpose } from 'wcc'
 
 export default defineComponent({
   tag: 'wcc-badge',
 })
 
 defineProps({ label: 'default', color: '#666' })
+const message = signal('')
+
+function log(text) {
+  message.set(text)
+  console.log('[wcc-badge]', text)
+}
+
+defineExpose({ log })
 </script>
 
 <template>
 <span class="badge" :style="{ backgroundColor: color }">{{label}}</span>
+<span class="log-msg" show="message()">{{message()}}</span>
 </template>
 
 <style>
@@ -20,5 +29,13 @@ defineProps({ label: 'default', color: '#666' })
   font-size: 12px;
   color: white;
   font-weight: bold;
+}
+
+.log-msg {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #888;
+  font-style: italic;
 }
 </style>

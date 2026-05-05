@@ -2,7 +2,7 @@
   "name": "wcc-language",
   "displayName": "wcCompiler (.wcc) Language Support",
   "description": "Syntax highlighting and intellisense for wcCompiler Single File Components (.wcc)",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "SPRLab",
   "license": "MIT",
   "repository": {
@@ -24,8 +24,13 @@
     "languages": [
       {
         "id": "wcc",
-        "aliases": ["WCC", "wcc"],
-        "extensions": [".wcc"],
+        "aliases": [
+          "WCC",
+          "wcc"
+        ],
+        "extensions": [
+          ".wcc"
+        ],
         "configuration": "./packages/client/language-configuration.json",
         "icon": {
           "light": "./packages/client/icons/wcc-file.png",
@@ -46,20 +51,33 @@
         }
       }
     ],
+    "snippets": [
+      {
+        "language": "wcc",
+        "path": "./packages/client/snippets/wcc.json"
+      }
+    ],
     "configurationDefaults": {
       "editor.tokenColorCustomizations": {
         "textMateRules": [
           {
             "scope": "keyword.control.wcc",
-            "settings": { "foreground": "#C586C0" }
+            "settings": {
+              "foreground": "#C586C0"
+            }
           },
           {
             "scope": "punctuation.section.interpolation.begin.wcc, punctuation.section.interpolation.end.wcc",
-            "settings": { "foreground": "#C586C0" }
+            "settings": {
+              "foreground": "#C586C0"
+            }
           },
           {
             "scope": "variable.other.event.wcc, variable.other.binding.wcc, variable.other.slot.wcc",
-            "settings": { "foreground": "#9CDCFE", "fontStyle": "italic" }
+            "settings": {
+              "foreground": "#9CDCFE",
+              "fontStyle": "italic"
+            }
           }
         ]
       }

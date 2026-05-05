@@ -67,7 +67,7 @@ async function main() {
   } else if (command === 'dev') {
     await build(config, cwd);
     const outputDir = resolve(cwd, config.output);
-    startDevServer({ port: config.port, root: cwd, outputDir });
+    const devServer = startDevServer({ port: config.port, root: cwd, outputDir });
     const inputDir = resolve(cwd, config.input);
     console.log(`Watching ${inputDir} for changes...`);
     watch(inputDir, { recursive: true }, async (eventType, filename) => {
@@ -85,6 +85,7 @@ async function main() {
         console.log(`Compiled: ${filename}`);
       } catch (err) {
         console.error(`Error compiling ${filename}: ${err.message}`);
+        devServer.notifyError(`${filename}\n\n${err.message}`);
       }
     });
   } else {

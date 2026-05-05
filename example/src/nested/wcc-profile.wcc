@@ -1,5 +1,5 @@
-<script>
-import { defineComponent, defineProps, signal } from 'wcc'
+<script lang="ts">
+import { defineComponent, defineProps, signal, templateRef } from 'wcc'
 
 export default defineComponent({
   tag: 'wcc-profile',
@@ -7,16 +7,18 @@ export default defineComponent({
 
 defineProps({ name: 'Anonymous', role: 'user' })
 const clicks = signal(0)
+const badge = templateRef<{ log: (text: string) => void }>('badge')
 
 function greet() {
   clicks.set(clicks() + 1)
+  badge.value!.log('Hello #' + clicks())
 }
 </script>
 
 <template>
 <div class="profile">
   <h3>{{name}}</h3>
-  <wcc-badge :label="role" color="#28a745"></wcc-badge>
+  <wcc-badge ref="badge" :label="role" color="#28a745"></wcc-badge>
   <p>Greeted {{clicks()}} times</p>
   <button @click="greet">Say Hi</button>
 </div>
