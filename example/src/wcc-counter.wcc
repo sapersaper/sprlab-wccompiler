@@ -9,7 +9,7 @@ export default defineComponent({
 const props = defineProps<{ label: string, initial: number }>({ label: 'Count', initial: 0 })
 const emit = defineEmits<{ (e: 'change', value: number): void }>()
 
-const count = signal(props.initial)
+const count = signal(0)
 const doubled = computed(() => count() * 2)
 
 function increment() {

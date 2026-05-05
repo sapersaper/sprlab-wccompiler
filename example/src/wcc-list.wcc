@@ -15,10 +15,8 @@ const items = signal([
 const nextId = signal(4)
 const newItemName = signal('')
 
-function removeItem(event) {
-  const li = event.target.closest('li')
-  const id = Number(li.dataset.id)
-  items.set(items().filter(i => i.id !== id))
+function removeItem(item) {
+  items.set(items().filter(i => i.id !== item.id))
 }
 
 function addItem() {
@@ -39,7 +37,7 @@ function addItem() {
 <ul>
   <li each="(item, index) in items" :key="item.id" :data-id="item.id" :title="item.name">
     <span>{{index}}: {{item.name}}</span>
-    <button @click="removeItem">×</button>
+    <button @click="removeItem(item)">×</button>
   </li>
 </ul>
 </template>
