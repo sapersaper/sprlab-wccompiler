@@ -22,7 +22,7 @@
 
   <header class="hero">
     <h1>wcCompiler</h1>
-    <p class="tagline">Zero-runtime compiler that transforms TypeScript/JavaScript into native web components.</p>
+    <p class="tagline">Zero-runtime compiler that transforms .wcc single-file components into native web components.</p>
     <p class="sub">No framework. No virtual DOM. No runtime. Just vanilla custom elements with signals-based reactivity.</p>
     <div class="hero-actions">
       <a href="playground/" class="btn primary">Try the Playground</a>
@@ -62,11 +62,15 @@
         </div>
         <div class="feature-card">
           <h3>🧩 Nested Components</h3>
-          <p>Auto-import child components. Reactive prop binding with <code>{{interpolation}}</code> in attributes.</p>
+          <p>Auto-import child components. Reactive prop binding with <code>:prop</code> attribute syntax.</p>
         </div>
         <div class="feature-card">
           <h3>🔄 Dev Server</h3>
           <p>SSE live-reload, file watching, instant recompilation. <code>wcc dev</code> and you're running.</p>
+        </div>
+        <div class="feature-card">
+          <h3>🛠️ VS Code Extension</h3>
+          <p>The <strong>wcCompiler (.wcc) Language Support</strong> extension provides syntax highlighting, completions, and diagnostics for <code>.wcc</code> files.</p>
         </div>
       </div>
     </section>
@@ -81,37 +85,39 @@
       <h3>2. Create a component</h3>
       <div class="code-tabs">
         <div class="code-tab-header">
-          <span class="active">counter.js</span>
-          <span>counter.html</span>
-          <span>counter.css</span>
+          <span class="active">src/wcc-counter.wcc</span>
         </div>
       </div>
-      <pre class="code-block"><code>import { defineComponent, signal, computed } from 'wcc'
+      <pre class="code-block"><code>&lt;script&gt;
+import { defineComponent, signal } from 'wcc'
 
 export default defineComponent({
   tag: 'wcc-counter',
-  template: './counter.html',
-  styles: './counter.css',
 })
 
 const count = signal(0)
-const doubled = computed(() => count() * 2)
 
 function increment() {
   count.set(count() + 1)
-}</code></pre>
+}
+&lt;/script&gt;
 
-      <pre class="code-block"><code>&lt;div class="counter"&gt;
-  &lt;span&gt;{{count}}&lt;/span&gt;
-  &lt;span&gt;(×2 = {{doubled}})&lt;/span&gt;
+&lt;template&gt;
+&lt;div class="counter"&gt;
+  &lt;span&gt;{{count()}}&lt;/span&gt;
   &lt;button @click="increment"&gt;+&lt;/button&gt;
-&lt;/div&gt;</code></pre>
+&lt;/div&gt;
+&lt;/template&gt;
+
+&lt;style&gt;
+.counter { display: flex; gap: 8px; align-items: center; }
+&lt;/style&gt;</code></pre>
 
       <h3>3. Build</h3>
       <pre class="code-block">npx wcc build</pre>
 
       <h3>4. Use</h3>
-      <pre class="code-block"><code>&lt;script type="module" src="dist/counter.js"&gt;&lt;/script&gt;
+      <pre class="code-block"><code>&lt;script type="module" src="dist/wcc-counter.js"&gt;&lt;/script&gt;
 &lt;wcc-counter&gt;&lt;/wcc-counter&gt;</code></pre>
     </section>
 
@@ -126,7 +132,7 @@ function increment() {
           <tr><td><code>signal(value)</code></td><td>Create a reactive variable. Read: <code>x()</code>, Write: <code>x.set(val)</code></td></tr>
           <tr><td><code>computed(() => expr)</code></td><td>Derived value with caching and auto-invalidation</td></tr>
           <tr><td><code>effect(() => { ... })</code></td><td>Side effect that re-runs when dependencies change. Supports cleanup via return function.</td></tr>
-          <tr><td><code>watch('name', (n, o) => {})</code></td><td>Observe a specific variable with old/new values</td></tr>
+          <tr><td><code>watch(signal, (n, o) => {})</code> / <code>watch(() => expr, (n, o) => {})</code></td><td>Observe a signal or getter with old/new values</td></tr>
           <tr><td><code>defineProps({ key: default })</code></td><td>Declare external props with defaults</td></tr>
           <tr><td><code>defineEmits(['event'])</code></td><td>Declare custom events (validated at compile time)</td></tr>
           <tr><td><code>templateRef('name')</code></td><td>Get a DOM element reference from the template</td></tr>
@@ -140,17 +146,17 @@ function increment() {
       <table class="api-table">
         <thead><tr><th>Directive</th><th>Example</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code>{{var}}</code></td><td><code>&lt;span&gt;{{count}}&lt;/span&gt;</code></td><td>Reactive text interpolation</td></tr>
-          <tr><td><code>@event</code></td><td><code>@click="handler"</code></td><td>DOM event listener</td></tr>
-          <tr><td><code>if</code></td><td><code>if="expr"</code></td><td>Conditional rendering</td></tr>
-          <tr><td><code>else-if</code></td><td><code>else-if="expr"</code></td><td>Alternative branch</td></tr>
+          <tr><td><code>{{expr()}}</code></td><td><code>&lt;span&gt;{{count()}}&lt;/span&gt;</code></td><td>Reactive text interpolation (call signals to read)</td></tr>
+          <tr><td><code>@event</code></td><td><code>@click="handler"</code> / <code>@click="removeItem(item)"</code></td><td>DOM event listener (name or expression)</td></tr>
+          <tr><td><code>if</code></td><td><code>if="status() === 'active'"</code></td><td>Conditional rendering</td></tr>
+          <tr><td><code>else-if</code></td><td><code>else-if="status() === 'pending'"</code></td><td>Alternative branch</td></tr>
           <tr><td><code>else</code></td><td><code>else</code></td><td>Default branch</td></tr>
-          <tr><td><code>each</code></td><td><code>each="item in list"</code></td><td>List rendering (keyed with <code>:key</code>)</td></tr>
-          <tr><td><code>show</code></td><td><code>show="expr"</code></td><td>CSS visibility toggle</td></tr>
-          <tr><td><code>model</code></td><td><code>model="signal"</code></td><td>Two-way binding (input, select, textarea)</td></tr>
-          <tr><td><code>:attr</code></td><td><code>:href="url"</code></td><td>Attribute binding</td></tr>
-          <tr><td><code>:class</code></td><td><code>:class="{ active: isOn }"</code></td><td>Class binding (string or object)</td></tr>
-          <tr><td><code>:style</code></td><td><code>:style="{ color: c }"</code></td><td>Style binding (string or object)</td></tr>
+          <tr><td><code>each</code></td><td><code>each="item in items()"</code></td><td>List rendering (keyed with <code>:key</code>)</td></tr>
+          <tr><td><code>show</code></td><td><code>show="isVisible()"</code></td><td>CSS visibility toggle</td></tr>
+          <tr><td><code>model</code></td><td><code>model="name"</code></td><td>Two-way binding (input, select, textarea)</td></tr>
+          <tr><td><code>:attr</code></td><td><code>:href="url()"</code></td><td>Attribute binding</td></tr>
+          <tr><td><code>:class</code></td><td><code>:class="{ active: isActive() }"</code></td><td>Class binding (string or object)</td></tr>
+          <tr><td><code>:style</code></td><td><code>:style="{ color: textColor() }"</code></td><td>Style binding (string or object)</td></tr>
           <tr><td><code>ref</code></td><td><code>ref="name"</code></td><td>Mark element for <code>templateRef()</code></td></tr>
         </tbody>
       </table>
@@ -169,7 +175,7 @@ function increment() {
       <table class="api-table">
         <thead><tr><th>Command</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code>wcc build</code></td><td>Compile all .ts/.js files + copy wcc-runtime.js</td></tr>
+          <tr><td><code>wcc build</code></td><td>Compile all .wcc files + copy wcc-runtime.js</td></tr>
           <tr><td><code>wcc dev</code></td><td>Build + watch + SSE live-reload dev server</td></tr>
         </tbody>
       </table>

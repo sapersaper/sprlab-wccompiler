@@ -1,6 +1,6 @@
 # wcCompiler
 
-Zero-runtime compiler that transforms `.ts`/`.js` component files into native web components. No framework, no virtual DOM, no runtime — just vanilla JavaScript custom elements with signals-based reactivity.
+Zero-runtime compiler that transforms `.wcc` single-file components into native web components. No framework, no virtual DOM, no runtime — just vanilla JavaScript custom elements with signals-based reactivity.
 
 ## Install
 
@@ -12,14 +12,13 @@ npm install -D @sprlab/wccompiler
 
 **1. Create a component**
 
-```js
-// src/wcc-counter.js
+```html
+<!-- src/wcc-counter.wcc -->
+<script>
 import { defineComponent, signal } from 'wcc'
 
 export default defineComponent({
   tag: 'wcc-counter',
-  template: './wcc-counter.html',
-  styles: './wcc-counter.css',
 })
 
 const count = signal(0)
@@ -27,19 +26,18 @@ const count = signal(0)
 function increment() {
   count.set(count() + 1)
 }
-```
+</script>
 
-```html
-<!-- src/wcc-counter.html -->
+<template>
 <div class="counter">
-  <span>{{count}}</span>
+  <span>{{count()}}</span>
   <button @click="increment">+</button>
 </div>
-```
+</template>
 
-```css
-/* src/wcc-counter.css */
+<style>
 .counter { display: flex; gap: 8px; align-items: center; }
+</style>
 ```
 
 **2. Build**
@@ -56,6 +54,36 @@ npx wcc build
 ```
 
 The compiled output is a single `.js` file with zero dependencies — works in any browser that supports custom elements.
+
+## Single File Component (.wcc)
+
+wcCompiler uses a single-file component format with the `.wcc` extension. Each file contains three blocks:
+
+- `<script>` — Component logic (signals, props, events, lifecycle)
+- `<template>` — HTML template with directives
+- `<style>` — Scoped CSS
+
+```html
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-my-component',
+})
+
+const message = signal('Hello')
+</script>
+
+<template>
+<p>{{message()}}</p>
+</template>
+
+<style>
+p { color: steelblue; }
+</style>
+```
+
+Use `<script lang="ts">` for TypeScript support. The CLI discovers and compiles all `.wcc` files in your source directory.
 
 ## Reactivity
 
@@ -94,13 +122,18 @@ effect(() => {
 ### Watch
 
 ```js
-watch('count', (newVal, oldVal) => {
+// Watch a signal directly
+watch(count, (newVal, oldVal) => {
   console.log(`Changed from ${oldVal} to ${newVal}`)
-  if (newVal > 10) api.save(newVal)
+})
+
+// Watch a getter function (useful for props or derived values)
+watch(() => props.count, (newVal, oldVal) => {
+  console.log(`Prop changed: ${oldVal} → ${newVal}`)
 })
 ```
 
-`watch` observes a specific signal/prop/computed and provides both old and new values. The callback does not run on initial mount — only on subsequent changes.
+`watch` observes a specific signal or getter and provides both old and new values. The callback does not run on initial mount — only on subsequent changes.
 
 ### Constants
 
@@ -116,6 +149,16 @@ const props = defineProps({ label: 'Click', count: 0 })
 
 ```html
 <wcc-counter label="Clicks:" count="5"></wcc-counter>
+```
+
+You can also call `defineProps` without assignment — the props are available by name in the template:
+
+```js
+defineProps({ label: 'Click' })
+```
+
+```html
+<span>{{label}}</span>
 ```
 
 TypeScript generics:
@@ -148,9 +191,19 @@ The compiler validates emit calls against declared events at compile time.
 
 ### Text Interpolation
 
+Signals and computeds require `()` to read their value in templates:
+
 ```html
-<span>{{count}}</span>
-<p>Hello, {{name}}! You have {{count}} items.</p>
+<span>{{count()}}</span>
+<p>You have {{items().length}} items.</p>
+<span>{{doubled()}}</span>
+```
+
+Props accessed without assignment use their name directly (no parentheses):
+
+```html
+<span>{{label}}</span>
+<p>Hello, {{name}}!</p>
 ```
 
 ### Event Binding
@@ -160,25 +213,34 @@ The compiler validates emit calls against declared events at compile time.
 <input @input="handleInput">
 ```
 
+Event handlers support expressions and inline arguments:
+
+```html
+<button @click="removeItem(item)">×</button>
+<button @click="() => doSomething()">Do it</button>
+```
+
 ### Conditional Rendering
 
 ```html
-<div if="status === 'active'">Active</div>
-<div else-if="status === 'pending'">Pending</div>
+<div if="status() === 'active'">Active</div>
+<div else-if="status() === 'pending'">Pending</div>
 <div else>Inactive</div>
 ```
 
 ### List Rendering
 
 ```html
-<li each="item in items">{{item.name}}</li>
-<li each="(item, index) in items">{{index}}: {{item.name}}</li>
+<li each="item in items()">{{item.name}}</li>
+<li each="(item, index) in items()">{{index}}: {{item.name}}</li>
 ```
+
+The source expression calls the signal (`items()`) to read the current array.
 
 ### Visibility Toggle
 
 ```html
-<div show="isVisible">Shown or hidden via CSS display</div>
+<div show="isVisible()">Shown or hidden via CSS display</div>
 ```
 
 ### Two-Way Binding
@@ -195,10 +257,10 @@ The compiler validates emit calls against declared events at compile time.
 ### Attribute Binding
 
 ```html
-<a :href="url">Link</a>
-<button :disabled="isLoading">Submit</button>
-<div :class="{ active: isActive, error: hasError }">...</div>
-<div :style="{ color: textColor }">...</div>
+<a :href="url()">Link</a>
+<button :disabled="isLoading()">Submit</button>
+<div :class="{ active: isActive(), error: hasError() }">...</div>
+<div :style="{ color: textColor() }">...</div>
 ```
 
 ### Template Refs
@@ -286,20 +348,45 @@ wcc-counter .counter { display: flex; }
 
 ## TypeScript
 
-Use `.ts` files with full type support:
+Use `<script lang="ts">` in your `.wcc` file for full type support:
 
-```ts
-import { defineComponent, defineProps, signal, computed, defineExpose } from 'wcc'
+```html
+<script lang="ts">
+import { defineComponent, defineProps, defineEmits, signal, computed, watch, defineExpose } from 'wcc'
 
-const props = defineProps<{ title: string }>({ title: 'Demo' })
-const count = signal<number>(0)
-const doubled = computed<number>(() => count() * 2)
+export default defineComponent({
+  tag: 'wcc-typescript',
+})
 
-function increment(): void {
-  count.set(count() + 1)
+const props = defineProps<{ title: string, count: number }>({ title: 'Demo', count: 0 })
+const emit = defineEmits<{ (e: 'update', value: number): void }>()
+
+const doubled = computed<number>(() => props.count * 2)
+const watchLog = signal<string>('(no changes yet)')
+
+watch(() => props.count, (newVal, oldVal) => {
+  watchLog.set(`count changed: ${oldVal} → ${newVal}`)
+})
+
+function handleUpdate(): void {
+  emit('update', doubled())
 }
 
-defineExpose({ doubled, increment })
+defineExpose({ doubled, handleUpdate, watchLog })
+</script>
+
+<template>
+<div class="demo">
+  <span>{{title}}: {{count}}</span>
+  <span>Doubled: {{doubled()}}</span>
+  <span>Watch: {{watchLog()}}</span>
+  <button @click="handleUpdate">Update</button>
+</div>
+</template>
+
+<style>
+.demo { font-family: sans-serif; }
+</style>
 ```
 
 `defineExpose()` exposes methods and properties for external access via ref.
@@ -307,9 +394,11 @@ defineExpose({ doubled, increment })
 ## CLI
 
 ```bash
-wcc build    # Compile all .ts/.js files from input/ to output/
+wcc build    # Compile all .wcc files from input/ to output/
 wcc dev      # Build + watch + live-reload dev server
 ```
+
+The CLI discovers all `.wcc` files in your source directory and compiles each into a standalone `.js` file.
 
 ### Configuration
 
@@ -324,6 +413,10 @@ export default {
 ```
 
 All options are optional — defaults shown above.
+
+## Editor Support
+
+The **wcCompiler (.wcc) Language Support** extension is available on the VS Code Marketplace. It provides syntax highlighting, completions, and diagnostics for `.wcc` files.
 
 ## Runtime Helper
 
