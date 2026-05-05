@@ -132,7 +132,7 @@ function increment() {
           <tr><td><code>templateRef('name')</code></td><td>Get a DOM element reference from the template</td></tr>
           <tr><td><code>onMount(() => {})</code></td><td>Lifecycle: connectedCallback (supports async)</td></tr>
           <tr><td><code>onDestroy(() => {})</code></td><td>Lifecycle: disconnectedCallback</td></tr>
-          <tr><td><code>templateBindings({ ... })</code></td><td>Declare template-used vars (eliminates TS unused warnings)</td></tr>
+          <tr><td><code>defineExpose({ ... })</code></td><td>Expose methods/properties for external access via ref</td></tr>
         </tbody>
       </table>
 

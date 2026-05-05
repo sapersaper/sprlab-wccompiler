@@ -289,7 +289,7 @@ wcc-counter .counter { display: flex; }
 Use `.ts` files with full type support:
 
 ```ts
-import { defineComponent, defineProps, signal, computed, templateBindings } from 'wcc'
+import { defineComponent, defineProps, signal, computed, defineExpose } from 'wcc'
 
 const props = defineProps<{ title: string }>({ title: 'Demo' })
 const count = signal<number>(0)
@@ -299,10 +299,10 @@ function increment(): void {
   count.set(count() + 1)
 }
 
-templateBindings({ doubled, increment })
+defineExpose({ doubled, increment })
 ```
 
-`templateBindings()` declares which variables are used in the template, eliminating TypeScript "unused variable" warnings.
+`defineExpose()` exposes methods and properties for external access via ref.
 
 ## CLI
 

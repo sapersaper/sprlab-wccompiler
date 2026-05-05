@@ -8,7 +8,7 @@
 - [x] Mejorar API de `watch` para inferir tipo del target automáticamente
   - `watch(signal, ...)` infiere tipo del Signal<T>
   - `watch(() => expr, ...)` infiere tipo del return de la función getter
-- [ ] Renombrar `templateBindings` → `defineExpose` — exponer métodos/propiedades del componente para acceso externo vía ref
+- [x] Renombrar `templateBindings` → `defineExpose` — exponer métodos/propiedades del componente para acceso externo vía ref
 
 ## 🟡 Prioridad media
 

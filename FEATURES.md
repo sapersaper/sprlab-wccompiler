@@ -22,7 +22,7 @@ Complete list of features supported by the compiler for building native web comp
 | `onMount()` | `onMount(() => { ... })` | Lifecycle hook: connectedCallback |
 | `onMount()` (async) | `onMount(async () => { await ... })` | Async lifecycle hook (wrapped in IIFE) |
 | `onDestroy()` | `onDestroy(() => { ... })` | Lifecycle hook: disconnectedCallback |
-| `templateBindings()` | `templateBindings({ count, doubled })` | Declare which variables/functions are used in the template (eliminates TS unused warnings) |
+| `defineExpose()` | `defineExpose({ count, doubled })` | Expose methods/properties for external access via ref |
 | TypeScript | `.ts` file extension | TS support with type stripping via esbuild |
 | Macro imports | `import { signal } from 'wcc'` | Optional ES import for IDE DX (stripped at compile time) |
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 // Features: TypeScript with generics, interfaces, type annotations,
 // defineProps<T>, defineEmits<T>, signal<T>, computed<T>, watch()
-import { defineComponent, defineProps, defineEmits, signal, computed, watch, templateBindings } from 'wcc'
+import { defineComponent, defineProps, defineEmits, signal, computed, watch, defineExpose } from 'wcc'
 
 interface CounterState {
   current: number
@@ -36,7 +36,7 @@ function handleUpdate(): void {
   history.set(history().concat([{ current: props.count, previous: prev }]))
 }
 
-templateBindings({ doubled, lastChange, handleUpdate, watchLog })
+defineExpose({ doubled, lastChange, handleUpdate, watchLog })
 </script>
 
 <template>
