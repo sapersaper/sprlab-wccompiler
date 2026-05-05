@@ -1,0 +1,24 @@
+<script>
+import { defineComponent, defineProps } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-badge',
+})
+
+const props = defineProps({ label: 'default', color: '#666' })
+</script>
+
+<template>
+<span class="badge" :style="{ backgroundColor: color }">{{label}}</span>
+</template>
+
+<style>
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: white;
+  font-weight: bold;
+}
+</style>

@@ -29,6 +29,7 @@ mkdir -p "$DEST/packages/server/bin" "$DEST/packages/server/dist"
 cp packages/server/bin/server.js "$DEST/packages/server/bin/"
 cp packages/server/dist/index.js "$DEST/packages/server/dist/"
 cp packages/server/dist/languagePlugin.js "$DEST/packages/server/dist/"
+cp packages/server/dist/templateExpressionParser.js "$DEST/packages/server/dist/"
 cp packages/server/dist/wccParser.js "$DEST/packages/server/dist/"
 cp packages/server/package.json "$DEST/packages/server/"
 

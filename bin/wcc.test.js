@@ -24,37 +24,37 @@ describe('wcc CLI', () => {
     const srcDir = join(tmpDir, dir);
     if (!existsSync(srcDir)) mkdirSync(srcDir, { recursive: true });
 
-    // Write a minimal component source
-    writeFileSync(join(srcDir, `${name}.js`), `
+    // Write a minimal .wcc SFC component
+    const sfcContent = `<script>
 import { defineComponent, signal } from 'wcc'
 
-export default defineComponent({
-  tag: '${name}',
-  template: './${name}.html',
-})
+export default defineComponent({ tag: '${name}' })
 
 const count = signal(0)
 
 function increment() {
   count.set(count() + 1)
 }
-`);
-    // Write a minimal template
-    writeFileSync(join(srcDir, `${name}.html`), `<div>{{count}}</div>`);
+</script>
+
+<template>
+<div>{{count()}}</div>
+</template>
+`;
+    writeFileSync(join(srcDir, `${name}.wcc`), sfcContent);
   }
 
   function writeConfig(config) {
     writeFileSync(join(tmpDir, 'wcc.config.js'), `export default ${JSON.stringify(config)};\n`);
   }
 
-  it('discovers .ts and .js files, excludes *.test.* and *.d.ts', () => {
+  it('discovers .wcc files, excludes *.test.* files', () => {
     // Create various files
     writeComponent('wcc-counter');
     writeFileSync(join(tmpDir, 'src', 'helper.test.js'), 'test file');
-    writeFileSync(join(tmpDir, 'src', 'types.d.ts'), 'declare module "x" {}');
     writeFileSync(join(tmpDir, 'src', 'readme.md'), '# readme');
 
-    // Run build — it should only compile wcc-counter.js (not test, d.ts, or md files)
+    // Run build — it should only compile wcc-counter.wcc (not test or md files)
     const result = execFileSync('node', [cliPath, 'build'], {
       cwd: tmpDir,
       encoding: 'utf-8',
@@ -63,9 +63,8 @@ function increment() {
 
     // Check that output was created
     expect(existsSync(join(tmpDir, 'dist', 'wcc-counter.js'))).toBe(true);
-    // Check that test/d.ts files were NOT compiled
+    // Check that test/md files were NOT compiled
     expect(existsSync(join(tmpDir, 'dist', 'helper.test.js'))).toBe(false);
-    expect(existsSync(join(tmpDir, 'dist', 'types.d.ts'))).toBe(false);
     expect(existsSync(join(tmpDir, 'dist', 'readme.md'))).toBe(false);
   });
 
@@ -87,8 +86,16 @@ function increment() {
   });
 
   it('exits with non-zero code on compilation error', () => {
-    // Write an invalid component (no defineComponent)
-    writeFileSync(join(tmpDir, 'src', 'bad.js'), 'const x = 1;');
+    // Write an invalid .wcc component (no defineComponent)
+    const badSfc = `<script>
+const x = 1;
+</script>
+
+<template>
+<div>hello</div>
+</template>
+`;
+    writeFileSync(join(tmpDir, 'src', 'bad.wcc'), badSfc);
 
     try {
       execFileSync('node', [cliPath, 'build'], {

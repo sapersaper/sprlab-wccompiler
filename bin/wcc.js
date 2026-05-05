@@ -23,7 +23,7 @@ async function build(config, cwd) {
     try {
       const output = await compile(file);
       const relPath = relative(inputDir, file);
-      const outPath = resolve(outputDir, relPath.replace(/\.ts$/, '.js').replace(/\.wcc$/, '.js'));
+      const outPath = resolve(outputDir, relPath.replace(/\.wcc$/, '.js'));
       const outDir = dirname(outPath);
       if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
       writeFileSync(outPath, output);
@@ -49,9 +49,8 @@ function discoverFiles(dir) {
   for (const entry of entries) {
     if (!entry.isFile()) continue;
     const ext = extname(entry.name);
-    if (ext !== '.ts' && ext !== '.js' && ext !== '.wcc') continue;
+    if (ext !== '.wcc') continue;
     if (entry.name.includes('.test.')) continue;
-    if (entry.name.endsWith('.d.ts')) continue;
     const fullPath = resolve(dir, entry.parentPath ? relative(dir, entry.parentPath) : '', entry.name);
     results.push(fullPath);
   }

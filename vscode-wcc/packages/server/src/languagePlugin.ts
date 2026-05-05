@@ -2,6 +2,9 @@ import type { VirtualCode, CodeMapping, CodeInformation, LanguagePlugin } from '
 import type { URI } from 'vscode-uri';
 import type * as ts from 'typescript';
 import { parseWccBlocks } from './wccParser';
+import type { WccBlock } from './wccParser';
+import { extractTemplateExpressions } from './templateExpressionParser';
+import type { TemplateExpression } from './templateExpressionParser';
 
 /** Full capabilities for code mappings — enables all intellisense features */
 const fullCapabilities: CodeInformation = {
@@ -10,6 +13,23 @@ const fullCapabilities: CodeInformation = {
   navigation: true,
   semantic: true,
   structure: true,
+  verification: true,
+};
+
+/**
+ * Capabilities for template expression mappings — enables intellisense features
+ * (completion, hover, go-to-definition) including type diagnostics.
+ *
+ * Type verification is enabled because template expressions now use explicit
+ * signal calls (e.g., status() instead of status), so TypeScript sees the
+ * unwrapped value type directly.
+ */
+const templateExpressionCapabilities: CodeInformation = {
+  completion: true,
+  format: false,
+  navigation: true,
+  semantic: true,
+  structure: false,
   verification: true,
 };
 
@@ -33,6 +53,68 @@ function getScriptLanguageId(attrs: string): string {
   }
   return 'javascript';
 }
+
+/**
+ * Generates the VirtualCode for template expressions.
+ * The virtual code has the form:
+ *
+ *   // [script block content - no mapping]
+ *   expr1;
+ *   expr2;
+ *   ...
+ *
+ * Where each `exprN` has a Source Mapping pointing to its original
+ * position in the .wcc file.
+ */
+export function generateTemplateExpressionsCode(
+  scriptBlock: WccBlock | null,
+  templateBlock: WccBlock,
+  expressions: TemplateExpression[],
+  scriptLanguageId: string
+): VirtualCode {
+  // Build the prefix from the script block content (no mapping for this part)
+  const prefix = scriptBlock ? scriptBlock.content + '\n' : '';
+  const prefixLength = prefix.length;
+
+  // Build the expressions code and their mappings
+  let expressionsCode = '';
+  const mappings: CodeMapping[] = [];
+  let currentOffset = 0;
+
+  for (const expression of expressions) {
+    // Expressions starting with '{' need to be wrapped in parentheses so TypeScript
+    // interprets them as object literals instead of code blocks.
+    const needsParens = expression.content.trimStart().startsWith('{');
+    const wrapPrefix = needsParens ? '(' : '';
+    const wrapSuffix = needsParens ? ')' : '';
+
+    mappings.push({
+      sourceOffsets: [templateBlock.startOffset + expression.startOffset],
+      generatedOffsets: [prefixLength + currentOffset + wrapPrefix.length],
+      lengths: [expression.content.length],
+      data: templateExpressionCapabilities,
+    });
+
+    const line = wrapPrefix + expression.content + wrapSuffix + ';\n';
+    expressionsCode += line;
+    currentOffset += line.length;
+  }
+
+  const fullContent = prefix + expressionsCode;
+
+  return {
+    id: 'template_expressions_0',
+    languageId: scriptLanguageId,
+    snapshot: createSnapshot(fullContent),
+    mappings,
+    embeddedCodes: [],
+  };
+}
+
+const jsKeywords = new Set([
+  'true', 'false', 'null', 'undefined', 'typeof', 'instanceof',
+  'new', 'delete', 'void', 'this', 'if', 'else', 'return',
+]);
 
 /**
  * WccCode — VirtualCode implementation for .wcc Single File Components.
@@ -68,20 +150,31 @@ export class WccCode implements VirtualCode {
     if (parsed.script) {
       const block = parsed.script;
 
-      // Append template usage references to the script content so TS sees them in the same scope
-      let scriptContent = block.content;
+      // Append template usage references to suppress "declared but never read" warnings
       let usageSuffix = '';
       if (parsed.template) {
-        const usages = extractTemplateUsages(parsed.template.content);
-        if (usages.length > 0) {
-          usageSuffix = '\n' + usages.map(u => `${u};`).join('\n') + '\n';
+        const expressions = extractTemplateExpressions(parsed.template.content);
+        const usages = new Set<string>();
+        for (const expr of expressions) {
+          // Extract top-level identifiers from each expression
+          const identRe = /\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g;
+          let identMatch: RegExpExecArray | null;
+          while ((identMatch = identRe.exec(expr.content)) !== null) {
+            const name = identMatch[1];
+            if (!jsKeywords.has(name)) {
+              usages.add(name);
+            }
+          }
+        }
+        if (usages.size > 0) {
+          usageSuffix = '\n' + [...usages].map(u => `${u};`).join('\n') + '\n';
         }
       }
 
       codes.push({
         id: 'script_0',
         languageId: getScriptLanguageId(block.attrs),
-        snapshot: createSnapshot(scriptContent + usageSuffix),
+        snapshot: createSnapshot(block.content + usageSuffix),
         mappings: [
           {
             sourceOffsets: [block.startOffset],
@@ -110,6 +203,22 @@ export class WccCode implements VirtualCode {
         ],
         embeddedCodes: [],
       });
+
+      // Generate template_expressions_0 VirtualCode for intellisense in template expressions
+      const expressions = extractTemplateExpressions(block.content);
+      if (expressions.length > 0) {
+        const scriptLanguageId = parsed.script
+          ? getScriptLanguageId(parsed.script.attrs)
+          : 'javascript';
+        codes.push(
+          generateTemplateExpressionsCode(
+            parsed.script ?? null,
+            block,
+            expressions,
+            scriptLanguageId
+          )
+        );
+      }
     }
 
     if (parsed.style) {
@@ -133,47 +242,6 @@ export class WccCode implements VirtualCode {
     return codes;
   }
 }
-
-/**
- * Extracts variable/function names referenced in a template.
- * Looks for {{expr}} interpolations and @event="handler" bindings.
- */
-function extractTemplateUsages(templateContent: string): string[] {
-  const usages = new Set<string>();
-
-  // Match {{expression}} — extract identifiers
-  const interpolationRe = /\{\{(.+?)\}\}/g;
-  let match: RegExpExecArray | null;
-  while ((match = interpolationRe.exec(templateContent)) !== null) {
-    // Extract top-level identifiers from the expression
-    const expr = match[1].trim();
-    const identRe = /\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g;
-    let identMatch: RegExpExecArray | null;
-    while ((identMatch = identRe.exec(expr)) !== null) {
-      const name = identMatch[1];
-      // Skip common JS keywords
-      if (!jsKeywords.has(name)) {
-        usages.add(name);
-      }
-    }
-  }
-
-  // Match @event="handler" or @event="handler()"
-  const eventRe = /@[\w.-]+="([^"]+)"/g;
-  while ((match = eventRe.exec(templateContent)) !== null) {
-    const handler = match[1].trim().replace(/\(.*\)$/, '');
-    if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(handler)) {
-      usages.add(handler);
-    }
-  }
-
-  return [...usages];
-}
-
-const jsKeywords = new Set([
-  'true', 'false', 'null', 'undefined', 'typeof', 'instanceof',
-  'new', 'delete', 'void', 'this', 'if', 'else', 'return',
-]);
 
 /**
  * wccLanguagePlugin — LanguagePlugin for .wcc Single File Components.
@@ -213,6 +281,21 @@ export const wccLanguagePlugin: LanguagePlugin<URI> = {
         }
       }
       return undefined;
+    },
+    getExtraServiceScripts(fileName: string, root: VirtualCode) {
+      const scripts: { code: VirtualCode; extension: string; scriptKind: number; fileName: string }[] = [];
+      for (const code of root.embeddedCodes ?? []) {
+        if (code.id === 'template_expressions_0') {
+          const ext = code.languageId === 'typescript' ? '.ts' : '.js';
+          scripts.push({
+            code,
+            extension: ext,
+            scriptKind: code.languageId === 'typescript' ? 3 : 1,
+            fileName: fileName + '.template_expressions' + ext,
+          });
+        }
+      }
+      return scripts;
     },
   },
 };

@@ -10,8 +10,6 @@ declare module 'wcc' {
   export function watch<T>(target: string, fn: (newVal: T, oldVal: T) => void): void;
   export function defineComponent(options: {
     tag: string;
-    template?: string;
-    styles?: string;
   }): void;
 
   export function defineProps<T extends Record<string, any>>(defaults?: Partial<T>): T;

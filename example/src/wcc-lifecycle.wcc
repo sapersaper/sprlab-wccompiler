@@ -1,0 +1,93 @@
+<script>
+// Features: onMount, onDestroy, templateRef, signal, defineProps
+import { defineComponent, defineProps, signal, onMount, onDestroy, templateRef } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-lifecycle',
+})
+
+const props = defineProps({ name: 'World' })
+
+const status = signal('mounted')
+const elapsed = signal(0)
+const internalName = signal('')
+const timerId = signal(0)
+
+const nameInput = templateRef('nameInput')
+
+onMount(() => {
+  nameInput.value.focus()
+  timerId.set(setInterval(() => { elapsed.set(elapsed() + 1) }, 1000))
+})
+
+onDestroy(() => {
+  clearInterval(timerId())
+})
+
+function reset() {
+  elapsed.set(0)
+}
+</script>
+
+<template>
+<div class="lifecycle-demo">
+  <h2>Lifecycle Hooks Demo</h2>
+  <div class="status">
+    <span class="label">Status:</span>
+    <span>{{status()}}</span>
+  </div>
+  <div class="timer">
+    <span class="label">Timer:</span>
+    <span>{{elapsed()}}s</span>
+  </div>
+  <input ref="nameInput" model="internalName" type="text" placeholder="Type your name">
+  <div class="greeting">Hello, {{internalName()}} {{name}}!</div>
+  <button @click="reset">Reset Timer</button>
+</div>
+</template>
+
+<style>
+.lifecycle-demo {
+  font-family: sans-serif;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-width: 320px;
+}
+
+h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.status, .timer, .greeting {
+  margin: 8px 0;
+}
+
+.label {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 8px 0;
+}
+
+button {
+  padding: 8px 16px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f5f5f5;
+  margin-top: 8px;
+}
+
+button:hover {
+  background: #e0e0e0;
+}
+</style>
