@@ -7,7 +7,8 @@ declare module 'wcc' {
   export function signal<T>(value: T): Signal<T>;
   export function computed<T>(fn: () => T): () => T;
   export function effect(fn: () => void): void;
-  export function watch<T>(target: string, fn: (newVal: T, oldVal: T) => void): void;
+  export function watch<T>(target: Signal<T>, fn: (newVal: T, oldVal: T) => void): void;
+  export function watch<T>(target: () => T, fn: (newVal: T, oldVal: T) => void): void;
   export function defineComponent(options: {
     tag: string;
   }): void;

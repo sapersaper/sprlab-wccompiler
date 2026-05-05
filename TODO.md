@@ -5,8 +5,9 @@
 - [x] Soporte para expresiones con argumentos en event handlers — `@click="removeItem(item)"`
 - [x] Soporte para `items()` en `each` source (consistencia con el resto del template)
 - [x] Inferencia de tipos para variables de iteración en `each` (`item` infiere tipo del array)
-- [ ] Mejorar API de `watch` para inferir tipo del target automáticamente
-  - Opciones: aceptar la referencia directa `watch(count, ...)` o requerir `watch<number>('count', ...)`
+- [x] Mejorar API de `watch` para inferir tipo del target automáticamente
+  - `watch(signal, ...)` infiere tipo del Signal<T>
+  - `watch(() => expr, ...)` infiere tipo del return de la función getter
 - [ ] Renombrar `templateBindings` → `defineExpose` — exponer métodos/propiedades del componente para acceso externo vía ref
 
 ## 🟡 Prioridad media
