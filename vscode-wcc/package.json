@@ -1,10 +1,14 @@
 {
   "name": "wcc-language",
-  "displayName": "WCC Language Support",
+  "displayName": "wcCompiler (.wcc) Language Support",
   "description": "Syntax highlighting and intellisense for wcCompiler Single File Components (.wcc)",
   "version": "0.1.0",
-  "publisher": "sprlab",
+  "publisher": "SPRLab",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sapersaper/sprlab-wccompiler"
+  },
   "icon": "./packages/client/icons/wcc-icon.png",
   "main": "./packages/client/dist/extension.js",
   "engines": {
