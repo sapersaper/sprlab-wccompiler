@@ -3,8 +3,8 @@ import type { URI } from 'vscode-uri';
 import type * as ts from 'typescript';
 import { parseWccBlocks } from './wccParser';
 import type { WccBlock } from './wccParser';
-import { extractTemplateExpressions } from './templateExpressionParser';
-import type { TemplateExpression } from './templateExpressionParser';
+import { extractTemplateExpressions, extractEachVariables } from './templateExpressionParser';
+import type { TemplateExpression, EachVariable } from './templateExpressionParser';
 
 /** Full capabilities for code mappings — enables all intellisense features */
 const fullCapabilities: CodeInformation = {
@@ -70,10 +70,22 @@ export function generateTemplateExpressionsCode(
   scriptBlock: WccBlock | null,
   templateBlock: WccBlock,
   expressions: TemplateExpression[],
-  scriptLanguageId: string
+  scriptLanguageId: string,
+  eachVariables: EachVariable[] = []
 ): VirtualCode {
   // Build the prefix from the script block content (no mapping for this part)
-  const prefix = scriptBlock ? scriptBlock.content + '\n' : '';
+  let prefix = scriptBlock ? scriptBlock.content + '\n' : '';
+
+  // Add declarations for each iteration variables so TypeScript knows about them
+  // This suppresses "Cannot find name" errors and enables basic intellisense
+  for (const each of eachVariables) {
+    // Declare item as any (type inference from source would require full type analysis)
+    prefix += `declare const ${each.itemVar}: any;\n`;
+    if (each.indexVar) {
+      prefix += `declare const ${each.indexVar}: number;\n`;
+    }
+  }
+
   const prefixLength = prefix.length;
 
   // Build the expressions code and their mappings
@@ -210,12 +222,14 @@ export class WccCode implements VirtualCode {
         const scriptLanguageId = parsed.script
           ? getScriptLanguageId(parsed.script.attrs)
           : 'javascript';
+        const eachVariables = extractEachVariables(block.content);
         codes.push(
           generateTemplateExpressionsCode(
             parsed.script ?? null,
             block,
             expressions,
-            scriptLanguageId
+            scriptLanguageId,
+            eachVariables
           )
         );
       }
@@ -250,19 +264,19 @@ export class WccCode implements VirtualCode {
  * the WccCode virtual document that represents them.
  */
 export const wccLanguagePlugin: LanguagePlugin<URI> = {
-  getLanguageId(uri) {
+  getLanguageId(uri: URI) {
     if (uri.path.endsWith('.wcc')) {
       return 'wcc';
     }
     return undefined;
   },
-  createVirtualCode(_uri, languageId, snapshot) {
+  createVirtualCode(_uri: URI, languageId: string, snapshot: ts.IScriptSnapshot) {
     if (languageId === 'wcc') {
       return new WccCode(snapshot);
     }
     return undefined;
   },
-  updateVirtualCode(_uri, wccCode, snapshot) {
+  updateVirtualCode(_uri: URI, wccCode: VirtualCode, snapshot: ts.IScriptSnapshot) {
     (wccCode as WccCode).update(snapshot);
     return wccCode;
   },
@@ -270,7 +284,7 @@ export const wccLanguagePlugin: LanguagePlugin<URI> = {
     extraFileExtensions: [
       { extension: 'wcc', isMixedContent: true, scriptKind: 7 /* ts.ScriptKind.Deferred */ },
     ],
-    getServiceScript(root) {
+    getServiceScript(root: VirtualCode) {
       for (const code of root.embeddedCodes ?? []) {
         if (code.id === 'script_0') {
           return {

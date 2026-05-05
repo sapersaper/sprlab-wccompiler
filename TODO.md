@@ -43,13 +43,13 @@ Solo queda el formato `.wcc` (Single File Component).
 - [x] HTML intellisense dentro de `<template>`
 - [x] Suprimir falsos "declared but never read" para variables usadas en el template
 
-### Fase 3 — Intellisense en template (expresiones y directivas)
+### Fase 3 — Intellisense en template (expresiones y directivas) ✅
 - [x] Intellisense dentro de `{{}}` (autocompletado, hover en expresiones del template)
 - [x] Go-to-definition desde el template al script (click en `{{greeting}}` → salta a `const greeting`)
 - [x] Mappings precisos entre posiciones del template y código virtual
 - [x] Autocompletado en valores de directivas (`@click="`, `:class="`, `model="`)
 - [x] Diagnósticos de tipo en expresiones del template — signals usan `signal()` explícito en el template (estilo SolidJS)
-- [ ] Soporte para variables de iteración en `each` (e.g., `item` y `index` en `each="(item, index) in items"`)
+- [x] Soporte para variables de iteración en `each` (e.g., `item` y `index` en `each="(item, index) in items"`)
 
 ### Fase 4 — Highlighting de directivas (gramática TextMate)
 - [ ] `{{expresión}}` — resaltado como interpolación

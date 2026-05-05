@@ -40,7 +40,25 @@
           "source.css": "css"
         }
       }
-    ]
+    ],
+    "configurationDefaults": {
+      "editor.tokenColorCustomizations": {
+        "textMateRules": [
+          {
+            "scope": "keyword.control.wcc",
+            "settings": { "foreground": "#C586C0" }
+          },
+          {
+            "scope": "punctuation.section.interpolation.begin.wcc, punctuation.section.interpolation.end.wcc",
+            "settings": { "foreground": "#C586C0" }
+          },
+          {
+            "scope": "variable.other.event.wcc, variable.other.binding.wcc, variable.other.slot.wcc",
+            "settings": { "foreground": "#9CDCFE", "fontStyle": "italic" }
+          }
+        ]
+      }
+    }
   },
   "workspaces": [
     "packages/client",
