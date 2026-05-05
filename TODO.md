@@ -51,12 +51,12 @@ Solo queda el formato `.wcc` (Single File Component).
 - [x] Diagnósticos de tipo en expresiones del template — signals usan `signal()` explícito en el template (estilo SolidJS)
 - [x] Soporte para variables de iteración en `each` (e.g., `item` y `index` en `each="(item, index) in items"`)
 
-### Fase 4 — Highlighting de directivas (gramática TextMate)
-- [ ] `{{expresión}}` — resaltado como interpolación
-- [ ] `@click`, `@input`, etc. — resaltado como event binding
-- [ ] `:class`, `:style`, `:attr` — resaltado como attribute binding
-- [ ] Directivas: `each`, `if`, `else-if`, `else`, `show`, `model`, `ref`
-- [ ] `#nombre` — resaltado como named slot
+### Fase 4 — Highlighting de directivas (gramática TextMate) ✅
+- [x] `{{expresión}}` — resaltado como interpolación
+- [x] `@click`, `@input`, etc. — resaltado como event binding
+- [x] `:class`, `:style`, `:attr` — resaltado como attribute binding
+- [x] Directivas: `each`, `if`, `else-if`, `else`, `show`, `model`, `ref`
+- [x] `#nombre` — resaltado como named slot
 - [ ] Aplicar en `<template>` de `.wcc` y en archivos `.html`
 
 ### Fase 5 — Snippets y DX
