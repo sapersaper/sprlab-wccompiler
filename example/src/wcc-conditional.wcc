@@ -34,6 +34,10 @@ function cycle() {
 function toggleDetails() {
   showDetails.set(!showDetails())
 }
+
+function isStatus(target: Status): boolean {
+  return status() === target
+}
 </script>
 
 <template>
@@ -44,10 +48,10 @@ function toggleDetails() {
     <span>{{status()}}</span>
   </div>
 
-  <div if="status() === 'active'" class="branch active">
+  <div if="isStatus('active')" class="branch active">
     <span>Welcome back, {{name()}}!</span>
   </div>
-  <div else-if="status() === 'pending'" class="branch pending">
+  <div else-if="isStatus('pending')" class="branch pending">
     <p>Your account is pending approval.</p>
     <button @click="activate">Activate Now</button>
   </div>
