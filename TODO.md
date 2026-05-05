@@ -2,6 +2,11 @@
 
 ## 🔴 Prioridad máxima
 
+- [ ] Arreglar el Playground — migrar a editor único `.wcc` con `compileFromSFC`, debuggear errores de compilación en browser
+  - Los archivos están en `docs/playground/` (index.html, src/app.js, src/presets.js, dist/wcc-compiler.js)
+  - El link está deshabilitado en docs/index.html hasta que funcione
+  - Proyecto de desarrollo local: `~/projects/POC/kiro/sprlab-wc/playground/` (yarn dev, port 4300)
+
 - [x] Soporte para expresiones con argumentos en event handlers — `@click="removeItem(item)"`
 - [x] Soporte para `items()` en `each` source (consistencia con el resto del template)
 - [x] Inferencia de tipos para variables de iteración en `each` (`item` infiere tipo del array)
