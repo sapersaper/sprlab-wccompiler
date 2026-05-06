@@ -3,8 +3,8 @@ import type { URI } from 'vscode-uri';
 import type * as ts from 'typescript';
 import { parseWccBlocks } from './wccParser';
 import type { WccBlock } from './wccParser';
-import { extractTemplateExpressions, extractEachVariables } from './templateExpressionParser';
-import type { TemplateExpression, EachVariable } from './templateExpressionParser';
+import { extractTemplateExpressions, extractEachVariables, extractEachDeclarations } from './templateExpressionParser';
+import type { TemplateExpression, EachVariable, EachDeclaration } from './templateExpressionParser';
 
 /** Full capabilities for code mappings — enables all intellisense features */
 const fullCapabilities: CodeInformation = {
@@ -128,7 +128,8 @@ export function generateTemplateExpressionsCode(
   templateBlock: WccBlock,
   expressions: TemplateExpression[],
   scriptLanguageId: string,
-  eachVariables: EachVariable[] = []
+  eachVariables: EachVariable[] = [],
+  eachDeclarations: EachDeclaration[] = []
 ): VirtualCode {
   // Build the prefix from the script block content (no mapping for this part)
   let prefix = scriptBlock ? scriptBlock.content + '\n' : '';
@@ -143,6 +144,7 @@ export function generateTemplateExpressionsCode(
   }
 
   // Add declarations for each iteration variables with inferred types
+  // These are generated WITHOUT mappings (prefix has no mappings)
   for (const each of eachVariables) {
     const source = each.source;
     if (source.endsWith('()')) {
@@ -156,7 +158,7 @@ export function generateTemplateExpressionsCode(
       prefix += `const ${each.itemVar} = __each_arr_${source}[0];\n`;
     }
     if (each.indexVar) {
-      prefix += `const ${each.indexVar} = 0;\n`;
+      prefix += `const ${each.indexVar}: number = 0;\n`;
     }
   }
 
@@ -166,6 +168,33 @@ export function generateTemplateExpressionsCode(
   let expressionsCode = '';
   const mappings: CodeMapping[] = [];
   let currentOffset = 0;
+
+  // Add mapped expressions for each variable declarations (hover/go-to-definition on item/index)
+  for (const decl of eachDeclarations) {
+    // Map itemVar: generate "item;" with mapping to the item variable in the each attribute
+    const itemLine = `${decl.itemVar};\n`;
+    mappings.push({
+      sourceOffsets: [templateBlock.startOffset + decl.itemVarOffset],
+      generatedOffsets: [prefixLength + currentOffset],
+      lengths: [decl.itemVar.length],
+      data: templateExpressionCapabilities,
+    });
+    expressionsCode += itemLine;
+    currentOffset += itemLine.length;
+
+    // Map indexVar if present
+    if (decl.indexVar && decl.indexVarOffset >= 0) {
+      const indexLine = `${decl.indexVar};\n`;
+      mappings.push({
+        sourceOffsets: [templateBlock.startOffset + decl.indexVarOffset],
+        generatedOffsets: [prefixLength + currentOffset],
+        lengths: [decl.indexVar.length],
+        data: templateExpressionCapabilities,
+      });
+      expressionsCode += indexLine;
+      currentOffset += indexLine.length;
+    }
+  }
 
   for (const expression of expressions) {
     // Expressions starting with '{' need to be wrapped in parentheses so TypeScript
@@ -297,13 +326,15 @@ export class WccCode implements VirtualCode {
           ? getScriptLanguageId(parsed.script.attrs)
           : 'javascript';
         const eachVariables = extractEachVariables(block.content);
+        const eachDeclarations = extractEachDeclarations(block.content);
         codes.push(
           generateTemplateExpressionsCode(
             parsed.script ?? null,
             block,
             expressions,
             scriptLanguageId,
-            eachVariables
+            eachVariables,
+            eachDeclarations
           )
         );
       }

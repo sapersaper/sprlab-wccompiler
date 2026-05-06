@@ -58,3 +58,4 @@
 !node_modules/vscode-languageserver-types/**
 !node_modules/vscode-nls/**
 !node_modules/vscode-uri/**
+!node_modules/typescript/**

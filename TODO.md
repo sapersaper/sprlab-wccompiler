@@ -10,7 +10,7 @@
 
 ## volar-language-server
 
-- [ ] ⏫ Hover/intellisense sobre variables dentro del atributo `each="..."`
+- [x] ⏫ Hover/intellisense sobre variables dentro del atributo `each="..."`
 - [ ] ⏫ Inferir tipo de `templateRef<T>` desde el `defineExpose` del child component (cross-file type resolution)
   ```ts
   // wcc-badge.wcc → expone tipo automáticamente

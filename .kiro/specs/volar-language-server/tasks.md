@@ -16,7 +16,7 @@
 - [x] Configurar TypeScript integration (extraFileExtensions, getServiceScript, getExtraServiceScripts)
 - [x] Tests: language plugin (parsing, virtual codes, mappings)
 - [x] Tests: template expression extraction
-- [ ] Hover/intellisense sobre variables dentro del atributo `each="..."`
+- [x] Hover/intellisense sobre variables dentro del atributo `each="..."`
 - [x] Snippet `wcc` → scaffold completo de componente .wcc
 - [x] Snippets para directivas comunes
 - [ ]* Semantic tokens para colorear props, signals y computeds en template
