@@ -423,18 +423,6 @@ export default {
 
 All options are optional — defaults shown above.
 
-### Yarn PnP Compatibility
-
-If you use Yarn Berry with PnP (default mode), you may encounter `ERR_MODULE_NOT_FOUND` errors related to `@exodus/bytes` (a transitive dependency of `jsdom`). This is a known upstream issue with that package's exports map.
-
-**Workaround**: Add `nodeLinker: node-modules` to your `.yarnrc.yml`:
-
-```yaml
-nodeLinker: node-modules
-```
-
-Alternatively, use npm which doesn't have this issue.
-
 ## Editor Support
 
 The **wcCompiler (.wcc) Language Support** extension is available on the VS Code Marketplace. It provides syntax highlighting, completions, and diagnostics for `.wcc` files.
