@@ -80,9 +80,14 @@ Complete list of features supported by the compiler for building native web comp
 
 ## Output Characteristics
 
-- Zero runtime dependencies (reactive runtime inlined per component)
-- Self-contained `.js` file per component
+- Zero runtime dependencies (shared `__wcc-signals.js` loaded once, imported by all components)
+- Self-contained `.js` file per component (plus shared runtime)
+- Source comment at top of each file (`// Generated from: filename.wcc`)
+- Tree-shaken runtime imports (only imports what the component uses)
 - Native `HTMLElement` class with Custom Elements API
+- Idempotent `connectedCallback` (safe for re-mount / DOM moves)
+- `disconnectedCallback` with `AbortController.abort()` for listener cleanup
+- CSS deduplication via id guard (safe for multiple imports)
 - Public getters/setters for props (programmatic access)
 - `CustomEvent` dispatch with `{ bubbles: true, composed: true }`
 

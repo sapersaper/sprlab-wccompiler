@@ -18,9 +18,17 @@
 - [x] Implementar `stripMacroImport` para eliminar `import {...} from 'wcc'`
 - [x] Implementar `toClassName` (kebab-case → PascalCase)
 - [x] Implementar browser compiler (`compileFromSFC`, `compileFromStrings`) sin dependencias Node.js
+- [x] Generar comentario de source en output (`// Generated from: file.wcc`)
+- [x] Tree-shake imports del runtime (solo importa lo que usa cada componente)
+- [x] CSS deduplication via id guard (previene duplicados en múltiples imports)
+- [x] connectedCallback idempotente (safe para re-mount / DOM moves)
+- [x] AbortController para cleanup de event listeners en disconnectedCallback
+- [x] disconnectedCallback siempre generado (abort listeners + user hooks)
 - [x] Tests: SFC parser (bloques válidos, errores, edge cases)
 - [x] Tests: CSS scoper (selectores simples, @media, @keyframes)
 - [x] Tests: Compiler integration (pipeline completo)
 - [x] Tests: Browser compiler (compileFromSFC)
 - [ ] Source maps — output mapea al source original para debugging
+- [ ] Nombres descriptivos para bindings DOM (`__text_count` en vez de `__b0`)
+- [ ] disconnectedCallback cleanup de effects (requiere __effect retorne dispose)
 - [ ]* Opciones adicionales en defineComponent (shadow, extends, formAssociated, mode)
