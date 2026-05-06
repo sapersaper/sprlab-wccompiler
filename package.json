@@ -1,6 +1,6 @@
 {
   "name": "@sprlab/wccompiler",
-  "version": "0.4.2",
+  "version": "0.5.1",
   "description": "Zero-runtime compiler that transforms .wcc single-file components into native web components with signals-based reactivity",
   "type": "module",
   "bin": {

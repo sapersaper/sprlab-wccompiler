@@ -4,11 +4,13 @@
 
 ### `wcc build`
 1. Carga config con `loadConfig(cwd)`
-2. Descubre archivos .wcc recursivamente en `config.input`
-3. Compila cada archivo con `compile(filePath)`
-4. Escribe output en `config.output` (preserva estructura de directorios)
-5. Copia `wcc-runtime.js` al output
-6. Exit code 1 si hay errores
+2. Genera `__wcc-signals.js` en el output (runtime compartido)
+3. Descubre archivos .wcc recursivamente en `config.input`
+4. Compila cada archivo con `compile(filePath, { runtimeImportPath })`
+5. Cada componente importa del runtime compartido (path relativo calculado)
+6. Escribe output en `config.output` (preserva estructura de directorios)
+7. Copia `wcc-runtime.js` al output
+8. Exit code 1 si hay errores
 
 ### `wcc dev`
 1. Ejecuta build inicial

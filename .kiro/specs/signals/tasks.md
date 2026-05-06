@@ -4,6 +4,7 @@
 - [x] Implementar `__computed(fn)` con lazy evaluation y dirty tracking
 - [x] Implementar `__effect(fn)` con auto-tracking y cleanup support
 - [x] Implementar `__batch(fn)` con depth counting y flush de pending effects
+- [x] Usar Set para pending effects (O(1) deduplicación en vez de Array.includes O(n))
 - [x] Implementar `extractSignals` con depth counting para argumentos complejos
 - [x] Implementar `extractComputeds` con depth counting para expresiones
 - [x] Implementar `extractEffects` con brace depth tracking multi-línea
