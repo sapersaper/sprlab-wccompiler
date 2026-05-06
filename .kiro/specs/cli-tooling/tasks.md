@@ -9,7 +9,11 @@
 - [x] Implementar `discoverFiles` (recursivo, solo .wcc, excluye .test.)
 - [x] Copiar `wcc-runtime.js` al output en build
 - [x] Implementar `wcc-runtime.js` (init, set, get, on)
+- [x] Generar `__wcc-signals.js` compartido en build (runtime deduplicado)
+- [x] Componentes importan del runtime compartido en vez de inlinear
+- [x] Calcular path relativo correcto para componentes en subdirectorios
 - [x] Tests: config (defaults, validación, archivo custom)
 - [x] Tests: dev-server (static files, SSE, live-reload)
 - [x] Tests: CLI integration
 - [x] Error overlay en dev server — mostrar errores de compilación en el browser
+- [ ] ⏶ disconnectedCallback cleanup — trackear effects y listeners, limpiar al desconectar

@@ -15,16 +15,28 @@ async function build(config, cwd) {
 
   if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
 
+  // Generate shared reactive runtime
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const { reactiveRuntime } = await import('../lib/reactive-runtime.js');
+  const signalsContent = reactiveRuntime.trim().replace(/^/gm, '') + '\nexport { __signal, __computed, __effect, __batch };\n';
+  const signalsDest = join(outputDir, '__wcc-signals.js');
+  writeFileSync(signalsDest, signalsContent);
+
   // Discover source files
   const files = discoverFiles(inputDir);
   let errors = 0;
 
   for (const file of files) {
     try {
-      const output = await compile(file);
+      // Calculate relative path from component output to __wcc-signals.js
       const relPath = relative(inputDir, file);
       const outPath = resolve(outputDir, relPath.replace(/\.wcc$/, '.js'));
       const outDir = dirname(outPath);
+      const runtimeRelPath = relative(outDir, signalsDest).replace(/\\/g, '/');
+      const runtimeImportPath = runtimeRelPath.startsWith('.') ? runtimeRelPath : './' + runtimeRelPath;
+
+      const output = await compile(file, { runtimeImportPath });
       if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
       writeFileSync(outPath, output);
     } catch (err) {
@@ -34,8 +46,6 @@ async function build(config, cwd) {
   }
 
   // Copy wcc-runtime.js to output directory
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
   const runtimeSrc = resolve(__dirname, '../lib/wcc-runtime.js');
   const runtimeDest = join(outputDir, 'wcc-runtime.js');
   copyFileSync(runtimeSrc, runtimeDest);
