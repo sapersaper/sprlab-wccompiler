@@ -20,6 +20,7 @@ Complete list of features supported by the compiler for building native web comp
 | `emit()` | `emit('event', data)` | Dispatch CustomEvent (validated against declarations) |
 | `defineExpose()` | `defineExpose({ count, doubled })` | Expose methods/properties for external access via ref |
 | `templateRef()` | `const el = templateRef('name')` | DOM element reference (access via `el.value`) |
+| `templateRef<T>()` | `templateRef<WccBadge>('badge')` | Typed ref (import type from child .wcc) |
 | `onMount()` | `onMount(() => { ... })` | Lifecycle: connectedCallback (supports async) |
 | `onDestroy()` | `onDestroy(() => { ... })` | Lifecycle: disconnectedCallback |
 | `function` | `function name(params) { ... }` | Component methods (event handlers, logic) |

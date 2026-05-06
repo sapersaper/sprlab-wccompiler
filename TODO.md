@@ -10,13 +10,13 @@
 
 ## volar-language-server
 
-- [ ] ⏫ Hover/intellisense sobre variables dentro del atributo `each="..."`
-- [ ] ⏫ Inferir tipo de `templateRef<T>` desde el `defineExpose` del child component (cross-file type resolution)
+- [x] ⏫ Hover/intellisense sobre variables dentro del atributo `each="..."`
+- [x] ⏫ Inferir tipo de `templateRef<T>` desde el `defineExpose` del child component (cross-file type resolution)
   ```ts
-  // wcc-badge.wcc → expone tipo automáticamente
+  // wcc-badge.wcc → genera automáticamente: export interface WccBadge { ... }
   defineExpose({ log, doubled })
   
-  // wcc-profile.wcc → infiere tipo sin escribirlo a mano
+  // wcc-profile.wcc → importa el tipo por nombre PascalCase del tag
   import type { WccBadge } from './wcc-badge.wcc'
   const badge = templateRef<WccBadge>('badge')
   badge.value!.log('hello') // ✅ tipado

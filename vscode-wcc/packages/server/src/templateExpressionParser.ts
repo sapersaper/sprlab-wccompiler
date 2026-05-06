@@ -34,6 +34,24 @@ export interface EachVariable {
 }
 
 /**
+ * Iteration variable declaration with offset information for source mappings.
+ */
+export interface EachDeclaration {
+  /** Name of the item variable */
+  itemVar: string;
+  /** Offset of itemVar within the template block */
+  itemVarOffset: number;
+  /** Name of the index variable, or null */
+  indexVar: string | null;
+  /** Offset of indexVar within the template block, or -1 */
+  indexVarOffset: number;
+  /** Source expression */
+  source: string;
+  /** Offset of source expression within the template block */
+  sourceOffset: number;
+}
+
+/**
  * Extracts iteration variables from all `each` directives in the template.
  * Parses expressions like `each="item in items()"` and `each="(item, index) in items()"`.
  */
@@ -60,6 +78,50 @@ export function extractEachVariables(templateContent: string): EachVariable[] {
   }
 
   return variables;
+}
+
+/**
+ * Extracts iteration variable declarations with exact offsets for source mappings.
+ * This enables hover/intellisense on the variable names inside `each="..."`.
+ */
+export function extractEachDeclarations(templateContent: string): EachDeclaration[] {
+  const declarations: EachDeclaration[] = [];
+  const eachRe = /\beach="([^"]*)"/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = eachRe.exec(templateContent)) !== null) {
+    const expr = match[1];
+    const attrValueStart = match.index + 'each="'.length;
+
+    // Try destructured form: (item, index) in source
+    const destructuredMatch = /^\s*\(\s*(\w+)\s*,\s*(\w+)\s*\)\s+in\s+(.+)\s*$/.exec(expr);
+    if (destructuredMatch) {
+      const itemVar = destructuredMatch[1];
+      const indexVar = destructuredMatch[2];
+      const source = destructuredMatch[3].trim();
+
+      const itemVarOffset = attrValueStart + expr.indexOf(itemVar);
+      const indexVarOffset = attrValueStart + expr.indexOf(indexVar, expr.indexOf(itemVar) + itemVar.length);
+      const sourceOffset = attrValueStart + expr.lastIndexOf(source);
+
+      declarations.push({ itemVar, itemVarOffset, indexVar, indexVarOffset, source, sourceOffset });
+      continue;
+    }
+
+    // Try simple form: item in source
+    const simpleMatch = /^\s*(\w+)\s+in\s+(.+)\s*$/.exec(expr);
+    if (simpleMatch) {
+      const itemVar = simpleMatch[1];
+      const source = simpleMatch[2].trim();
+
+      const itemVarOffset = attrValueStart + expr.indexOf(itemVar);
+      const sourceOffset = attrValueStart + expr.lastIndexOf(source);
+
+      declarations.push({ itemVar, itemVarOffset, indexVar: null, indexVarOffset: -1, source, sourceOffset });
+    }
+  }
+
+  return declarations;
 }
 
 /**

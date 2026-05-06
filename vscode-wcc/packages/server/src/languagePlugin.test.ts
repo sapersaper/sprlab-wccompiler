@@ -283,3 +283,104 @@ describe('wccLanguagePlugin', () => {
     expect(wccLanguagePlugin.getLanguageId(mockUri('/path/to/file.wcc.ts'))).toBeUndefined();
   });
 });
+
+describe('each declaration mappings', () => {
+  it('generates mappings for item and index variables in each attribute', () => {
+    const source = `<script>
+const items = signal([{ id: 1, name: 'a' }]);
+</script>
+<template>
+<ul>
+  <li each="(item, index) in items()">{{item.name}}</li>
+</ul>
+</template>`;
+
+    const code = new WccCode(createSnapshot(source));
+    const exprCode = code.embeddedCodes.find((c) => c.id === 'template_expressions_0');
+    expect(exprCode).toBeDefined();
+
+    const content = exprCode!.snapshot.getText(0, exprCode!.snapshot.getLength());
+    const mappings = exprCode!.mappings;
+
+    // The virtual code should contain "item;" and "index;" as mapped expressions
+    expect(content).toContain('item;\n');
+    expect(content).toContain('index;\n');
+
+    // Find the mapping for "item" — it should point to the offset of "item" in the template
+    const templateStart = source.indexOf('<template>') + '<template>'.length;
+    const eachAttr = 'each="(item, index) in items()"';
+    const eachAttrStart = source.indexOf(eachAttr) - templateStart;
+    const itemOffsetInTemplate = eachAttrStart + 'each="('.length;
+
+    const itemMapping = mappings.find(m => {
+      const genOffset = m.generatedOffsets[0];
+      const slice = content.slice(genOffset, genOffset + m.lengths[0]);
+      return slice === 'item';
+    });
+    expect(itemMapping).toBeDefined();
+    expect(itemMapping!.lengths[0]).toBe(4); // "item"
+
+    // Find the mapping for "index"
+    const indexMapping = mappings.find(m => {
+      const genOffset = m.generatedOffsets[0];
+      const slice = content.slice(genOffset, genOffset + m.lengths[0]);
+      return slice === 'index';
+    });
+    expect(indexMapping).toBeDefined();
+    expect(indexMapping!.lengths[0]).toBe(5); // "index"
+  });
+
+  it('generates mapping for item variable in simple each form', () => {
+    const source = `<script>const items = signal([]);</script>
+<template><li each="item in items()">{{item}}</li></template>`;
+
+    const code = new WccCode(createSnapshot(source));
+    const exprCode = code.embeddedCodes.find((c) => c.id === 'template_expressions_0');
+    expect(exprCode).toBeDefined();
+
+    const content = exprCode!.snapshot.getText(0, exprCode!.snapshot.getLength());
+    expect(content).toContain('item;\n');
+
+    // Should NOT contain "index;" since simple form has no index
+    const indexLine = content.split('\n').find(l => l.trim() === 'index;');
+    expect(indexLine).toBeUndefined();
+  });
+});
+
+describe('defineExpose type export', () => {
+  it('generates PascalCase interface in script_0 when defineExpose is present', () => {
+    const source = `<script lang="ts">
+import { defineComponent, signal, computed, defineExpose } from 'wcc'
+export default defineComponent({ tag: 'wcc-test' })
+const count = signal(0)
+const doubled = computed(() => count() * 2)
+function reset() { count.set(0) }
+defineExpose({ count, doubled, reset })
+</script>
+<template><div>{{count()}}</div></template>`;
+
+    const code = new WccCode(createSnapshot(source));
+    const scriptCode = code.embeddedCodes.find((c) => c.id === 'script_0')!;
+    const content = scriptCode.snapshot.getText(0, scriptCode.snapshot.getLength());
+
+    expect(content).toContain('export interface WccTest');
+    expect(content).toContain('count: typeof count');
+    expect(content).toContain('doubled: typeof doubled');
+    expect(content).toContain('reset: typeof reset');
+  });
+
+  it('does NOT generate interface when defineExpose is absent', () => {
+    const source = `<script>
+import { defineComponent, signal } from 'wcc'
+export default defineComponent({ tag: 'wcc-no-expose' })
+const count = signal(0)
+</script>
+<template><div>{{count()}}</div></template>`;
+
+    const code = new WccCode(createSnapshot(source));
+    const scriptCode = code.embeddedCodes.find((c) => c.id === 'script_0')!;
+    const content = scriptCode.snapshot.getText(0, scriptCode.snapshot.getLength());
+
+    expect(content).not.toContain('export interface');
+  });
+});
