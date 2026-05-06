@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent, defineProps, signal, templateRef } from 'wcc'
+import type { WccBadge } from './wcc-badge.wcc'
 
 export default defineComponent({
   tag: 'wcc-profile',
@@ -7,11 +8,18 @@ export default defineComponent({
 
 defineProps({ name: 'Anonymous', role: 'user' })
 const clicks = signal(0)
-const badge = templateRef<{ log: (text: string) => void }>('badge')
+const badge = templateRef<WccBadge>('badge')
 
 function greet() {
   clicks.set(clicks() + 1)
+
+  // Call exposed method (typed via import type { WccBadge })
   badge.value!.log('Hello #' + clicks())
+
+  // Access raw HTMLElement when needed (cast to HTMLElement):
+  const el = badge.value as unknown as HTMLElement
+  el.classList.add('highlighted')
+  console.log('[wcc-profile] badge classes:', el.classList.toString())
 }
 </script>
 

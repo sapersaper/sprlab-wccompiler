@@ -286,10 +286,32 @@ export class WccCode implements VirtualCode {
         }
       }
 
+      // Generate exported type from defineExpose for cross-file templateRef<T> inference
+      let exposeSuffix = '';
+      const exposeMatch = block.content.match(/defineExpose\(\s*\{([^}]*)\}\s*\)/);
+      if (exposeMatch) {
+        const exposeBody = exposeMatch[1];
+        const exposeNames: string[] = [];
+        const nameRe = /\b(\w+)\b/g;
+        let nm: RegExpExecArray | null;
+        while ((nm = nameRe.exec(exposeBody)) !== null) {
+          exposeNames.push(nm[1]);
+        }
+        if (exposeNames.length > 0) {
+          // Extract tag name from defineComponent and convert to PascalCase
+          const tagMatch = block.content.match(/defineComponent\(\s*\{[\s\S]*?tag\s*:\s*['"]([^'"]+)['"]/);
+          const typeName = tagMatch
+            ? tagMatch[1].split('-').map((p: string) => p.charAt(0).toUpperCase() + p.slice(1)).join('')
+            : '__Exposed';
+          const typeMembers = exposeNames.map(n => `${n}: typeof ${n}`).join('; ');
+          exposeSuffix = `\nexport interface ${typeName} { ${typeMembers}; }\n`;
+        }
+      }
+
       codes.push({
         id: 'script_0',
         languageId: getScriptLanguageId(block.attrs),
-        snapshot: createSnapshot(block.content + usageSuffix),
+        snapshot: createSnapshot(block.content + usageSuffix + exposeSuffix),
         mappings: [
           {
             sourceOffsets: [block.startOffset],

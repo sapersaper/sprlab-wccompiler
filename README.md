@@ -391,6 +391,15 @@ defineExpose({ doubled, handleUpdate, watchLog })
 
 `defineExpose()` exposes methods and properties for external access via ref.
 
+The language server automatically generates a typed interface (PascalCase of the tag name) that can be imported by consumers:
+
+```ts
+// In the parent component:
+import type { WccTypescript } from './wcc-typescript.wcc'
+const child = templateRef<WccTypescript>('myRef')
+child.value!.handleUpdate() // ✅ typed
+```
+
 ## CLI
 
 ```bash

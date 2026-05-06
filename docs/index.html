@@ -136,6 +136,7 @@ function increment() {
           <tr><td><code>defineProps({ key: default })</code></td><td>Declare external props with defaults</td></tr>
           <tr><td><code>defineEmits(['event'])</code></td><td>Declare custom events (validated at compile time)</td></tr>
           <tr><td><code>templateRef('name')</code></td><td>Get a DOM element reference from the template</td></tr>
+          <tr><td><code>templateRef&lt;T&gt;('name')</code></td><td>Typed ref — import type from child .wcc for autocomplete</td></tr>
           <tr><td><code>onMount(() => {})</code></td><td>Lifecycle: connectedCallback (supports async)</td></tr>
           <tr><td><code>onDestroy(() => {})</code></td><td>Lifecycle: disconnectedCallback</td></tr>
           <tr><td><code>defineExpose({ ... })</code></td><td>Expose methods/properties for external access via ref</td></tr>

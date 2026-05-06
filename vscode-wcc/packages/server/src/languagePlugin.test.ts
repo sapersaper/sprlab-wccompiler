@@ -346,3 +346,41 @@ const items = signal([{ id: 1, name: 'a' }]);
     expect(indexLine).toBeUndefined();
   });
 });
+
+describe('defineExpose type export', () => {
+  it('generates PascalCase interface in script_0 when defineExpose is present', () => {
+    const source = `<script lang="ts">
+import { defineComponent, signal, computed, defineExpose } from 'wcc'
+export default defineComponent({ tag: 'wcc-test' })
+const count = signal(0)
+const doubled = computed(() => count() * 2)
+function reset() { count.set(0) }
+defineExpose({ count, doubled, reset })
+</script>
+<template><div>{{count()}}</div></template>`;
+
+    const code = new WccCode(createSnapshot(source));
+    const scriptCode = code.embeddedCodes.find((c) => c.id === 'script_0')!;
+    const content = scriptCode.snapshot.getText(0, scriptCode.snapshot.getLength());
+
+    expect(content).toContain('export interface WccTest');
+    expect(content).toContain('count: typeof count');
+    expect(content).toContain('doubled: typeof doubled');
+    expect(content).toContain('reset: typeof reset');
+  });
+
+  it('does NOT generate interface when defineExpose is absent', () => {
+    const source = `<script>
+import { defineComponent, signal } from 'wcc'
+export default defineComponent({ tag: 'wcc-no-expose' })
+const count = signal(0)
+</script>
+<template><div>{{count()}}</div></template>`;
+
+    const code = new WccCode(createSnapshot(source));
+    const scriptCode = code.embeddedCodes.find((c) => c.id === 'script_0')!;
+    const content = scriptCode.snapshot.getText(0, scriptCode.snapshot.getLength());
+
+    expect(content).not.toContain('export interface');
+  });
+});

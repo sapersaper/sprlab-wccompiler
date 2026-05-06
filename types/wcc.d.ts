@@ -19,7 +19,7 @@ declare module 'wcc' {
   export function defineEmits<T>(): T;
   export function defineEmits(names: string[]): (name: string, detail?: any) => void;
 
-  export function templateRef<T = HTMLElement>(name: string): { value: (T & HTMLElement) | null };
+  export function templateRef<T = HTMLElement>(name: string): { value: T | null };
 
   export function onMount(fn: () => void | Promise<void>): void;
   export function onDestroy(fn: () => void | Promise<void>): void;
