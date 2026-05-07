@@ -339,13 +339,23 @@ function increment() {
           <p>Built-in SSE live-reload server. File watching with instant recompilation. Error overlay in browser.</p>
           <p><code>npx wcc dev</code></p>
         </div>
+        <div class="feature-card">
+          <h3>🔗 Framework Integrations</h3>
+          <p>Optional helpers for Vue, React, and Angular. Zero config needed — just import and use.</p>
+          <pre class="feature-code"><code>// Vue
+import { wccVuePlugin } from '@sprlab/wccompiler/integrations/vue'
+// React
+import { useWccEvent } from '@sprlab/wccompiler/integrations/react'
+// Angular
+import { WCC_SCHEMAS } from '@sprlab/wccompiler/integrations/angular'</code></pre>
+        </div>
       </div>
     </section>
   </main>
 
   <!-- ── 8. Footer ── -->
   <footer class="footer">
-    <p><strong>wcCompiler</strong> v0.6.4 — MIT License — by <a href="https://github.com/sapersaper">sprlab</a></p>
+    <p><strong>wcCompiler</strong> v0.7.0 — MIT License — by <a href="https://github.com/sapersaper">sprlab</a></p>
     <p class="footer-links">
       <a href="https://github.com/sapersaper/sprlab-wccompiler">GitHub</a> ·
       <a href="https://www.npmjs.com/package/@sprlab/wccompiler">npm</a> ·

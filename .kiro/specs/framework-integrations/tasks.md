@@ -13,7 +13,7 @@ Add optional Vue, React, and Angular integration helpers to `@sprlab/wccompiler`
   - Add `integrations/` to the `files` array
   - _Requirements: 1.1, 1.5, 6.1, 6.2, 6.3, 6.4, 7.1_
 
-- [ ] 2. Implement Vue integration
+- [x] 2. Implement Vue integration
   - [x] 2.1 Create `integrations/vue.js` with `wccVuePlugin` factory function
     - Import `vue` from `@vitejs/plugin-vue`
     - Accept optional `{ prefix }` option, default to `'wcc-'`
@@ -21,7 +21,7 @@ Add optional Vue, React, and Angular integration helpers to `@sprlab/wccompiler`
     - Export `wccVuePlugin` as a named export
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
-  - [ ] 2.2 Write property test for Vue prefix matching (Property 1)
+  - [x] 2.2 Write property test for Vue prefix matching (Property 1)
     - Create `lib/integrations.vue.test.js`
     - Mock `@vitejs/plugin-vue` using `vi.mock()`
     - Use fast-check to generate random prefix and tag strings
@@ -30,7 +30,7 @@ Add optional Vue, React, and Angular integration helpers to `@sprlab/wccompiler`
     - **Property 1: isCustomElement prefix matching**
     - **Validates: Requirements 2.1, 2.2, 2.3, 2.4, 2.6**
 
-- [ ] 3. Implement React integration
+- [x] 3. Implement React integration
   - [x] 3.1 Create `integrations/react.js` with `useWccEvent` hook
     - Import `useRef`, `useEffect` from `react`
     - Create element ref via `useRef(null)`
@@ -40,7 +40,7 @@ Add optional Vue, React, and Angular integration helpers to `@sprlab/wccompiler`
     - Export `useWccEvent` as a named export
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
 
-  - [ ] 3.2 Write property tests for React hook lifecycle and dispatch (Properties 2 & 3)
+  - [x] 3.2 Write property tests for React hook lifecycle and dispatch (Properties 2 & 3)
     - Create `lib/integrations.react.test.js`
     - Mock `react` with minimal `useRef`/`useEffect` implementations that track calls
     - Use fast-check to generate random event names and detail values
@@ -51,7 +51,7 @@ Add optional Vue, React, and Angular integration helpers to `@sprlab/wccompiler`
     - **Property 3: Event dispatch invokes handler**
     - **Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5, 3.6**
 
-- [ ] 4. Implement Angular integration
+- [x] 4. Implement Angular integration
   - [x] 4.1 Create `integrations/angular.js` with `WCC_SCHEMAS` and `WccModule`
     - Import `CUSTOM_ELEMENTS_SCHEMA` from `@angular/core`
     - Export `WCC_SCHEMAS` as `[CUSTOM_ELEMENTS_SCHEMA]`
@@ -59,7 +59,7 @@ Add optional Vue, React, and Angular integration helpers to `@sprlab/wccompiler`
     - Add JSDoc documenting NgModule usage pattern
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-  - [ ] 4.2 Write tests for Angular integration
+  - [x] 4.2 Write tests for Angular integration
     - Create `lib/integrations.angular.test.js`
     - Mock `@angular/core` with `CUSTOM_ELEMENTS_SCHEMA` constant
     - Verify `WCC_SCHEMAS` equals `[CUSTOM_ELEMENTS_SCHEMA]`
@@ -71,8 +71,8 @@ Add optional Vue, React, and Angular integration helpers to `@sprlab/wccompiler`
   - Run `yarn vitest --run` and ensure all integration tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 6. Write decoupling property test (Property 4)
-  - [ ] 6.1 Create `lib/integrations.decoupling.test.js`
+- [x] 6. Write decoupling property test (Property 4)
+  - [x] 6.1 Create `lib/integrations.decoupling.test.js`
     - Read all files in `integrations/` directory
     - Read all files in `lib/` directory
     - Parse import/require statements from each file
