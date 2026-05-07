@@ -3,6 +3,12 @@
   "version": "0.6.4",
   "description": "Zero-runtime compiler that transforms .wcc single-file components into native web components with signals-based reactivity",
   "type": "module",
+  "exports": {
+    ".": "./lib/compiler.js",
+    "./integrations/vue": "./integrations/vue.js",
+    "./integrations/react": "./integrations/react.js",
+    "./integrations/angular": "./integrations/angular.js"
+  },
   "bin": {
     "wcc": "./bin/wcc.js"
   },
@@ -10,6 +16,7 @@
     "bin/",
     "lib/*.js",
     "!lib/*.test.js",
+    "integrations/",
     "types/",
     "README.md"
   ],
@@ -33,6 +40,18 @@
   "dependencies": {
     "esbuild": "^0.27.0",
     "linkedom": "^0.18.12"
+  },
+  "peerDependencies": {
+    "@vitejs/plugin-vue": ">=4.0.0",
+    "vue": ">=3.0.0",
+    "react": ">=18.0.0",
+    "@angular/core": ">=14.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@vitejs/plugin-vue": { "optional": true },
+    "vue": { "optional": true },
+    "react": { "optional": true },
+    "@angular/core": { "optional": true }
   },
   "devDependencies": {
     "fast-check": "^4.1.1",
