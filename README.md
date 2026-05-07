@@ -423,6 +423,37 @@ export default {
 
 All options are optional — defaults shown above.
 
+### Standalone Mode
+
+Controls whether the reactive runtime is inlined in each component or imported from a shared module.
+
+```js
+// wcc.config.js
+export default {
+  standalone: true  // inline runtime in every component (default: false)
+}
+```
+
+- `standalone: false` (default) — Components import the runtime from a shared `__wcc-signals.js` file. Smaller per-component size when using multiple components.
+- `standalone: true` — Each component includes the full reactive runtime inline. Zero external dependencies per component.
+
+#### Per-Component Override
+
+Override the global setting for individual components:
+
+```html
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-widget',
+  standalone: true,  // this component is self-contained regardless of global config
+})
+</script>
+```
+
+Component-level `standalone` always takes precedence over the global config. This lets you have a project with shared runtime but mark specific components as fully self-contained for distribution.
+
 ## Editor Support
 
 The **wcCompiler (.wcc) Language Support** extension is available on the VS Code Marketplace. It provides syntax highlighting, completions, and diagnostics for `.wcc` files.
