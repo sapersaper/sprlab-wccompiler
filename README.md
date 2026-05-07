@@ -656,12 +656,21 @@ export default defineConfig({
 
 ### React
 
-React 19+ supports custom elements natively. For React 18, use the event hook:
+React 19+ supports custom elements natively. For React 18, use the event hook to bridge CustomEvents:
 
 ```jsx
+import { useRef } from 'react'
 import { useWccEvent } from '@sprlab/wccompiler/integrations/react'
 
 function App() {
+  // Form 1: Pass an existing ref
+  const counterRef = useRef(null)
+  useWccEvent(counterRef, 'change', (e) => console.log(e.detail))
+  return <wcc-counter ref={counterRef}></wcc-counter>
+}
+
+// Form 2: Let the hook create the ref
+function App2() {
   const ref = useWccEvent('change', (e) => console.log(e.detail))
   return <wcc-counter ref={ref}></wcc-counter>
 }
@@ -669,19 +678,23 @@ function App() {
 
 ### Angular
 
+Add `CUSTOM_ELEMENTS_SCHEMA` to your component or module — this is Angular's built-in way to allow custom elements:
+
 ```ts
-import { WCC_SCHEMAS } from '@sprlab/wccompiler/integrations/angular'
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
 
 // Standalone component (Angular 17+)
 @Component({
-  schemas: WCC_SCHEMAS,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `<wcc-counter></wcc-counter>`
 })
+export class AppComponent {}
 
 // Or NgModule approach
 @NgModule({
-  schemas: WCC_SCHEMAS,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
+export class AppModule {}
 ```
 
 ### Vanilla

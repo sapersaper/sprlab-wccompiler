@@ -1,31 +1,48 @@
 /**
- * Angular schema helper for WCC custom elements.
- * Provides CUSTOM_ELEMENTS_SCHEMA configuration for Angular modules/components.
+ * Angular integration guide for WCC custom elements.
  *
  * @module @sprlab/wccompiler/integrations/angular
- */
-
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
-
-/**
- * Schema array for Angular components/modules that use WCC custom elements.
- * Use in @Component({ schemas: WCC_SCHEMAS }) or @NgModule({ schemas: WCC_SCHEMAS })
  *
- * @type {Array<import('@angular/core').SchemaMetadata>}
- */
-export const WCC_SCHEMAS = [CUSTOM_ELEMENTS_SCHEMA]
-
-/**
- * NgModule-compatible class that declares CUSTOM_ELEMENTS_SCHEMA.
- * Import this in your NgModule's imports array.
+ * Angular's AOT compiler requires schemas to be statically analyzable,
+ * so we cannot provide a re-exported schema constant that works at compile time.
+ * Instead, use Angular's built-in CUSTOM_ELEMENTS_SCHEMA directly:
  *
- * Usage:
- * @NgModule({ imports: [WccModule] })
+ * @example Standalone component (Angular 17+)
+ * ```ts
+ * import { Component } from '@angular/core';
+ * import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+ *
+ * @Component({
+ *   selector: 'app-root',
+ *   schemas: [CUSTOM_ELEMENTS_SCHEMA],
+ *   template: `<wcc-counter></wcc-counter>`
+ * })
+ * export class AppComponent {}
+ * ```
+ *
+ * @example NgModule approach
+ * ```ts
+ * import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+ *
+ * @NgModule({
+ *   schemas: [CUSTOM_ELEMENTS_SCHEMA],
+ * })
  * export class AppModule {}
+ * ```
  *
- * Note: For standalone components (Angular 17+), use WCC_SCHEMAS directly:
- * @Component({ schemas: WCC_SCHEMAS })
+ * That's it — one line of config. WCC components work as native custom elements
+ * in Angular without any additional wrapper or helper.
  */
-export class WccModule {
-  static schemas = WCC_SCHEMAS
+
+/**
+ * Configuration instructions for Angular projects using WCC components.
+ * This is a documentation-only export — Angular's AOT compiler requires
+ * CUSTOM_ELEMENTS_SCHEMA to be imported directly from @angular/core.
+ *
+ * @type {{ schema: string, standalone: string, ngModule: string }}
+ */
+export const WCC_ANGULAR_CONFIG = {
+  schema: "import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'",
+  standalone: "@Component({ schemas: [CUSTOM_ELEMENTS_SCHEMA] })",
+  ngModule: "@NgModule({ schemas: [CUSTOM_ELEMENTS_SCHEMA] })",
 }
