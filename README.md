@@ -632,6 +632,10 @@ export default defineComponent({
 
 Component-level `standalone` always takes precedence over the global config. This lets you have a project with shared runtime but mark specific components as fully self-contained for distribution.
 
+#### Reactive Scope Isolation
+
+Each standalone component has its own isolated reactive runtime. Signals from component A cannot be observed by effects in component B — they are completely independent. This is by design for distribution scenarios where components must be self-contained. If you need cross-component reactivity (e.g., shared state), use the default shared mode (`standalone: false`).
+
 ## Editor Support
 
 The **wcCompiler (.wcc) Language Support** extension is available on the VS Code Marketplace. It provides syntax highlighting, completions, and diagnostics for `.wcc` files.
