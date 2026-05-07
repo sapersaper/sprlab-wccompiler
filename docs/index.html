@@ -11,75 +11,209 @@
     <div class="nav-inner">
       <a href="#" class="logo">wc<span>Compiler</span></a>
       <div class="nav-links">
+        <a href="#how-it-works">How it works</a>
         <a href="#features">Features</a>
-        <a href="#guide">Guide</a>
+        <a href="#comparison">Compare</a>
+        <a href="#guide">Get Started</a>
         <a href="#api">API</a>
-        <!-- <a href="playground/" class="btn-playground">Playground</a> -->
+        <a href="https://www.npmjs.com/package/@sprlab/wccompiler" class="btn-github">npm</a>
         <a href="https://github.com/sapersaper/sprlab-wccompiler" class="btn-github">GitHub</a>
       </div>
     </div>
   </nav>
 
+  <!-- ── 1. Hero ── -->
   <header class="hero">
     <h1>wcCompiler</h1>
-    <p class="tagline">Zero-runtime compiler that transforms .wcc single-file components into native web components.</p>
-    <p class="sub">No framework. No virtual DOM. No runtime. Just vanilla custom elements with signals-based reactivity.</p>
+    <p class="tagline">Write single-file components. Get zero-dependency custom elements.</p>
+    <p class="sub">No framework lock-in. No virtual DOM. No runtime. Just vanilla JavaScript web components with signals-based reactivity — compiled away at build time.</p>
     <div class="hero-actions">
       <a href="#guide" class="btn primary">Get Started</a>
       <a href="https://github.com/sapersaper/sprlab-wccompiler" class="btn secondary">GitHub</a>
+      <a href="https://www.npmjs.com/package/@sprlab/wccompiler" class="btn secondary">npm</a>
     </div>
     <pre class="install-cmd">npm install -D @sprlab/wccompiler</pre>
   </header>
 
   <main>
-    <!-- ── Features ── -->
+    <!-- ── 2. How it works ── -->
+    <section id="how-it-works" class="section">
+      <h2>How It Works</h2>
+      <div class="how-it-works-visual">
+        <div class="how-step">
+          <div class="how-label">Write</div>
+          <pre class="code-block"><code>src/counter.wcc
+┌─────────────────┐
+│ &lt;script&gt;        │
+│   signal, effect │
+│ &lt;template&gt;      │
+│   {{count()}}   │
+│ &lt;style&gt;         │
+│   .counter {}   │
+└─────────────────┘</code></pre>
+        </div>
+        <div class="how-arrow">→</div>
+        <div class="how-step">
+          <div class="how-label">Build</div>
+          <pre class="code-block"><code>$ npx wcc build
+
+✓ Parsed SFC blocks
+✓ Analyzed reactivity
+✓ Walked template DOM
+✓ Generated output</code></pre>
+        </div>
+        <div class="how-arrow">→</div>
+        <div class="how-step">
+          <div class="how-label">Ship</div>
+          <pre class="code-block"><code>dist/counter.js
+┌─────────────────────┐
+│ class WccCounter     │
+│   extends HTMLElement│
+│ customElements       │
+│   .define(...)       │
+└─────────────────────┘
+Zero dependencies ✓</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3. Features ── -->
     <section id="features" class="section">
       <h2>Features</h2>
       <div class="feature-grid">
         <div class="feature-card">
           <h3>⚡ Signals Reactivity</h3>
-          <p><code>signal()</code>, <code>computed()</code>, <code>effect()</code> — fine-grained reactivity with automatic dependency tracking.</p>
+          <p>Fine-grained reactivity with automatic dependency tracking.</p>
+          <pre class="feature-code"><code>const count = signal(0)
+count()      // read
+count.set(5) // write</code></pre>
         </div>
         <div class="feature-card">
           <h3>📝 Template Directives</h3>
-          <p><code>if</code>/<code>else</code>, <code>each</code>, <code>show</code>, <code>model</code>, <code>:attr</code>, <code>@event</code> — declarative template syntax.</p>
+          <p>Declarative template syntax — no <code>v-</code> prefix needed.</p>
+          <pre class="feature-code"><code>&lt;div if="active()"&gt;...&lt;/div&gt;
+&lt;li each="item in list()"&gt;
+&lt;input model="name"&gt;</code></pre>
         </div>
         <div class="feature-card">
           <h3>🔌 Scoped Slots</h3>
-          <p>Named slots, default slots, and scoped slots with reactive prop passing via <code>&lt;template #name="{ prop }"&gt;</code>.</p>
+          <p>Named, default, and scoped slots with reactive prop passing.</p>
+          <pre class="feature-code"><code>&lt;slot name="header" :count="count"&gt;
+&lt;template #header="{ count }"&gt;
+  {{count}} items
+&lt;/template&gt;</code></pre>
         </div>
         <div class="feature-card">
           <h3>🎨 CSS Scoping</h3>
-          <p>Automatic tag-name prefixing. No Shadow DOM — styles are scoped but composable.</p>
+          <p>Automatic tag-name prefixing. No Shadow DOM — composable styles.</p>
+          <pre class="feature-code"><code>/* input */  .btn { color: blue }
+/* output */ wcc-app .btn { color: blue }</code></pre>
         </div>
         <div class="feature-card">
           <h3>🔷 TypeScript</h3>
-          <p>Full TypeScript support with type stripping via esbuild. Generics for props and emits.</p>
-        </div>
-        <div class="feature-card">
-          <h3>📦 Zero Dependencies</h3>
-          <p>Compiled components are vanilla JS with no framework runtime. Shared mode uses a tiny signals module; standalone mode produces a single self-contained file.</p>
-        </div>
-        <div class="feature-card">
-          <h3>🧩 Nested Components</h3>
-          <p>Auto-import child components. Reactive prop binding with <code>:prop</code> attribute syntax.</p>
-        </div>
-        <div class="feature-card">
-          <h3>🔄 Dev Server</h3>
-          <p>SSE live-reload, file watching, instant recompilation. <code>wcc dev</code> and you're running.</p>
-        </div>
-        <div class="feature-card">
-          <h3>🛠️ VS Code Extension</h3>
-          <p>The <strong>wcCompiler (.wcc) Language Support</strong> extension provides syntax highlighting, completions, and diagnostics for <code>.wcc</code> files.</p>
+          <p>Full TS support via esbuild. Generics for props and emits.</p>
+          <pre class="feature-code"><code>defineProps&lt;{ count: number }&gt;()
+defineEmits&lt;{ (e: 'change'): void }&gt;()</code></pre>
         </div>
         <div class="feature-card">
           <h3>📦 Standalone Mode</h3>
-          <p>Inline the reactive runtime for zero-dependency distributable components. One file, no imports, works anywhere.</p>
+          <p>Inline the runtime for zero-dependency distributable components. One file, no imports, works anywhere.</p>
+          <pre class="feature-code"><code>defineComponent({
+  tag: 'my-widget',
+  standalone: true
+})</code></pre>
+        </div>
+        <div class="feature-card">
+          <h3>🧩 Nested Components</h3>
+          <p>Auto-import child components. Reactive prop binding with <code>:prop</code>.</p>
+          <pre class="feature-code"><code>&lt;wcc-child :count="count()"
+            @change="handler"&gt;
+&lt;/wcc-child&gt;</code></pre>
+        </div>
+        <div class="feature-card">
+          <h3>🔄 Dev Server</h3>
+          <p>SSE live-reload, file watching, instant recompilation.</p>
+          <pre class="feature-code"><code>$ npx wcc dev
+Watching src/ for changes...
+Compiled: wcc-counter.wcc</code></pre>
+        </div>
+        <div class="feature-card">
+          <h3>🛠️ VS Code Extension</h3>
+          <p>Syntax highlighting, completions, and diagnostics for <code>.wcc</code> files.</p>
+          <pre class="feature-code"><code>// Install from marketplace:
+// "wcCompiler (.wcc) Language Support"</code></pre>
         </div>
       </div>
     </section>
 
-    <!-- ── Quick Start Guide ── -->
+    <!-- ── 4. Comparison ── -->
+    <section id="comparison" class="section">
+      <h2>Why wcCompiler?</h2>
+      <table class="api-table comparison-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>wcCompiler</th>
+            <th>Lit</th>
+            <th>Stencil</th>
+            <th>Svelte</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Runtime</td>
+            <td><strong>0 KB</strong> (compiled away)</td>
+            <td>~5 KB</td>
+            <td>~15 KB</td>
+            <td>~2 KB</td>
+          </tr>
+          <tr>
+            <td>Output</td>
+            <td><strong>Vanilla Custom Element</strong></td>
+            <td>Lit CE</td>
+            <td>Stencil CE</td>
+            <td>Framework component</td>
+          </tr>
+          <tr>
+            <td>Shadow DOM</td>
+            <td><strong>No</strong> (scoped CSS)</td>
+            <td>Yes (required)</td>
+            <td>Optional</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>SFC format</td>
+            <td><strong>.wcc</strong></td>
+            <td>No</td>
+            <td>No</td>
+            <td>.svelte</td>
+          </tr>
+          <tr>
+            <td>Signals</td>
+            <td><strong>Built-in</strong></td>
+            <td>No</td>
+            <td>No</td>
+            <td>Runes</td>
+          </tr>
+          <tr>
+            <td>Two-way binding</td>
+            <td><strong>model directive</strong></td>
+            <td>Manual</td>
+            <td>Manual</td>
+            <td>bind:</td>
+          </tr>
+          <tr>
+            <td>Scoped slots</td>
+            <td><strong>Yes</strong></td>
+            <td>No</td>
+            <td>No</td>
+            <td>Yes (let:)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── 5. Quick Start Guide ── -->
     <section id="guide" class="section">
       <h2>Quick Start</h2>
 
@@ -123,9 +257,10 @@ function increment() {
       <h3>4. Use</h3>
       <pre class="code-block"><code>&lt;script type="module" src="dist/wcc-counter.js"&gt;&lt;/script&gt;
 &lt;wcc-counter&gt;&lt;/wcc-counter&gt;</code></pre>
+      <p class="section-note">That's it. The compiled output is a single <code>.js</code> file — works in any browser that supports custom elements.</p>
     </section>
 
-    <!-- ── API Reference ── -->
+    <!-- ── 6. API Reference ── -->
     <section id="api" class="section">
       <h2>API Reference</h2>
 
@@ -136,11 +271,11 @@ function increment() {
           <tr><td><code>signal(value)</code></td><td>Create a reactive variable. Read: <code>x()</code>, Write: <code>x.set(val)</code></td></tr>
           <tr><td><code>computed(() => expr)</code></td><td>Derived value with caching and auto-invalidation</td></tr>
           <tr><td><code>effect(() => { ... })</code></td><td>Side effect that re-runs when dependencies change. Supports cleanup via return function.</td></tr>
-          <tr><td><code>watch(signal, (n, o) => {})</code> / <code>watch(() => expr, (n, o) => {})</code></td><td>Observe a signal or getter with old/new values</td></tr>
+          <tr><td><code>batch(() => { ... })</code></td><td>Group multiple signal writes — effects flush once at the end</td></tr>
+          <tr><td><code>watch(signal, (n, o) => {})</code></td><td>Observe a signal or getter with old/new values</td></tr>
           <tr><td><code>defineProps({ key: default })</code></td><td>Declare external props with defaults</td></tr>
           <tr><td><code>defineEmits(['event'])</code></td><td>Declare custom events (validated at compile time)</td></tr>
           <tr><td><code>templateRef('name')</code></td><td>Get a DOM element reference from the template</td></tr>
-          <tr><td><code>templateRef&lt;T&gt;('name')</code></td><td>Typed ref — import type from child .wcc for autocomplete</td></tr>
           <tr><td><code>onMount(() => {})</code></td><td>Lifecycle: connectedCallback (supports async)</td></tr>
           <tr><td><code>onDestroy(() => {})</code></td><td>Lifecycle: disconnectedCallback</td></tr>
           <tr><td><code>defineExpose({ ... })</code></td><td>Expose methods/properties for external access via ref</td></tr>
@@ -151,28 +286,14 @@ function increment() {
       <table class="api-table">
         <thead><tr><th>Directive</th><th>Example</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code>{{expr()}}</code></td><td><code>&lt;span&gt;{{count()}}&lt;/span&gt;</code></td><td>Reactive text interpolation (call signals to read)</td></tr>
-          <tr><td><code>@event</code></td><td><code>@click="handler"</code> / <code>@click="removeItem(item)"</code></td><td>DOM event listener (name or expression)</td></tr>
-          <tr><td><code>if</code></td><td><code>if="status() === 'active'"</code></td><td>Conditional rendering</td></tr>
-          <tr><td><code>else-if</code></td><td><code>else-if="status() === 'pending'"</code></td><td>Alternative branch</td></tr>
-          <tr><td><code>else</code></td><td><code>else</code></td><td>Default branch</td></tr>
+          <tr><td><code>{{expr()}}</code></td><td><code>&lt;span&gt;{{count()}}&lt;/span&gt;</code></td><td>Reactive text interpolation</td></tr>
+          <tr><td><code>@event</code></td><td><code>@click="handler"</code></td><td>DOM event listener</td></tr>
+          <tr><td><code>if</code> / <code>else-if</code> / <code>else</code></td><td><code>if="active()"</code></td><td>Conditional rendering</td></tr>
           <tr><td><code>each</code></td><td><code>each="item in items()"</code></td><td>List rendering (keyed with <code>:key</code>)</td></tr>
-          <tr><td><code>show</code></td><td><code>show="isVisible()"</code></td><td>CSS visibility toggle</td></tr>
-          <tr><td><code>model</code></td><td><code>model="name"</code></td><td>Two-way binding (input, select, textarea)</td></tr>
-          <tr><td><code>:attr</code></td><td><code>:href="url()"</code></td><td>Attribute binding</td></tr>
-          <tr><td><code>:class</code></td><td><code>:class="{ active: isActive() }"</code></td><td>Class binding (string or object)</td></tr>
-          <tr><td><code>:style</code></td><td><code>:style="{ color: textColor() }"</code></td><td>Style binding (string or object)</td></tr>
-          <tr><td><code>ref</code></td><td><code>ref="name"</code></td><td>Mark element for <code>templateRef()</code></td></tr>
-        </tbody>
-      </table>
-
-      <h3>Slots</h3>
-      <table class="api-table">
-        <thead><tr><th>Type</th><th>Component</th><th>Consumer</th></tr></thead>
-        <tbody>
-          <tr><td>Default</td><td><code>&lt;slot&gt;fallback&lt;/slot&gt;</code></td><td>Plain child elements</td></tr>
-          <tr><td>Named</td><td><code>&lt;slot name="x"&gt;&lt;/slot&gt;</code></td><td><code>&lt;template #x&gt;content&lt;/template&gt;</code></td></tr>
-          <tr><td>Scoped</td><td><code>&lt;slot name="x" :prop="val"&gt;&lt;/slot&gt;</code></td><td><code>&lt;template #x="{ prop }"&gt;{{prop}}&lt;/template&gt;</code></td></tr>
+          <tr><td><code>show</code></td><td><code>show="visible()"</code></td><td>CSS visibility toggle</td></tr>
+          <tr><td><code>model</code></td><td><code>model="name"</code></td><td>Two-way binding</td></tr>
+          <tr><td><code>:attr</code></td><td><code>:href="url()"</code></td><td>Attribute / class / style binding</td></tr>
+          <tr><td><code>ref</code></td><td><code>ref="canvas"</code></td><td>Template element reference</td></tr>
         </tbody>
       </table>
 
@@ -180,15 +301,57 @@ function increment() {
       <table class="api-table">
         <thead><tr><th>Command</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code>wcc build</code></td><td>Compile all .wcc files + copy wcc-runtime.js</td></tr>
+          <tr><td><code>wcc build</code></td><td>Compile all .wcc files to output directory</td></tr>
           <tr><td><code>wcc dev</code></td><td>Build + watch + SSE live-reload dev server</td></tr>
         </tbody>
       </table>
+
+      <h3>Configuration (wcc.config.js)</h3>
+      <table class="api-table">
+        <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>port</code></td><td><code>4100</code></td><td>Dev server port</td></tr>
+          <tr><td><code>input</code></td><td><code>'src'</code></td><td>Source directory</td></tr>
+          <tr><td><code>output</code></td><td><code>'dist'</code></td><td>Output directory</td></tr>
+          <tr><td><code>standalone</code></td><td><code>false</code></td><td>Inline runtime per component (zero-dep output)</td></tr>
+        </tbody>
+      </table>
+
+      <p class="section-note">Full documentation on <a href="https://www.npmjs.com/package/@sprlab/wccompiler">npm</a> and <a href="https://github.com/sapersaper/sprlab-wccompiler">GitHub</a>.</p>
+    </section>
+
+    <!-- ── 7. Ecosystem ── -->
+    <section id="ecosystem" class="section">
+      <h2>Ecosystem</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>🛠️ VS Code Extension</h3>
+          <p>Syntax highlighting, completions, diagnostics, and typed templateRef support for <code>.wcc</code> files.</p>
+          <p><a href="https://marketplace.visualstudio.com/items?itemName=sprlab.wccompiler-language-support">Install from Marketplace →</a></p>
+        </div>
+        <div class="feature-card">
+          <h3>📦 Standalone Mode</h3>
+          <p>Inline the reactive runtime for distributable components. Perfect for npm packages, CDN widgets, and micro-frontends.</p>
+          <p><code>standalone: true</code> in config or per-component.</p>
+        </div>
+        <div class="feature-card">
+          <h3>🔄 Dev Server</h3>
+          <p>Built-in SSE live-reload server. File watching with instant recompilation. Error overlay in browser.</p>
+          <p><code>npx wcc dev</code></p>
+        </div>
+      </div>
     </section>
   </main>
 
+  <!-- ── 8. Footer ── -->
   <footer class="footer">
-    <p>wcCompiler — MIT License — <a href="https://github.com/sapersaper/sprlab-wccompiler">GitHub</a></p>
+    <p><strong>wcCompiler</strong> v0.6.1 — MIT License — by <a href="https://github.com/sapersaper">sprlab</a></p>
+    <p class="footer-links">
+      <a href="https://github.com/sapersaper/sprlab-wccompiler">GitHub</a> ·
+      <a href="https://www.npmjs.com/package/@sprlab/wccompiler">npm</a> ·
+      <a href="https://marketplace.visualstudio.com/items?itemName=sprlab.wccompiler-language-support">VS Code Extension</a> ·
+      <a href="https://github.com/sapersaper/sprlab-wccompiler/blob/main/CONTRIBUTING.md">Contributing</a>
+    </p>
   </footer>
 </body>
 </html>

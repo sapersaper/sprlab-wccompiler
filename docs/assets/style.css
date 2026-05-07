@@ -209,6 +209,73 @@ code {
   font-size: 13px;
   border-top: 1px solid #21262d;
 }
+.footer strong { color: #8b949e; }
+.footer-links {
+  margin-top: 8px;
+}
+.footer-links a {
+  color: #484f58;
+}
+.footer-links a:hover {
+  color: #58a6ff;
+}
+
+/* ── How It Works ── */
+.how-it-works-visual {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+}
+.how-step {
+  flex: 1;
+  max-width: 280px;
+}
+.how-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #58a6ff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+.how-arrow {
+  font-size: 28px;
+  color: #3fb950;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Feature Code Examples ── */
+.feature-code {
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-top: 10px;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #8b949e;
+  overflow-x: auto;
+}
+
+/* ── Comparison Table ── */
+.comparison-table td:first-child {
+  font-weight: 600;
+  color: #8b949e;
+}
+.comparison-table strong {
+  color: #3fb950;
+}
+
+/* ── Section Note ── */
+.section-note {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #8b949e;
+}
 
 /* ── Responsive ── */
 @media (max-width: 640px) {
@@ -217,4 +284,7 @@ code {
   .hero-actions { flex-direction: column; align-items: center; }
   .nav-links { gap: 12px; }
   .feature-grid { grid-template-columns: 1fr; }
+  .how-it-works-visual { flex-direction: column; }
+  .how-arrow { transform: rotate(90deg); }
+  .how-step { max-width: 100%; }
 }
