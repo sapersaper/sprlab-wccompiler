@@ -55,6 +55,23 @@ npx wcc build
 
 The compiled output is a single `.js` file with zero dependencies — works in any browser that supports custom elements.
 
+## How It Works
+
+```
+  src/wcc-counter.wcc          dist/wcc-counter.js
+  ┌──────────────────┐         ┌──────────────────────────┐
+  │ <script>         │         │ // Reactive runtime       │
+  │   signal, effect │  ───►   │ // (inline or imported)   │
+  │ <template>       │  build  │ class WccCounter extends  │
+  │   {{count()}}    │         │   HTMLElement { ... }     │
+  │ <style>          │         │ customElements.define(...) │
+  └──────────────────┘         └──────────────────────────┘
+                                         +
+                               dist/__wcc-signals.js (shared mode)
+```
+
+The compiler reads your `.wcc` source, extracts script/template/style blocks, analyzes reactive declarations, walks the template DOM for bindings and directives, and generates a self-contained custom element class. CSS is automatically scoped by tag name.
+
 ## Single File Component (.wcc)
 
 wcCompiler uses a single-file component format with the `.wcc` extension. Each file contains three blocks:
@@ -85,6 +102,31 @@ p { color: steelblue; }
 
 Use `<script lang="ts">` for TypeScript support. The CLI discovers and compiles all `.wcc` files in your source directory.
 
+## Coming from Vue?
+
+If you're familiar with Vue, here's how wcCompiler maps:
+
+| Vue | wcCompiler |
+|-----|------------|
+| `ref(0)` | `signal(0)` |
+| `computed(() => ...)` | `computed(() => ...)` |
+| `watch(source, cb)` | `watch(source, cb)` |
+| `v-if` | `if` |
+| `v-else-if` | `else-if` |
+| `v-else` | `else` |
+| `v-for="item in items"` | `each="item in items()"` |
+| `v-show` | `show` |
+| `v-model` | `model` |
+| `@click` | `@click` |
+| `:prop` | `:prop` |
+| `defineProps()` | `defineProps()` |
+| `defineEmits()` | `defineEmits()` |
+| `onMounted()` | `onMount()` |
+| `onUnmounted()` | `onDestroy()` |
+| `<slot>` | `<slot>` |
+
+Key differences: signals use `.set()` to write and `()` to read. Template directives have no `v-` prefix. Output is vanilla JS with no runtime framework.
+
 ## Reactivity
 
 ### Signals
@@ -94,6 +136,8 @@ const count = signal(0)       // create
 count()                        // read → 0
 count.set(5)                   // write → 5
 ```
+
+> **Note:** `.set()` is the public API for writing signals. The compiled output uses direct invocation (`count(5)`) as an internal optimization — both forms are equivalent, but `.set()` is the recommended way to write signals in your source code.
 
 ### Computed
 
@@ -118,6 +162,23 @@ effect(() => {
   return () => clearInterval(id)  // called before re-run
 })
 ```
+
+### Batch
+
+Group multiple signal writes into a single update pass:
+
+```js
+import { batch } from 'wcc'
+
+batch(() => {
+  firstName.set('John')
+  lastName.set('Doe')
+  age.set(30)
+})
+// Effects run once after all three writes, not three times
+```
+
+Nested batches are supported — effects flush only when the outermost batch completes.
 
 ### Watch
 
@@ -235,7 +296,32 @@ Event handlers support expressions and inline arguments:
 <li each="(item, index) in items()">{{index}}: {{item.name}}</li>
 ```
 
-The source expression calls the signal (`items()`) to read the current array.
+The source expression calls the signal (`items()`) to read the current array. Supports keyed rendering with `:key`:
+
+```html
+<li each="item in items()" :key="item.id">{{item.name}}</li>
+```
+
+Numeric ranges are also supported:
+
+```html
+<li each="n in 5">Item {{n}}</li>
+```
+
+#### Nested Directives in `each`
+
+Directives work inside `each` blocks — including conditionals and nested loops:
+
+```html
+<div each="user in users()">
+  <span>{{user.name}}</span>
+  <span if="user.active" class="badge">Active</span>
+  <span else class="badge muted">Inactive</span>
+  <ul>
+    <li each="role in user.roles">{{role}}</li>
+  </ul>
+</div>
+```
 
 ### Visibility Toggle
 
@@ -313,6 +399,36 @@ Consumer (receives data via template props):
 </wcc-card>
 ```
 
+## Nested Components
+
+Components can use other components in their templates. Import the child `.wcc` file and use its tag in the template:
+
+```html
+<script>
+import { defineComponent, signal } from 'wcc'
+import './wcc-badge.wcc'
+
+export default defineComponent({ tag: 'wcc-profile' })
+
+const count = signal(0)
+
+function increment() {
+  count.set(count() + 1)
+}
+</script>
+
+<template>
+<div class="profile">
+  <wcc-badge :count="count()" @click="increment"></wcc-badge>
+</div>
+</template>
+```
+
+- **Manual import**: `import './wcc-child.wcc'` — the compiler registers the child component
+- **Auto-detect**: If a custom element tag in the template matches a `.wcc` file in the same directory, it's auto-imported
+- **Reactive props**: Use `:prop="expr"` to pass reactive data down — updates automatically when the expression changes
+- **Event listening**: Use `@event="handler"` to listen to custom events emitted by the child
+
 ## Lifecycle Hooks
 
 ```js
@@ -331,6 +447,11 @@ onDestroy(() => {
 ```
 
 Async callbacks are wrapped in an IIFE — `connectedCallback` itself stays synchronous.
+
+**Details:**
+- Multiple `onMount` / `onDestroy` calls are supported — they all run in declaration order
+- `connectedCallback` is idempotent — re-mounting a component (e.g., moving it in the DOM) re-attaches listeners and effects cleanly
+- All effects and event listeners are automatically cleaned up in `disconnectedCallback` via AbortController
 
 ## CSS Scoping
 
@@ -391,13 +512,45 @@ defineExpose({ doubled, handleUpdate, watchLog })
 
 `defineExpose()` exposes methods and properties for external access via ref.
 
+```js
+// wcc-timer.wcc — exposes start/stop/elapsed
+const elapsed = signal(0)
+let interval = null
+
+function start() { interval = setInterval(() => elapsed.set(elapsed() + 1), 1000) }
+function stop() { clearInterval(interval) }
+
+defineExpose({ elapsed, start, stop })
+```
+
+```html
+<!-- Parent component accessing exposed API -->
+<script>
+import { defineComponent, templateRef, onMount } from 'wcc'
+import './wcc-timer.wcc'
+
+export default defineComponent({ tag: 'wcc-app' })
+
+const timer = templateRef('timer')
+
+onMount(() => {
+  timer.value.start()       // call exposed method
+  console.log(timer.value.elapsed)  // read exposed signal
+})
+</script>
+
+<template>
+<wcc-timer ref="timer"></wcc-timer>
+</template>
+```
+
 The language server automatically generates a typed interface (PascalCase of the tag name) that can be imported by consumers:
 
 ```ts
 // In the parent component:
-import type { WccTypescript } from './wcc-typescript.wcc'
-const child = templateRef<WccTypescript>('myRef')
-child.value!.handleUpdate() // ✅ typed
+import type { WccTimer } from './wcc-timer.wcc'
+const timer = templateRef<WccTimer>('timer')
+timer.value!.start() // ✅ typed
 ```
 
 ## CLI
@@ -415,13 +568,73 @@ Create `wcc.config.js` in your project root:
 
 ```js
 export default {
-  port: 4100,    // dev server port
-  input: 'src',  // source directory
-  output: 'dist' // output directory
+  port: 4100,       // dev server port (default: 4100)
+  input: 'src',     // source directory (default: 'src')
+  output: 'dist',   // output directory (default: 'dist')
+  standalone: false  // inline runtime per component (default: false)
 }
 ```
 
 All options are optional — defaults shown above.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `port` | number | `4100` | Dev server port for `wcc dev` |
+| `input` | string | `'src'` | Source directory containing `.wcc` files |
+| `output` | string | `'dist'` | Output directory for compiled `.js` files |
+| `standalone` | boolean | `false` | Inline reactive runtime in each component |
+
+### Standalone Mode
+
+Controls whether the reactive runtime is inlined in each component or imported from a shared module.
+
+```js
+// wcc.config.js
+export default {
+  standalone: true  // inline runtime in every component (default: false)
+}
+```
+
+- `standalone: false` (default) — Components import the runtime from a shared `__wcc-signals.js` file. Smaller per-component size when using multiple components.
+- `standalone: true` — Each component includes the full reactive runtime inline. Zero external dependencies per component.
+
+**Output difference:**
+
+```
+Default (false):   component.js → imports __wcc-signals.js
+Standalone (true): component.js → runtime inlined, zero imports
+```
+
+**When to use standalone:**
+- Publishing components as npm packages
+- Embedding widgets in third-party sites
+- CDN distribution (`<script src="component.js">`)
+- Micro-frontends where you don't control the host
+
+**When NOT to use standalone:**
+- Apps with multiple components (runtime would be duplicated in each)
+- Internal projects where you control the build
+
+#### Per-Component Override
+
+Override the global setting for individual components:
+
+```html
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-widget',
+  standalone: true,  // this component is self-contained regardless of global config
+})
+</script>
+```
+
+Component-level `standalone` always takes precedence over the global config. This lets you have a project with shared runtime but mark specific components as fully self-contained for distribution.
+
+#### Reactive Scope Isolation
+
+Each standalone component has its own isolated reactive runtime. Signals from component A cannot be observed by effects in component B — they are completely independent. This is by design for distribution scenarios where components must be self-contained. If you need cross-component reactivity (e.g., shared state), use the default shared mode (`standalone: false`).
 
 ## Editor Support
 

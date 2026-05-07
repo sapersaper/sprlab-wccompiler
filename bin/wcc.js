@@ -7,6 +7,9 @@ import { loadConfig } from '../lib/config.js';
 import { compile } from '../lib/compiler.js';
 import { startDevServer } from '../lib/dev-server.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const command = process.argv[2];
 
 async function build(config, cwd) {
@@ -15,34 +18,42 @@ async function build(config, cwd) {
 
   if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
 
-  // Generate shared reactive runtime
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-  const { reactiveRuntime } = await import('../lib/reactive-runtime.js');
-  const signalsContent = reactiveRuntime.trim().replace(/^/gm, '') + '\nexport { __signal, __computed, __effect, __batch, __untrack };\n';
-  const signalsDest = join(outputDir, '__wcc-signals.js');
-  writeFileSync(signalsDest, signalsContent);
-
-  // Discover source files
   const files = discoverFiles(inputDir);
   let errors = 0;
+  let needsSharedRuntime = false;
 
   for (const file of files) {
     try {
-      // Calculate relative path from component output to __wcc-signals.js
       const relPath = relative(inputDir, file);
       const outPath = resolve(outputDir, relPath.replace(/\.wcc$/, '.js'));
       const outDir = dirname(outPath);
+
+      // Calculate runtimeImportPath (always calculate it — the compiler decides whether to use it)
+      const signalsDest = join(outputDir, '__wcc-signals.js');
       const runtimeRelPath = relative(outDir, signalsDest).replace(/\\/g, '/');
       const runtimeImportPath = runtimeRelPath.startsWith('.') ? runtimeRelPath : './' + runtimeRelPath;
 
-      const output = await compile(file, { runtimeImportPath });
+      const { code, usesSharedRuntime } = await compile(file, {
+        standalone: config.standalone,
+        runtimeImportPath,
+      });
+
+      if (usesSharedRuntime) needsSharedRuntime = true;
+
       if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
-      writeFileSync(outPath, output);
+      writeFileSync(outPath, code);
     } catch (err) {
       console.error(`Error compiling ${file}: ${err.message}`);
       errors++;
     }
+  }
+
+  // Generate shared runtime ONLY if needed
+  if (needsSharedRuntime) {
+    const { reactiveRuntime } = await import('../lib/reactive-runtime.js');
+    const signalsContent = reactiveRuntime.trim() + '\nexport { __signal, __computed, __effect, __batch, __untrack };\n';
+    const signalsDest = join(outputDir, '__wcc-signals.js');
+    writeFileSync(signalsDest, signalsContent);
   }
 
   // Copy wcc-runtime.js to output directory
@@ -87,11 +98,30 @@ async function main() {
       if (filename.includes('.test.')) return;
       const filePath = resolve(inputDir, filename);
       try {
-        const output = await compile(filePath);
-        const outPath = resolve(outputDir, filename.replace(/\.ts$/, '.js').replace(/\.wcc$/, '.js'));
+        const relPath = filename;
+        const outPath = resolve(outputDir, relPath.replace(/\.ts$/, '.js').replace(/\.wcc$/, '.js'));
         const outDir = dirname(outPath);
+
+        // Calculate runtimeImportPath for this file
+        const signalsDest = join(outputDir, '__wcc-signals.js');
+        const runtimeRelPath = relative(outDir, signalsDest).replace(/\\/g, '/');
+        const runtimeImportPath = runtimeRelPath.startsWith('.') ? runtimeRelPath : './' + runtimeRelPath;
+
+        const { code, usesSharedRuntime } = await compile(filePath, {
+          standalone: config.standalone,
+          runtimeImportPath,
+        });
+
         if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
-        writeFileSync(outPath, output);
+        writeFileSync(outPath, code);
+
+        // If this component uses shared runtime and the file doesn't exist yet, generate it
+        if (usesSharedRuntime && !existsSync(signalsDest)) {
+          const { reactiveRuntime } = await import('../lib/reactive-runtime.js');
+          const signalsContent = reactiveRuntime.trim() + '\nexport { __signal, __computed, __effect, __batch, __untrack };\n';
+          writeFileSync(signalsDest, signalsContent);
+        }
+
         console.log(`Compiled: ${filename}`);
       } catch (err) {
         console.error(`Error compiling ${filename}: ${err.message}`);
