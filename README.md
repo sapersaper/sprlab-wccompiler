@@ -95,6 +95,8 @@ count()                        // read → 0
 count.set(5)                   // write → 5
 ```
 
+> **Note:** `.set()` is the public API for writing signals. The compiled output uses direct invocation (`count(5)`) as an internal optimization — both forms are equivalent, but `.set()` is the recommended way to write signals in your source code.
+
 ### Computed
 
 ```js
@@ -313,6 +315,36 @@ Consumer (receives data via template props):
 </wcc-card>
 ```
 
+## Nested Components
+
+Components can use other components in their templates. Import the child `.wcc` file and use its tag in the template:
+
+```html
+<script>
+import { defineComponent, signal } from 'wcc'
+import './wcc-badge.wcc'
+
+export default defineComponent({ tag: 'wcc-profile' })
+
+const count = signal(0)
+
+function increment() {
+  count.set(count() + 1)
+}
+</script>
+
+<template>
+<div class="profile">
+  <wcc-badge :count="count()" @click="increment"></wcc-badge>
+</div>
+</template>
+```
+
+- **Manual import**: `import './wcc-child.wcc'` — the compiler registers the child component
+- **Auto-detect**: If a custom element tag in the template matches a `.wcc` file in the same directory, it's auto-imported
+- **Reactive props**: Use `:prop="expr"` to pass reactive data down — updates automatically when the expression changes
+- **Event listening**: Use `@event="handler"` to listen to custom events emitted by the child
+
 ## Lifecycle Hooks
 
 ```js
@@ -436,6 +468,23 @@ export default {
 
 - `standalone: false` (default) — Components import the runtime from a shared `__wcc-signals.js` file. Smaller per-component size when using multiple components.
 - `standalone: true` — Each component includes the full reactive runtime inline. Zero external dependencies per component.
+
+**Output difference:**
+
+```
+Default (false):   component.js → imports __wcc-signals.js
+Standalone (true): component.js → runtime inlined, zero imports
+```
+
+**When to use standalone:**
+- Publishing components as npm packages
+- Embedding widgets in third-party sites
+- CDN distribution (`<script src="component.js">`)
+- Micro-frontends where you don't control the host
+
+**When NOT to use standalone:**
+- Apps with multiple components (runtime would be duplicated in each)
+- Internal projects where you control the build
 
 #### Per-Component Override
 
