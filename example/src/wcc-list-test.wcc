@@ -1,0 +1,49 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-list-test',
+})
+
+const items = signal([
+  { id: 1, name: 'Apple', done: false },
+  { id: 2, name: 'Banana', done: true },
+  { id: 3, name: 'Cherry', done: false }
+])
+
+const newItem = signal('')
+let nextId = 4
+
+function addItem() {
+  if (!newItem()) return
+  items.set([...items(), { id: nextId++, name: newItem(), done: false }])
+  newItem.set('')
+}
+
+function removeItem(item) {
+  items.set(items().filter(i => i.id !== item.id))
+}
+
+function toggleItem(item) {
+  items.set(items().map(i => i.id === item.id ? { ...i, done: !i.done } : i))
+}
+</script>
+
+<template>
+<div class="list-test">
+  <h3>List Test</h3>
+  <p>Total: {{items().length}} items</p>
+  <ul>
+    <li each="(item, index) in items()">
+      <span class="index">{{index}}.</span>
+      <span class="name">{{item.name}}</span>
+      <button @click="toggleItem(item)">{{item.done ? '✅' : '⬜'}}</button>
+      <button @click="removeItem(item)">🗑️</button>
+    </li>
+  </ul>
+  <div class="add-form">
+    <input type="text" model="newItem" placeholder="New item...">
+    <button @click="addItem">Add</button>
+  </div>
+</div>
+</template>

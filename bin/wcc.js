@@ -19,7 +19,7 @@ async function build(config, cwd) {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
   const { reactiveRuntime } = await import('../lib/reactive-runtime.js');
-  const signalsContent = reactiveRuntime.trim().replace(/^/gm, '') + '\nexport { __signal, __computed, __effect, __batch };\n';
+  const signalsContent = reactiveRuntime.trim().replace(/^/gm, '') + '\nexport { __signal, __computed, __effect, __batch, __untrack };\n';
   const signalsDest = join(outputDir, '__wcc-signals.js');
   writeFileSync(signalsDest, signalsContent);
 
