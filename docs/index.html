@@ -268,7 +268,7 @@ function increment() {
       <table class="api-table">
         <thead><tr><th>Function</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code>signal(value)</code></td><td>Create a reactive variable. Read: <code>x()</code>, Write: <code>x.set(val)</code></td></tr>
+          <tr><td><code>signal(value)</code></td><td>Create a reactive variable. Read: <code>x()</code>, Write: <code>x.set(val)</code>. Note: <code>x(val)</code> also works (used internally by compiled output) but <code>.set()</code> is the recommended API.</td></tr>
           <tr><td><code>computed(() => expr)</code></td><td>Derived value with caching and auto-invalidation</td></tr>
           <tr><td><code>effect(() => { ... })</code></td><td>Side effect that re-runs when dependencies change. Supports cleanup via return function.</td></tr>
           <tr><td><code>batch(() => { ... })</code></td><td>Group multiple signal writes — effects flush once at the end</td></tr>
@@ -350,7 +350,8 @@ function increment() {
       <a href="https://github.com/sapersaper/sprlab-wccompiler">GitHub</a> ·
       <a href="https://www.npmjs.com/package/@sprlab/wccompiler">npm</a> ·
       <a href="https://marketplace.visualstudio.com/items?itemName=sprlab.wccompiler-language-support">VS Code Extension</a> ·
-      <a href="https://github.com/sapersaper/sprlab-wccompiler/blob/main/CONTRIBUTING.md">Contributing</a>
+      <a href="https://github.com/sapersaper/sprlab-wccompiler/blob/main/CONTRIBUTING.md">Contributing</a> ·
+      <a href="https://github.com/sapersaper/sprlab-wccompiler/blob/main/README.md">Full Docs</a>
     </p>
   </footer>
 </body>
