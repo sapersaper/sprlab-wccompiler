@@ -1,6 +1,6 @@
 {
   "name": "@sprlab/wccompiler",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Zero-runtime compiler that transforms .wcc single-file components into native web components with signals-based reactivity",
   "type": "module",
   "exports": {
@@ -41,20 +41,32 @@
     "access": "public"
   },
   "dependencies": {
+    "@babel/generator": "^7.27.0",
+    "@babel/parser": "^7.27.0",
+    "@babel/traverse": "^7.27.0",
+    "@babel/types": "^7.27.0",
     "esbuild": "^0.27.0",
     "linkedom": "^0.18.12"
   },
   "peerDependencies": {
+    "@angular/core": ">=14.0.0",
     "@vitejs/plugin-vue": ">=4.0.0",
-    "vue": ">=3.0.0",
     "react": ">=18.0.0",
-    "@angular/core": ">=14.0.0"
+    "vue": ">=3.0.0"
   },
   "peerDependenciesMeta": {
-    "@vitejs/plugin-vue": { "optional": true },
-    "vue": { "optional": true },
-    "react": { "optional": true },
-    "@angular/core": { "optional": true }
+    "@angular/core": {
+      "optional": true
+    },
+    "@vitejs/plugin-vue": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "fast-check": "^4.1.1",
