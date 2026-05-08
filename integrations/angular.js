@@ -30,9 +30,23 @@
  * export class AppModule {}
  * ```
  *
+ * @example Two-way binding with defineModel
+ * ```ts
+ * // The adapter translates wcc:model events to Angular's propNameChange convention.
+ * // Import the integration once in your main.ts or app module:
+ * import '@sprlab/wccompiler/integrations/angular'
+ *
+ * // Then use Angular's banana-in-a-box syntax:
+ * // <wcc-input [(value)]="myValue"></wcc-input>
+ * ```
+ *
  * That's it — one line of config. WCC components work as native custom elements
  * in Angular without any additional wrapper or helper.
  */
+
+// Side-effect: registers document-level wcc:model → propNameChange translation
+// This enables [(propName)] two-way binding on WCC components in Angular templates.
+import '../adapters/angular.js'
 
 /**
  * Configuration instructions for Angular projects using WCC components.

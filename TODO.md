@@ -15,6 +15,13 @@
 
 - [ ]* ⏫ Semantic tokens para colorear props, signals y computeds en template
 
+## interop / compatibilidad (baja prioridad)
+
+- [ ]* SSR (Server-Side Rendering) — ¿los WCC components funcionan con Next.js, Nuxt, Angular Universal? Custom elements sin Shadow DOM suelen tener issues en SSR.
+- [ ]* Lazy loading — ¿se puede importar un WCC component dinámicamente (`import()`) y que funcione cuando se renderiza?
+- [ ]* Form participation — ¿un WCC input participa en un `<form>` nativo? (submit, validation, FormData). Requiere `ElementInternals` y `formAssociated`.
+- [ ]* Accessibility (a11y) — ¿los WCC components exponen roles ARIA correctamente a los frameworks?
+
 ---
 
 `*` = opcional / futuro

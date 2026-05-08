@@ -1,11 +1,16 @@
 /**
  * Vue Vite plugin for WCC custom elements.
  * Configures isCustomElement to recognize WCC component tags.
+ * Also re-exports the defineModel adapter for v-model support.
  *
  * @module @sprlab/wccompiler/integrations/vue
  */
 
 import vue from '@vitejs/plugin-vue'
+
+// Side-effect: registers document-level wcc:model → update:propName translation
+// This enables v-model:propName on WCC components in Vue templates.
+import '../adapters/vue.js'
 
 /**
  * @typedef {Object} WccVuePluginOptions

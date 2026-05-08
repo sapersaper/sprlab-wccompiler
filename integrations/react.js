@@ -13,9 +13,14 @@
  *   // Form 2: Let the hook create the ref
  *   const ref = useWccEvent('change', (e) => console.log(e.detail))
  *   <wcc-counter ref={ref}></wcc-counter>
+ *
+ *   // Form 3: Two-way binding with defineModel
+ *   const [value, setValue] = useState('')
+ *   const ref = useWccModel('value', value, setValue)
+ *   <wcc-input ref={ref}></wcc-input>
  */
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useCallback } from 'react'
 
 /**
  * Hook that attaches a CustomEvent listener to a DOM element via ref.
@@ -49,4 +54,63 @@ export function useWccEvent(refOrEventName, eventNameOrHandler, handler) {
 
   // Only return ref if we created it (Form 2)
   if (!isRefForm) return elementRef
+}
+
+
+/**
+ * Hook for two-way binding with WCC defineModel props.
+ *
+ * Listens for `wcc:model` events on the element and calls the setter
+ * when the matching prop changes internally. Also syncs the React state
+ * to the element's attribute when the value changes externally.
+ *
+ * @param {string} propName - The model prop name (e.g., 'value', 'count')
+ * @param {*} value - Current React state value
+ * @param {(newValue: *) => void} setValue - React state setter
+ * @param {import('react').RefObject<HTMLElement>} [existingRef] - Optional existing ref
+ * @returns {import('react').RefObject<HTMLElement>} Ref to attach to the WCC element
+ *
+ * @example
+ * ```jsx
+ * function App() {
+ *   const [text, setText] = useState('')
+ *   const inputRef = useWccModel('value', text, setText)
+ *   return <wcc-input ref={inputRef}></wcc-input>
+ * }
+ * ```
+ */
+export function useWccModel(propName, value, setValue, existingRef) {
+  const internalRef = useRef(null)
+  const elementRef = existingRef || internalRef
+
+  const setValueRef = useRef(setValue)
+  setValueRef.current = setValue
+
+  // Listen for wcc:model events from the component (child → parent)
+  useEffect(() => {
+    const el = elementRef.current
+    if (!el) return
+
+    const listener = (e) => {
+      if (e.detail && e.detail.prop === propName) {
+        setValueRef.current(e.detail.value)
+      }
+    }
+
+    el.addEventListener('wcc:model', listener)
+    return () => el.removeEventListener('wcc:model', listener)
+  }, [propName])
+
+  // Sync React state to the element's attribute (parent → child)
+  useEffect(() => {
+    const el = elementRef.current
+    if (!el) return
+    if (value != null) {
+      el.setAttribute(propName, String(value))
+    } else {
+      el.removeAttribute(propName)
+    }
+  }, [propName, value])
+
+  return elementRef
 }

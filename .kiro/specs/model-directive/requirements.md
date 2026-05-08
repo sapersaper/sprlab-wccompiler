@@ -10,6 +10,10 @@
 6. Como desarrollador, quiero errores si model bindea a un prop, computed, o constante (read-only).
 7. Como desarrollador, quiero errores si model referencia una variable no declarada.
 
+## Relación con otros specs
+
+> **Nota:** Este spec cubre exclusivamente `model="signal"` en elementos HTML nativos de formulario. La funcionalidad de props bidireccionales en componentes (`defineModel()`) y el binding WCC-to-WCC (`model:propName="signal"`) están documentados en el spec separado `define-model`. Ambos coexisten sin conflicto — ver Requirement 10 en `define-model` para los detalles de interacción.
+
 ## Restricciones
 
 - Solo válido en `<input>`, `<textarea>`, `<select>`
