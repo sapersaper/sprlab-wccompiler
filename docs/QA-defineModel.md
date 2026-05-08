@@ -109,24 +109,39 @@ const searchText = ref('')
 </script>
 ```
 
-### 2.3 Usage — Multiple props (v-wcc-model)
+### 2.3 Usage — Multiple props (v-model:propName with nodeTransform)
 
-For additional model props beyond the primary `modelValue`, use the `v-wcc-model` directive:
+With `wccVuePlugin()` in vite.config.js, `v-model:propName` works natively on WCC elements:
 
 ```vue
 <template>
   <wcc-form
     v-model="mainValue"
-    v-wcc-model:count="countRef"
-    v-wcc-model:title="titleRef"
+    v-model:count="countRef"
+    v-model:title="titleRef"
   ></wcc-form>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+const mainValue = ref('')
+const countRef = ref(0)
+const titleRef = ref('untitled')
+</script>
+```
+
+Fallback (without wccVuePlugin nodeTransform):
+
+```vue
+<template>
+  <wcc-form v-wcc-model:count="countRef" v-wcc-model:title="titleRef"></wcc-form>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { vWccModel } from '@sprlab/wccompiler/adapters/vue'
 
-const mainValue = ref('')
 const countRef = ref(0)
 const titleRef = ref('untitled')
 </script>
@@ -160,9 +175,9 @@ const titleRef = ref('untitled')
 
 ### 2.6 Known Limitations
 
-- `v-model:propName` (with argument) does NOT work on custom elements in Vue — this is a Vue limitation, not a WCC bug
-- Use `v-wcc-model:propName` instead for additional props
-- The primary prop should be named `modelValue` for `v-model` compatibility
+- The primary prop should be named `modelValue` for `v-model` (without argument) compatibility
+- `v-wcc-model` directive is a fallback — prefer `v-model:propName` with `wccVuePlugin()` nodeTransform
+- Vue sets camelCase attributes (`modelValue`), WCC observes both camelCase and kebab-case (`model-value`)
 
 ---
 
