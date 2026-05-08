@@ -73,13 +73,13 @@ export default {
 ```
 
 ```js
-// main.js — Browser context (adapter + directive)
+// main.js — Browser context (adapter + directive, ONE line)
 import { createApp } from 'vue'
-import { vWccModel } from '@sprlab/wccompiler/adapters/vue'
+import { wccVue } from '@sprlab/wccompiler/adapters/vue'
 import App from './App.vue'
 
 const app = createApp(App)
-app.directive('wcc-model', vWccModel)  // Register globally for v-wcc-model
+app.use(wccVue)  // Registers adapter + v-wcc-model directive globally
 app.mount('#app')
 ```
 
