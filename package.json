@@ -1,13 +1,15 @@
 {
   "name": "@sprlab/wccompiler",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "description": "Zero-runtime compiler that transforms .wcc single-file components into native web components with signals-based reactivity",
   "type": "module",
   "exports": {
     ".": "./lib/compiler.js",
     "./integrations/vue": "./integrations/vue.js",
     "./integrations/react": "./integrations/react.js",
-    "./integrations/angular": "./integrations/angular.js"
+    "./integrations/angular": "./integrations/angular.js",
+    "./adapters/vue": "./adapters/vue.js",
+    "./adapters/angular": "./adapters/angular.js"
   },
   "bin": {
     "wcc": "./bin/wcc.js"
@@ -17,6 +19,7 @@
     "lib/*.js",
     "!lib/*.test.js",
     "integrations/",
+    "adapters/",
     "types/",
     "README.md"
   ],
