@@ -1,51 +1,32 @@
 /**
- * Angular adapter for WCC defineModel — enables [(propName)] two-way binding.
+ * Angular adapter for WCC defineModel (OPTIONAL).
  *
- * Import this ONCE in your Angular app's main.ts:
- *   import '@sprlab/wccompiler/adapters/angular'
+ * The WCC component already emits `propNameChange` directly from _modelSet,
+ * so Angular's [(prop)] banana-box syntax works WITHOUT this adapter.
  *
- * What it does:
- * 1. Translates wcc:model events → propNameChange (enables [(prop)] syntax)
- * 2. Uses queueMicrotask to defer event emission outside Angular's render cycle
- *    (prevents NG0600: "Writing to signals is not allowed while Angular renders")
+ * This file is kept for:
+ * 1. Documentation of the Angular integration approach
+ * 2. The ControlValueAccessor guide for ngModel support
+ *
+ * Setup (Angular):
+ *   // No adapter import needed! Just use CUSTOM_ELEMENTS_SCHEMA:
+ *   import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+ *   @Component({ schemas: [CUSTOM_ELEMENTS_SCHEMA] })
  *
  * Usage:
- *   <!-- In Angular template (with CUSTOM_ELEMENTS_SCHEMA) -->
  *   <wcc-input [(value)]="text"></wcc-input>
  *   <wcc-counter [(count)]="myCount"></wcc-counter>
  *
- * For ngModel support, you need a ControlValueAccessor.
- * See the exported WccValueAccessor class below.
+ * How it works:
+ *   Angular's [(prop)] expands to [prop]="value" (propChange)="value = $event.detail"
+ *   WCC _modelSet emits propNameChange CustomEvent with detail=newValue
+ *   Angular picks it up automatically — no adapter needed.
  *
  * @module @sprlab/wccompiler/adapters/angular
  */
 
-// ── Document-level adapter: wcc:model → propNameChange ──────────────
-// Angular's [(prop)] syntax listens for `propChange` events.
-// Uses queueMicrotask to defer the re-dispatch outside Angular's synchronous
-// render cycle, preventing NG0600 errors when Angular is mid-render.
-
-if (typeof document !== 'undefined') {
-  document.addEventListener('wcc:model', (e) => {
-    const { prop, value } = e.detail;
-    const target = e.target;
-
-    // Defer to next microtask to avoid NG0600
-    // (Angular doesn't allow signal writes during render)
-    queueMicrotask(() => {
-      target.dispatchEvent(new CustomEvent(`${prop}Change`, {
-        detail: value,
-        bubbles: true
-      }));
-    });
-  });
-}
-
 // ── ControlValueAccessor for ngModel/ReactiveForms ──────────────────
 // Angular's ngModel requires a ControlValueAccessor to bridge form controls.
-// Since this is a JS file (not TypeScript with decorators), we export the
-// implementation as a guide. Users need to create a TypeScript directive.
-//
 // Copy this into your Angular project as a .ts file:
 //
 // ```ts
@@ -67,7 +48,6 @@ if (typeof document !== 'undefined') {
 //   constructor(private el: ElementRef<HTMLElement>) {}
 //
 //   writeValue(value: any): void {
-//     // Parent → Child: set attribute
 //     if (value != null) {
 //       this.el.nativeElement.setAttribute('value', String(value));
 //     } else {
@@ -96,9 +76,3 @@ if (typeof document !== 'undefined') {
 //   }
 // }
 // ```
-//
-// Usage with ngModel:
-//   <wcc-input wccModel [(ngModel)]="text"></wcc-input>
-//
-// Usage with Reactive Forms:
-//   <wcc-input wccModel [formControl]="myControl"></wcc-input>

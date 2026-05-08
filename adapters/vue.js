@@ -1,69 +1,30 @@
 /**
- * Vue adapter for WCC defineModel — enables v-model and multi-model binding.
+ * Vue adapter for WCC defineModel (OPTIONAL — only needed without wccVuePlugin).
  *
- * Setup (ONE line in main.js):
+ * If you use wccVuePlugin() in vite.config.js, you DON'T need this adapter.
+ * The plugin handles v-model:propName transformation at build time.
+ *
+ * This adapter is for non-Vite setups (webpack, etc.) where you can't use
+ * the Vite pre-transform plugin. It provides a Vue directive for two-way binding.
+ *
+ * Setup:
  *   import { createApp } from 'vue'
  *   import { wccVue } from '@sprlab/wccompiler/adapters/vue'
+ *   app.use(wccVue)
  *
- *   const app = createApp(App)
- *   app.use(wccVue)  // registers adapter + v-wcc-model directive globally
- *   app.mount('#app')
- *
- * IMPORTANT: Also use wccVuePlugin() in vite.config.js to enable v-model:propName
- * on custom elements (via AST nodeTransform):
- *   import { wccVuePlugin } from '@sprlab/wccompiler/integrations/vue'
- *   export default { plugins: [wccVuePlugin()] }
- *
- * With both configured, you can use:
- *   <!-- Native v-model:propName (preferred, requires wccVuePlugin) -->
- *   <wcc-input v-model:value="text"></wcc-input>
- *   <wcc-form v-model:count="countRef" v-model:title="titleRef"></wcc-form>
- *
- *   <!-- v-model without argument (uses modelValue convention) -->
- *   <wcc-input v-model="text"></wcc-input>
- *
- *   <!-- Fallback directive (for non-Vite setups without nodeTransform) -->
+ * Usage:
  *   <wcc-input v-wcc-model:value="textRef"></wcc-input>
+ *   <wcc-form v-wcc-model:count="countRef"></wcc-form>
  *
  * @module @sprlab/wccompiler/adapters/vue
  */
 
-// ── Document-level adapter: wcc:model → update:propName ─────────────
-// This enables Vue's native v-model on WCC custom elements.
-// Vue v-model on custom elements listens for `update:modelValue` by default.
-// The nodeTransform in wccVuePlugin makes v-model:propName listen for `update:propName`.
-//
-// IMPORTANT: We listen in CAPTURE phase so the update:propName event is dispatched
-// BEFORE Vue's own bubble-phase listeners process the element. This ensures Vue
-// picks up the translated event synchronously.
-
-if (typeof document !== 'undefined') {
-  document.addEventListener('wcc:model', (e) => {
-    const { prop, value } = e.detail;
-    // Dispatch update:propName synchronously on the target element.
-    // bubbles:false because Vue listens directly on the element via addEventListener.
-    e.target.dispatchEvent(new CustomEvent(`update:${prop}`, {
-      detail: value,
-      bubbles: false
-    }));
-  }, true); // ← capture phase
-}
-
 // ── Vue directive: v-wcc-model ──────────────────────────────────────
-// Fallback for non-Vite setups. If using wccVuePlugin(), prefer v-model:propName instead.
-//
-// Usage:
-//   <wcc-input v-wcc-model:value="textRef"></wcc-input>
-//
-// The bound value MUST be a Vue ref (or reactive property).
-// The directive writes directly to ref.value for WCC→Vue updates.
+// Fallback for non-Vite setups. Listens for propName-changed events directly.
 
 /**
  * Vue custom directive for two-way binding with WCC defineModel props.
- * This is a FALLBACK — prefer v-model:propName with wccVuePlugin() nodeTransform.
- *
- * @example
- * <wcc-counter v-wcc-model:count="myCountRef"></wcc-counter>
+ * Listens for `propName-changed` CustomEvent (emitted by WCC _modelSet).
  */
 export const vWccModel = {
   mounted(el, binding) {
@@ -74,62 +35,41 @@ export const vWccModel = {
     }
 
     // Set initial value (parent → child)
-    // Vue sets camelCase attributes, so set both camelCase and kebab-case
     if (binding.value != null) {
       el.setAttribute(propName, String(binding.value));
     }
 
-    // Listen for child → parent changes
-    const wccHandler = (e) => {
-      if (e.detail && e.detail.prop === propName) {
-        const newValue = e.detail.value;
-
-        // Try to update the Vue ref directly
-        // In Vue 3, if the binding expression is a ref, binding.value is the ref's current value
-        // We need to find the ref on the component instance and write to it
-        const instance = binding.instance;
-        if (instance) {
-          // Access the setup state to find the ref
-          const setupState = instance.$.setupState;
-          // The binding expression is stored in the directive's internal data
-          // In Vue 3, we can use the dir's exp to find the variable name
-          // Fallback: emit a custom event that a parent @update handler can catch
-          const refName = binding.dir?.__wccRefName?.[el]?.[propName];
-          if (refName && setupState[refName] !== undefined) {
-            // Direct ref write
-            if (setupState[refName]?.value !== undefined) {
-              setupState[refName].value = newValue;
+    // Listen for propName-changed (WCC → Vue)
+    const kebabName = propName.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+    const handler = (e) => {
+      // Try to update the Vue ref via setupState
+      const instance = binding.instance;
+      if (instance) {
+        const setupState = instance.$.setupState;
+        // Find the ref that matches the current binding value
+        for (const key of Object.keys(setupState)) {
+          const val = setupState[key];
+          if (val === binding.value || val?.value === binding.value) {
+            if (val?.value !== undefined) {
+              val.value = e.detail;
             } else {
-              setupState[refName] = newValue;
+              setupState[key] = e.detail;
             }
-          } else {
-            // Fallback: try to find by matching current value
-            for (const key of Object.keys(setupState)) {
-              const val = setupState[key];
-              if (val?.value === binding.value || val === binding.value) {
-                if (val?.value !== undefined) {
-                  val.value = newValue;
-                } else {
-                  setupState[key] = newValue;
-                }
-                break;
-              }
-            }
+            break;
           }
         }
       }
     };
 
-    el.addEventListener('wcc:model', wccHandler);
+    el.addEventListener(`${kebabName}-changed`, handler);
     el.__wccModelHandlers = el.__wccModelHandlers || {};
-    el.__wccModelHandlers[propName] = wccHandler;
+    el.__wccModelHandlers[propName] = { handler, eventName: `${kebabName}-changed` };
   },
 
   updated(el, binding) {
     const propName = binding.arg;
     if (!propName) return;
 
-    // Sync parent → child on updates
     if (binding.value != null) {
       el.setAttribute(propName, String(binding.value));
     } else {
@@ -141,27 +81,19 @@ export const vWccModel = {
     const propName = binding.arg;
     if (!propName) return;
 
-    const handler = el.__wccModelHandlers?.[propName];
-    if (handler) {
-      el.removeEventListener('wcc:model', handler);
+    const entry = el.__wccModelHandlers?.[propName];
+    if (entry) {
+      el.removeEventListener(entry.eventName, entry.handler);
       delete el.__wccModelHandlers[propName];
     }
   }
 };
 
-// ── Vue Plugin: app.use(wccVue) ─────────────────────────────────────
+// ── Vue Plugin ──────────────────────────────────────────────────────
 
 /**
- * Vue plugin that registers the v-wcc-model directive globally.
- * The document-level adapter is registered on import (side-effect above).
- *
- * @example
- * import { createApp } from 'vue'
- * import { wccVue } from '@sprlab/wccompiler/adapters/vue'
- *
- * const app = createApp(App)
- * app.use(wccVue)
- * app.mount('#app')
+ * Vue plugin that registers v-wcc-model directive globally.
+ * Only needed if NOT using wccVuePlugin() in vite.config.js.
  */
 export const wccVue = {
   install(app) {

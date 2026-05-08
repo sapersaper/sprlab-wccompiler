@@ -23,3 +23,6 @@ example/.yarn/
 
 # VS Code extension packages
 *.vsix
+
+# Test environments
+test-vue/

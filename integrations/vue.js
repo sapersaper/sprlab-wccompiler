@@ -5,7 +5,7 @@
  * @module @sprlab/wccompiler/integrations/vue
  *
  * IMPORTANT: This file is for vite.config.js (Node.js context).
- * For browser-side model adapter, use app.use(wccVue) from '@sprlab/wccompiler/adapters/vue'.
+ * For browser-side, use app.use(wccVue) from '@sprlab/wccompiler/adapters/vue'.
  *
  * @example vite.config.js
  * ```js
@@ -13,17 +13,25 @@
  * export default { plugins: [wccVuePlugin()] }
  * ```
  *
- * @example main.js (browser — enables v-model event translation)
+ * @example main.js (optional — only needed if NOT using wccVuePlugin)
  * ```js
  * import { wccVue } from '@sprlab/wccompiler/adapters/vue'
  * app.use(wccVue)
  * ```
  *
- * With this plugin, v-model:propName works natively on WCC custom elements:
+ * With wccVuePlugin(), v-model:propName works natively on WCC custom elements:
  * ```vue
  * <wcc-input v-model="text"></wcc-input>
  * <wcc-form v-model:count="countRef" v-model:title="titleRef"></wcc-form>
  * ```
+ *
+ * How it works:
+ * The plugin runs BEFORE @vitejs/plugin-vue and rewrites the template string:
+ *   v-model:count="expr"  →  :count="expr" @count-changed="expr = $event.detail"
+ *   v-model="expr"        →  :model-value="expr" @model-value-changed="expr = $event.detail"
+ *
+ * The WCC component emits `propName-changed` CustomEvent with detail=value on internal writes.
+ * Vue compiles @propName-changed as a normal event listener (not filtered like update:*).
  */
 
 import vue from '@vitejs/plugin-vue'
@@ -34,115 +42,66 @@ import vue from '@vitejs/plugin-vue'
  */
 
 /**
- * AST node transform that enables v-model:propName on custom elements.
+ * Vite plugin that pre-transforms v-model:propName on custom elements
+ * before Vue's compiler processes the template.
  *
- * Vue's compiler normally doesn't support v-model with arguments on custom elements.
- * This transform intercepts v-model:arg directives on custom elements and rewrites them
- * to the equivalent :prop + @update:prop binding that Vue understands.
- *
- * Transforms:
- *   <wcc-input v-model:value="text" />
- * Into the equivalent of:
- *   <wcc-input :value="text" @update:value="text = $event" />
- *
- * @param {object} node - Vue compiler AST node
- * @param {object} context - Vue compiler transform context
- */
-function wccVModelTransform(node, context) {
-  // Only process element nodes (type 1 = ELEMENT)
-  if (node.type !== 1) return;
-
-  // Only process custom elements (tag contains a hyphen)
-  if (!node.tag.includes('-')) return;
-
-  // Find v-model directives with arguments
-  const newProps = [];
-  let modified = false;
-
-  for (const prop of node.props) {
-    // Check if this is a v-model directive (with or without argument)
-    if (
-      prop.type === 7 && // DIRECTIVE
-      prop.name === 'model'
-    ) {
-      // Determine prop name: explicit arg or default 'modelValue'
-      const propName = prop.arg ? prop.arg.content : 'modelValue';
-      const expr = prop.exp;
-
-      if (!expr) {
-        newProps.push(prop);
-        continue;
-      }
-
-      // Create the arg node (use existing or create for modelValue)
-      const argNode = prop.arg || {
-        type: 4, // SIMPLE_EXPRESSION
-        content: 'modelValue',
-        isStatic: true,
-        constType: 3,
-        loc: prop.loc
-      };
-
-      // Replace v-model:propName="expr" with:
-      // :propName="expr" (bind directive)
-      newProps.push({
-        type: 7, // DIRECTIVE
-        name: 'bind',
-        arg: argNode,
-        exp: expr,
-        modifiers: [],
-        loc: prop.loc
-      });
-
-      // @update:propName="$event => { expr = $event }" (on directive)
-      newProps.push({
-        type: 7, // DIRECTIVE
-        name: 'on',
-        arg: {
-          type: 4, // SIMPLE_EXPRESSION
-          content: `update:${propName}`,
-          isStatic: true,
-          constType: 3,
-          loc: prop.loc
-        },
-        exp: {
-          type: 4, // SIMPLE_EXPRESSION
-          content: `$event => { ${expr.content} = $event.detail ?? $event }`,
-          isStatic: false,
-          constType: 0,
-          loc: prop.loc
-        },
-        modifiers: [],
-        loc: prop.loc
-      });
-
-      modified = true;
-    } else {
-      newProps.push(prop);
-    }
-  }
-
-  if (modified) {
-    node.props = newProps;
-  }
-}
-
-/**
- * Creates a Vite plugin that configures Vue's template compiler
- * to recognize custom elements with the given prefix and enables
- * v-model:propName on those elements.
+ * This is necessary because Vue's compiler filters out `onUpdate:*` event listeners
+ * for custom elements (isModelListener check in patchProp). By rewriting to
+ * `@propName-changed`, we use an event name that Vue registers normally.
  *
  * @param {WccVuePluginOptions} [options]
- * @returns {import('vite').Plugin}
+ * @returns {import('vite').Plugin[]}
  */
 export function wccVuePlugin(options = {}) {
   const prefix = typeof options.prefix === 'string' ? options.prefix : 'wcc-'
-  return vue({
+
+  const preTransformPlugin = {
+    name: 'vite-plugin-wcc-vmodel',
+    enforce: 'pre',
+    transform(code, id) {
+      if (!id.endsWith('.vue')) return null
+
+      let result = code
+
+      // Transform v-model:propName="expr" on custom elements (tags with hyphens)
+      // → :propName="expr" @propName-changed="expr = $event.detail"
+      // Run in a loop to handle multiple v-model on the same element
+      let prev = ''
+      while (prev !== result) {
+        prev = result
+        result = result.replace(
+          /(<[\w]+-[\w-]*(?:\s[^>]*?)?)\bv-model:(\w+)="([^"]+)"/,
+          (match, prefix, prop, expr) => {
+            return `${prefix}:${prop}="${expr}" @${prop}-changed="${expr} = $event.detail"`
+          }
+        )
+      }
+
+      // Transform v-model="expr" (without argument) on custom elements
+      // → :model-value="expr" @model-value-changed="expr = $event.detail"
+      prev = ''
+      while (prev !== result) {
+        prev = result
+        result = result.replace(
+          /(<[\w]+-[\w-]*(?:\s[^>]*?)?)\bv-model="([^"]+)"/,
+          (match, prefix, expr) => {
+            return `${prefix}:model-value="${expr}" @model-value-changed="${expr} = $event.detail"`
+          }
+        )
+      }
+
+      if (result !== code) return result
+      return null
+    }
+  }
+
+  const vuePlugin = vue({
     template: {
       compilerOptions: {
-        isCustomElement: (tag) => tag.startsWith(prefix),
-        nodeTransforms: [wccVModelTransform]
+        isCustomElement: (tag) => tag.startsWith(prefix)
       }
     }
   })
+
+  return [preTransformPlugin, vuePlugin]
 }
