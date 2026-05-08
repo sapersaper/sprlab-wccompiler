@@ -95,27 +95,76 @@ export function wccVuePlugin(options = {}) {
       // → <div slot="name">content</div>
       // This prevents Vue from intercepting the slot syntax and erroring.
       // The WCC component's runtime slot parser detects slot="name" on regular elements.
+      //
+      // IMPORTANT: Only transform templates inside custom elements (tags with hyphens).
+      // This ensures we don't interfere with Vue's own slot/template handling on native elements.
 
-      // Handle <template #name>...</template> (shorthand)
+      // Helper: transform scoped slot content — escape {{prop}} → {%prop%} for declared props only
+      function transformScopedContent(content, propsExpr) {
+        const props = propsExpr.split(',').map(p => p.trim()).filter(Boolean)
+        let transformed = content
+        for (const prop of props) {
+          // Replace {{propName}} and {{ propName }} with {%propName%} / {% propName %}
+          transformed = transformed.replace(
+            new RegExp('\\{\\{(\\s*)' + prop + '(\\s*)\\}\\}', 'g'),
+            (m, ws1, ws2) => `{%${ws1}${prop}${ws2}%}`
+          )
+        }
+        return { transformed, props }
+      }
+
+      // Handle scoped slots: <template #name="{ prop1, prop2 }">...</template>
+      // → <div slot="name" slot-props="prop1, prop2">content with {%prop%}</div>
+      // Only inside custom elements (tag names with hyphens)
       prev = ''
       while (prev !== result) {
         prev = result
         result = result.replace(
-          /<template\s+#(\w+)>([\s\S]*?)<\/template>/,
-          (match, slotName, content) => {
-            return `<div slot="${slotName}">${content}</div>`
+          /(<[\w]+-[\w-]*[^>]*>)([\s\S]*?)<template\s+#(\w+)="\{\s*([^}]*)\s*\}">([\s\S]*?)<\/template>/,
+          (match, openTag, before, slotName, propsExpr, content) => {
+            const { transformed, props } = transformScopedContent(content, propsExpr)
+            return `${openTag}${before}<div slot="${slotName}" slot-props="${props.join(', ')}">${transformed}</div>`
           }
         )
       }
 
-      // Handle <template v-slot:name>...</template> (verbose)
+      // Handle scoped slots: <template v-slot:name="{ prop1, prop2 }">...</template>
+      // → <div slot="name" slot-props="prop1, prop2">content with {%prop%}</div>
+      // Only inside custom elements (tag names with hyphens)
       prev = ''
       while (prev !== result) {
         prev = result
         result = result.replace(
-          /<template\s+v-slot:(\w+)>([\s\S]*?)<\/template>/,
-          (match, slotName, content) => {
-            return `<div slot="${slotName}">${content}</div>`
+          /(<[\w]+-[\w-]*[^>]*>)([\s\S]*?)<template\s+v-slot:(\w+)="\{\s*([^}]*)\s*\}">([\s\S]*?)<\/template>/,
+          (match, openTag, before, slotName, propsExpr, content) => {
+            const { transformed, props } = transformScopedContent(content, propsExpr)
+            return `${openTag}${before}<div slot="${slotName}" slot-props="${props.join(', ')}">${transformed}</div>`
+          }
+        )
+      }
+
+      // Handle non-scoped <template #name>...</template> (shorthand)
+      // Only inside custom elements (tag names with hyphens)
+      prev = ''
+      while (prev !== result) {
+        prev = result
+        result = result.replace(
+          /(<[\w]+-[\w-]*[^>]*>)([\s\S]*?)<template\s+#(\w+)>([\s\S]*?)<\/template>/,
+          (match, openTag, before, slotName, content) => {
+            return `${openTag}${before}<div slot="${slotName}">${content}</div>`
+          }
+        )
+      }
+
+      // Handle non-scoped <template v-slot:name>...</template> (verbose)
+      // Only inside custom elements (tag names with hyphens)
+      prev = ''
+      while (prev !== result) {
+        prev = result
+        result = result.replace(
+          /(<[\w]+-[\w-]*[^>]*>)([\s\S]*?)<template\s+v-slot:(\w+)>([\s\S]*?)<\/template>/,
+          (match, openTag, before, slotName, content) => {
+            return `${openTag}${before}<div slot="${slotName}">${content}</div>`
           }
         )
       }

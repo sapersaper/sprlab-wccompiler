@@ -25,4 +25,4 @@ example/.yarn/
 *.vsix
 
 # Test environments
-test-vue/
+framework-testing/
