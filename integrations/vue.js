@@ -90,6 +90,36 @@ export function wccVuePlugin(options = {}) {
         )
       }
 
+      // ── Slot transforms ──
+      // Transform <template #name>content</template> inside custom elements
+      // → <div slot="name">content</div>
+      // This prevents Vue from intercepting the slot syntax and erroring.
+      // The WCC component's runtime slot parser detects slot="name" on regular elements.
+
+      // Handle <template #name>...</template> (shorthand)
+      prev = ''
+      while (prev !== result) {
+        prev = result
+        result = result.replace(
+          /<template\s+#(\w+)>([\s\S]*?)<\/template>/,
+          (match, slotName, content) => {
+            return `<div slot="${slotName}">${content}</div>`
+          }
+        )
+      }
+
+      // Handle <template v-slot:name>...</template> (verbose)
+      prev = ''
+      while (prev !== result) {
+        prev = result
+        result = result.replace(
+          /<template\s+v-slot:(\w+)>([\s\S]*?)<\/template>/,
+          (match, slotName, content) => {
+            return `<div slot="${slotName}">${content}</div>`
+          }
+        )
+      }
+
       if (result !== code) return result
       return null
     }
