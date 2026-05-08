@@ -60,13 +60,13 @@ function wccVModelTransform(node, context) {
   let modified = false;
 
   for (const prop of node.props) {
-    // Check if this is a v-model directive with an argument
+    // Check if this is a v-model directive (with or without argument)
     if (
       prop.type === 7 && // DIRECTIVE
-      prop.name === 'model' &&
-      prop.arg // has argument (v-model:name)
+      prop.name === 'model'
     ) {
-      const propName = prop.arg.content;
+      // Determine prop name: explicit arg or default 'modelValue'
+      const propName = prop.arg ? prop.arg.content : 'modelValue';
       const expr = prop.exp;
 
       if (!expr) {
@@ -74,12 +74,21 @@ function wccVModelTransform(node, context) {
         continue;
       }
 
+      // Create the arg node (use existing or create for modelValue)
+      const argNode = prop.arg || {
+        type: 4, // SIMPLE_EXPRESSION
+        content: 'modelValue',
+        isStatic: true,
+        constType: 3,
+        loc: prop.loc
+      };
+
       // Replace v-model:propName="expr" with:
       // :propName="expr" (bind directive)
       newProps.push({
         type: 7, // DIRECTIVE
         name: 'bind',
-        arg: prop.arg,
+        arg: argNode,
         exp: expr,
         modifiers: [],
         loc: prop.loc
@@ -98,7 +107,7 @@ function wccVModelTransform(node, context) {
         },
         exp: {
           type: 4, // SIMPLE_EXPRESSION
-          content: `$event => { ${expr.content} = $event }`,
+          content: `$event => { ${expr.content} = $event.detail ?? $event }`,
           isStatic: false,
           constType: 0,
           loc: prop.loc
