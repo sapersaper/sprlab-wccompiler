@@ -32,15 +32,21 @@
 // This enables Vue's native v-model on WCC custom elements.
 // Vue v-model on custom elements listens for `update:modelValue` by default.
 // The nodeTransform in wccVuePlugin makes v-model:propName listen for `update:propName`.
+//
+// IMPORTANT: We listen in CAPTURE phase so the update:propName event is dispatched
+// BEFORE Vue's own bubble-phase listeners process the element. This ensures Vue
+// picks up the translated event synchronously.
 
 if (typeof document !== 'undefined') {
   document.addEventListener('wcc:model', (e) => {
     const { prop, value } = e.detail;
+    // Dispatch update:propName synchronously on the target element.
+    // bubbles:false because Vue listens directly on the element via addEventListener.
     e.target.dispatchEvent(new CustomEvent(`update:${prop}`, {
       detail: value,
-      bubbles: true
+      bubbles: false
     }));
-  });
+  }, true); // ← capture phase
 }
 
 // ── Vue directive: v-wcc-model ──────────────────────────────────────
