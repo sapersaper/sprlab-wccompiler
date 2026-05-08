@@ -61,10 +61,10 @@ function onInput(e) {
 
 ## 2. Vue Integration
 
-### 2.1 Setup
+### 2.1 Setup (TWO separate imports)
 
 ```js
-// vite.config.js
+// vite.config.js — Node.js context (Vite plugin)
 import { wccVuePlugin } from '@sprlab/wccompiler/integrations/vue'
 
 export default {
@@ -72,14 +72,34 @@ export default {
 }
 ```
 
-The Vue integration automatically imports the `wcc:model → update:propName` adapter.
+```js
+// main.js — Browser context (adapter + directive)
+import { createApp } from 'vue'
+import { vWccModel } from '@sprlab/wccompiler/adapters/vue'
+import App from './App.vue'
 
-### 2.2 Usage
+const app = createApp(App)
+app.directive('wcc-model', vWccModel)  // Register globally for v-wcc-model
+app.mount('#app')
+```
+
+> **IMPORTANT**: Do NOT import `@sprlab/wccompiler/integrations/vue` in browser code.
+> It imports `@vitejs/plugin-vue` which causes `createRequire is not a function` errors.
+> The integration file is ONLY for `vite.config.js`.
+
+### 2.2 Usage — Single prop (v-model)
+
+For `v-model` to work, the WCC component must declare a prop named `modelValue`:
+
+```js
+// wcc-input.wcc
+const value = defineModel({ name: 'modelValue', default: '' })
+```
 
 ```vue
 <template>
-  <!-- v-model:propName works out of the box -->
-  <wcc-input v-model:value="searchText"></wcc-input>
+  <!-- Vue's native v-model on custom elements uses modelValue + update:modelValue -->
+  <wcc-input v-model="searchText"></wcc-input>
   <p>You typed: {{ searchText }}</p>
 </template>
 
@@ -89,22 +109,60 @@ const searchText = ref('')
 </script>
 ```
 
-### 2.3 Test Cases
+### 2.3 Usage — Multiple props (v-wcc-model)
+
+For additional model props beyond the primary `modelValue`, use the `v-wcc-model` directive:
+
+```vue
+<template>
+  <wcc-form
+    v-model="mainValue"
+    v-wcc-model:count="countRef"
+    v-wcc-model:title="titleRef"
+  ></wcc-form>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { vWccModel } from '@sprlab/wccompiler/adapters/vue'
+
+const mainValue = ref('')
+const countRef = ref(0)
+const titleRef = ref('untitled')
+</script>
+```
+
+### 2.4 Test Cases
 
 | # | Test | Expected |
 |---|------|----------|
-| 1 | `v-model:value` binds Vue ref to WCC prop | Initial value syncs to component |
-| 2 | User types in WCC input | Vue ref updates reactively |
-| 3 | Vue ref changes programmatically | WCC component attribute updates |
-| 4 | Multiple `v-model:propName` on same component | Each prop binds independently |
-| 5 | `v-model:propName` with `.number` modifier | Value coerced to number |
+| 1 | `v-model="ref"` with `modelValue` prop | Bidirectional: Vue ref ↔ WCC prop |
+| 2 | User triggers internal change in WCC | Vue ref updates (via `update:modelValue` event) |
+| 3 | Vue ref changes programmatically | WCC attribute updates |
+| 4 | `v-wcc-model:count="ref"` | Bidirectional: Vue ref ↔ WCC `count` prop |
+| 5 | Multiple `v-wcc-model` on same element | Each prop binds independently |
+| 6 | Component unmounts | Event listeners cleaned up (no memory leak) |
+| 7 | `import '@sprlab/wccompiler/adapters/vue'` in main.js | No `createRequire` error |
+| 8 | `v-model:propName` (Vue native on CE) | Does NOT work — this is expected, use `v-wcc-model:propName` instead |
 
-### 2.4 How It Works
+### 2.5 How It Works
 
-1. Vue sets the attribute on the WCC element (parent → child)
-2. WCC component emits `wcc:model` on internal write
-3. Adapter translates to `update:propName` CustomEvent
-4. Vue's `v-model` listens for `update:propName` and updates the ref
+1. **v-model** (single prop):
+   - Vue sets `modelValue` attribute on the WCC element
+   - WCC emits `wcc:model` with `{ prop: 'modelValue', value: x }`
+   - Adapter translates to `update:modelValue` CustomEvent
+   - Vue's `v-model` picks it up and updates the ref
+
+2. **v-wcc-model:propName** (multi-prop):
+   - Directive sets `propName` attribute on mount/update
+   - Directive listens for `wcc:model` events where `detail.prop === propName`
+   - On match, updates the bound Vue ref
+
+### 2.6 Known Limitations
+
+- `v-model:propName` (with argument) does NOT work on custom elements in Vue — this is a Vue limitation, not a WCC bug
+- Use `v-wcc-model:propName` instead for additional props
+- The primary prop should be named `modelValue` for `v-model` compatibility
 
 ---
 
@@ -113,51 +171,72 @@ const searchText = ref('')
 ### 3.1 Setup
 
 ```ts
-// main.ts or app.module.ts
-import '@sprlab/wccompiler/integrations/angular'
-
-// In your component or module:
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
-
-@Component({
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  // ...
-})
-```
-
-The Angular integration automatically imports the `wcc:model → propNameChange` adapter.
-
-### 3.2 Usage
-
-```html
-<!-- Angular banana-in-a-box syntax -->
-<wcc-input [(value)]="searchText"></wcc-input>
-<p>You typed: {{ searchText }}</p>
+// main.ts — import adapter ONCE (registers document-level listener)
+import '@sprlab/wccompiler/adapters/angular'
 ```
 
 ```ts
-@Component({ /* ... */ })
+// In your component or module:
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `<wcc-input [(value)]="text"></wcc-input>`
+})
 export class AppComponent {
-  searchText = ''
+  text = '';
 }
 ```
 
-### 3.3 Test Cases
+### 3.2 Usage — [(prop)] two-way binding
+
+```html
+<!-- Angular template -->
+<wcc-input [(value)]="text"></wcc-input>
+<wcc-counter [(count)]="myCount"></wcc-counter>
+```
+
+Angular's `[(prop)]` expands to `[prop]="value" (propChange)="value = $event.detail"`.
+The adapter translates `wcc:model` → `propChange` with `queueMicrotask` to avoid timing issues.
+
+### 3.3 Usage — ngModel (requires ControlValueAccessor)
+
+For `ngModel` or Reactive Forms, you need a `ControlValueAccessor` directive.
+See the implementation guide in `@sprlab/wccompiler/adapters/angular` (commented TypeScript code).
+
+```ts
+// Copy WccValueAccessor from adapters/angular.js into your project as .ts
+// Then use:
+<wcc-input wccModel [(ngModel)]="text"></wcc-input>
+```
+
+### 3.4 Test Cases
 
 | # | Test | Expected |
 |---|------|----------|
-| 1 | `[(value)]` binds Angular property to WCC prop | Initial value syncs to component |
-| 2 | User types in WCC input | Angular property updates |
-| 3 | Angular property changes | WCC component attribute updates |
-| 4 | Multiple `[(propName)]` on same component | Each prop binds independently |
-| 5 | One-way `[value]` still works (no Change event needed) | Attribute set, no two-way sync |
+| 1 | `[(value)]="text"` binds Angular property to WCC prop | Bidirectional |
+| 2 | User triggers internal change in WCC | Angular property updates (via `valueChange` event) |
+| 3 | Angular property changes | WCC attribute updates |
+| 4 | Multiple `[(prop)]` on same element | Each prop binds independently |
+| 5 | No NG0600 error during render | `queueMicrotask` defers the event |
+| 6 | One-way `[value]` still works | Attribute set, no two-way sync |
+| 7 | `ngModel` with WccValueAccessor | Works with FormsModule |
+| 8 | Without adapter imported | `wcc:model` still emits, but no `propChange` translation |
 
-### 3.4 How It Works
+### 3.5 How It Works
 
-1. Angular sets `[value]` attribute on the WCC element (parent → child)
-2. WCC component emits `wcc:model` on internal write
-3. Adapter translates to `valueChange` CustomEvent
-4. Angular's `()` binding listens for `valueChange` and updates the property
+1. Angular sets `[prop]` attribute on the WCC element
+2. WCC emits `wcc:model` with `{ prop, value, oldValue }`
+3. Adapter defers via `queueMicrotask` (avoids NG0600)
+4. Adapter dispatches `propChange` CustomEvent on the element
+5. Angular's `(propChange)` binding picks it up
+
+### 3.6 Known Limitations
+
+- `[(ngModel)]` requires a `ControlValueAccessor` — the adapter alone is not enough
+- The `queueMicrotask` defer means the update is asynchronous (one microtask later)
+- Angular content projection timing may still affect slots (separate issue)
 
 ---
 
@@ -190,18 +269,35 @@ function App() {
 }
 ```
 
-### 4.3 Test Cases
+### 4.3 Multiple props
+
+```jsx
+function App() {
+  const [value, setValue] = useState('')
+  const [count, setCount] = useState(0)
+
+  const ref1 = useWccModel('value', value, setValue)
+  // For multiple props on same element, use useWccEvent on a shared ref:
+  const sharedRef = useRef(null)
+  useWccModel('value', value, setValue, sharedRef)
+  useWccModel('count', count, setCount, sharedRef)
+
+  return <wcc-form ref={sharedRef}></wcc-form>
+}
+```
+
+### 4.4 Test Cases
 
 | # | Test | Expected |
 |---|------|----------|
 | 1 | `useWccModel` syncs initial state to attribute | Component receives initial value |
-| 2 | User types in WCC input | React state updates via `wcc:model` listener |
+| 2 | User triggers internal change in WCC | React state updates via `wcc:model` listener |
 | 3 | React state changes via `setText()` | WCC component attribute updates |
 | 4 | Multiple `useWccModel` hooks for different props | Each prop binds independently |
 | 5 | Component unmounts | Event listener is cleaned up (no memory leak) |
 | 6 | `null`/`undefined` value | Attribute is removed from element |
 
-### 4.4 How It Works
+### 4.5 How It Works
 
 1. `useWccModel` sets the attribute on the WCC element when React state changes (parent → child)
 2. `useWccModel` listens for `wcc:model` events and calls the setter when `detail.prop` matches (child → parent)
@@ -224,7 +320,7 @@ function App() {
 |---|------|----------|
 | 1 | Parent signal changes | Child attribute updates reactively |
 | 2 | Child emits `wcc:model` (internal write) | Parent signal updates |
-| 3 | Circular update prevention | No infinite loop (parent writes directly to signal, not via _modelSet) |
+| 3 | Circular update prevention | No infinite loop |
 | 4 | Multiple `model:propName` on same child | Each binding works independently |
 | 5 | `model:propName` on non-custom-element | Compile-time error `MODEL_PROP_INVALID_TARGET` |
 
@@ -243,7 +339,25 @@ function App() {
 
 ---
 
-## 7. Regression Checklist
+## 7. Convention: modelValue for v-model
+
+For Vue's native `v-model` to work on a WCC custom element, the component MUST declare a model prop named `modelValue`:
+
+```js
+const value = defineModel({ name: 'modelValue', default: '' })
+```
+
+This is because Vue's `v-model` on custom elements is hardcoded to:
+- Set attribute `model-value`
+- Listen for `update:modelValue` event
+
+The adapter translates `wcc:model { prop: 'modelValue' }` → `update:modelValue`, completing the circuit.
+
+For additional props, use `v-wcc-model:propName` (Vue) or `[(propName)]` (Angular).
+
+---
+
+## 8. Regression Checklist
 
 - [ ] Existing `model="signal"` on `<input>`, `<textarea>`, `<select>` still works
 - [ ] Checkbox `model="checked"` still binds to boolean
@@ -252,3 +366,5 @@ function App() {
 - [ ] `model="signal"` and `model:propName="signal"` coexist in same template
 - [ ] All existing tests in `lib/codegen.model.test.js` pass
 - [ ] All existing tests in `lib/compiler.model.test.js` pass
+- [ ] No `createRequire` error when importing adapter in browser
+- [ ] No NG0600 error in Angular during render cycle
