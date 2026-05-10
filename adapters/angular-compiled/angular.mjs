@@ -25,7 +25,7 @@
  *
  * @module @sprlab/wccompiler/adapters/angular
  */
-import { Directive, TemplateRef, ElementRef, ViewContainerRef, ChangeDetectorRef, ContentChildren, inject, Attribute, } from '@angular/core';
+import { Directive, TemplateRef, ElementRef, ViewContainerRef, ChangeDetectorRef, ContentChildren, Output, EventEmitter, inject, Attribute, Input, } from '@angular/core';
 import * as i0 from "@angular/core";
 // ─── WccSlotDef — Auxiliary Directive ───────────────────────────────────────
 /**
@@ -296,4 +296,152 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.2.21", ngImpo
         }], propDecorators: { slotDefs: [{
                 type: ContentChildren,
                 args: [WccSlotDef]
+            }] } });
+// ─── WccEvent — Event Binding Directive ─────────────────────────────────────
+/**
+ * Directive that bridges WCC custom element events to Angular output bindings.
+ *
+ * Problem: Angular's `(event-name)="handler($event)"` works on custom elements,
+ * but `$event` is the raw CustomEvent. The developer must write `$event.detail`
+ * to get the payload. This is verbose and error-prone.
+ *
+ * Solution: This directive listens for CustomEvents on the host element and
+ * re-emits them as Angular outputs with `$event = event.detail`.
+ *
+ * Usage:
+ *   <wcc-counter wccEvent="count-changed" (wccEmit)="onCount($event)"></wcc-counter>
+ *
+ * Or for multiple events, use WccEvents (plural) with a comma-separated list:
+ *   <wcc-counter wccEvents="count-changed, value-changed"
+ *     (countChanged)="onCount($event)"
+ *     (valueChanged)="onValue($event)">
+ *   </wcc-counter>
+ *
+ * The event name is converted from kebab-case to camelCase for the output:
+ *   'count-changed' → (countChanged)
+ *   'value-changed' → (valueChanged)
+ *   'change' → (change)
+ */
+/**
+ * Single-event directive: listens for one CustomEvent and emits its detail.
+ *
+ * Usage:
+ *   <wcc-counter wccEvent="count-changed" (wccEmit)="handler($event)"></wcc-counter>
+ */
+export class WccEvent {
+    wccEvent = '';
+    wccEmit = new EventEmitter();
+    el = inject(ElementRef);
+    listener = null;
+    ngOnInit() {
+        if (!this.wccEvent)
+            return;
+        this.listener = (e) => {
+            this.wccEmit.emit(e.detail);
+        };
+        this.el.nativeElement.addEventListener(this.wccEvent, this.listener);
+    }
+    ngOnDestroy() {
+        if (this.listener && this.wccEvent) {
+            this.el.nativeElement.removeEventListener(this.wccEvent, this.listener);
+        }
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "19.2.21", ngImport: i0, type: WccEvent, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "19.2.21", type: WccEvent, isStandalone: true, selector: "[wccEvent]", inputs: { wccEvent: "wccEvent" }, outputs: { wccEmit: "wccEmit" }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.2.21", ngImport: i0, type: WccEvent, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[wccEvent]',
+                    standalone: true,
+                }]
+        }], propDecorators: { wccEvent: [{
+                type: Input
+            }], wccEmit: [{
+                type: Output
+            }] } });
+/**
+ * Event bridging directive: allows using camelCase event bindings on WCC elements.
+ *
+ * Without this directive, Angular devs must use kebab-case event names:
+ *   <wcc-counter (count-changed)="onCount($event.detail)"></wcc-counter>
+ *
+ * With this directive, they can use camelCase (more Angular-idiomatic):
+ *   <wcc-counter wccEvents (countChanged)="onCount($event.detail)"></wcc-counter>
+ *
+ * The directive listens for kebab-case CustomEvents from the WCC component
+ * and re-dispatches them with camelCase names so Angular's event binding picks them up.
+ *
+ * Event name conversion:
+ *   'count-changed' → dispatches 'countChanged'
+ *   'value-changed' → dispatches 'valueChanged'
+ *   'change' → dispatches 'change' (no conversion needed)
+ *
+ * Event discovery:
+ *   - Auto: reads `static __events` from the WCC component class (set by codegen)
+ *   - Manual: pass an explicit array via [wccEvents]="['count-changed', 'value-changed']"
+ *
+ * Note: $event is still the CustomEvent — use $event.detail to get the payload.
+ * This is consistent with how Angular handles all DOM events.
+ */
+export class WccEvents {
+    /** Optional explicit list of kebab-case event names to bridge */
+    wccEvents = '';
+    el = inject(ElementRef);
+    listeners = [];
+    ngOnInit() {
+        const hostEl = this.el.nativeElement;
+        const tagName = hostEl.tagName.toLowerCase();
+        if (!tagName.includes('-'))
+            return;
+        this.setupEvents(hostEl, tagName);
+    }
+    async setupEvents(hostEl, tagName) {
+        let eventNames;
+        if (Array.isArray(this.wccEvents) && this.wccEvents.length > 0) {
+            eventNames = this.wccEvents;
+        }
+        else {
+            // Auto-discover from component metadata
+            await customElements.whenDefined(tagName);
+            const ctor = customElements.get(tagName);
+            eventNames = ctor?.__events || [];
+        }
+        if (eventNames.length === 0)
+            return;
+        for (const eventName of eventNames) {
+            // Only bridge events that have hyphens (already camelCase events don't need bridging)
+            if (!eventName.includes('-'))
+                continue;
+            const camelName = eventName.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+            const listener = (e) => {
+                // Re-dispatch with camelCase name — Angular's (camelName) binding will catch it
+                hostEl.dispatchEvent(new CustomEvent(camelName, {
+                    detail: e.detail,
+                    bubbles: false,
+                    cancelable: false,
+                }));
+            };
+            hostEl.addEventListener(eventName, listener);
+            this.listeners.push([eventName, listener]);
+        }
+    }
+    ngOnDestroy() {
+        const hostEl = this.el.nativeElement;
+        for (const [name, listener] of this.listeners) {
+            hostEl.removeEventListener(name, listener);
+        }
+        this.listeners = [];
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "19.2.21", ngImport: i0, type: WccEvents, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "19.2.21", type: WccEvents, isStandalone: true, selector: "[wccEvents]", inputs: { wccEvents: "wccEvents" }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.2.21", ngImport: i0, type: WccEvents, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[wccEvents]',
+                    standalone: true,
+                }]
+        }], propDecorators: { wccEvents: [{
+                type: Input
             }] } });
