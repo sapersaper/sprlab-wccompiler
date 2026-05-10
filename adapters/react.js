@@ -249,3 +249,87 @@ export function createWccWrapper(tagName, config = {}) {
   return WccWrapper
 }
 
+
+
+/**
+ * Creates a React wrapper from a WCC component class that has `static __meta`.
+ *
+ * Unlike `createWccWrapper` which requires manual event/model configuration,
+ * this function reads the metadata directly from the compiled component class.
+ *
+ * @param {Function} WccClass - The WCC custom element class (must have static __meta)
+ * @returns {import('react').ForwardRefExoticComponent} A React component
+ *
+ * @example
+ * import { wrapWccComponent } from '@sprlab/wccompiler/adapters/react'
+ * import '../wcc-components/wcc-counter.js'  // registers the custom element
+ *
+ * // Read metadata directly from the registered class
+ * const WccCounter = wrapWccComponent(customElements.get('wcc-counter'))
+ *
+ * // Use idiomatically — no manual config needed
+ * <WccCounter count={count} onCountChanged={setCount} onChange={handler} />
+ */
+export function wrapWccComponent(WccClass) {
+  const meta = WccClass?.__meta
+  if (!meta) {
+    throw new Error(`wrapWccComponent: class does not have static __meta. Is it a compiled WCC component?`)
+  }
+
+  return createWccWrapper(meta.tag, {
+    events: meta.events || [],
+    models: meta.models || [],
+  })
+}
+
+/**
+ * Creates React wrappers for all registered WCC custom elements matching a prefix.
+ *
+ * Scans the custom elements registry for components with `static __meta` and
+ * generates typed wrapper components for each one.
+ *
+ * @param {Object} [options]
+ * @param {string} [options.prefix='wcc-'] - Tag prefix to filter components
+ * @returns {Record<string, import('react').ForwardRefExoticComponent>} Map of PascalCase name → React component
+ *
+ * @example
+ * // In your app entry point, after importing all WCC components:
+ * import '../wcc-components/wcc-counter.js'
+ * import '../wcc-components/wcc-card.js'
+ * import { createWccWrappers } from '@sprlab/wccompiler/adapters/react'
+ *
+ * export const { WccCounter, WccCard } = createWccWrappers()
+ *
+ * // Then use anywhere:
+ * <WccCounter count={count} onCountChanged={setCount} />
+ * <WccCard><div slot="header">Title</div></WccCard>
+ */
+export function createWccWrappers(options = {}) {
+  const { prefix = 'wcc-' } = options
+  const wrappers = {}
+
+  // Note: customElements registry doesn't have a list API,
+  // so we need the component files to be imported first (which registers them).
+  // This function is meant to be called after all component imports.
+
+  // We'll use a Proxy that lazily creates wrappers on first access
+  return new Proxy(wrappers, {
+    get(target, prop) {
+      if (typeof prop !== 'string') return undefined
+      if (prop in target) return target[prop]
+
+      // Convert PascalCase to kebab-case: WccCounter → wcc-counter
+      const kebab = prop.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '')
+
+      // Check if it starts with the prefix
+      if (!kebab.startsWith(prefix)) return undefined
+
+      const ctor = customElements.get(kebab)
+      if (!ctor || !(ctor).__meta) return undefined
+
+      const wrapper = wrapWccComponent(ctor)
+      target[prop] = wrapper
+      return wrapper
+    }
+  })
+}
