@@ -66,7 +66,7 @@ export declare class WccSlotsDirective implements AfterContentInit, OnDestroy {
     private classifyAndInitSlots;
     /** Named Slot: immediate static rendering */
     private initNamedSlot;
-    /** Scoped Slot: async registration + reactive rendering */
+    /** Scoped Slot: registration + reactive rendering */
     private initScopedSlot;
     /**
      * Builds the Angular context for createEmbeddedView.

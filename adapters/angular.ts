@@ -123,9 +123,19 @@ export class WccSlotsDirective implements AfterContentInit, OnDestroy {
   // ─── Classification ─────────────────────────────────────────────────────
 
   /** Classifies slots using __scopedSlots from the host element and initializes them */
-  private classifyAndInitSlots(): void {
-    const element = this.el.nativeElement as any;
-    const scopedNames: string[] = element.__scopedSlots || [];
+  private async classifyAndInitSlots(): Promise<void> {
+    const hostEl = this.el.nativeElement;
+    const tagName = hostEl.tagName.toLowerCase();
+
+    // Wait for the custom element to be defined (ensures the class is upgraded)
+    await customElements.whenDefined(tagName);
+    if (this.destroyed) return;
+
+    const element = hostEl as any;
+    // Read from instance getter or static property
+    const scopedNames: string[] = element.__scopedSlots
+      || (element.constructor && element.constructor.__scopedSlots)
+      || [];
 
     for (const slotDef of this.slotDefs) {
       if (!slotDef.slotName) continue;
@@ -143,15 +153,27 @@ export class WccSlotsDirective implements AfterContentInit, OnDestroy {
   /** Named Slot: immediate static rendering */
   private initNamedSlot(slotDef: WccSlotDef): void {
     const hostEl = this.el.nativeElement;
-    const wrapper = document.createElement('div');
-    wrapper.setAttribute('slot', slotDef.slotName);
-    wrapper.style.display = 'contents';
+
+    // Strategy 1: Find [data-slot] container inside the component's internal DOM
+    const dataSlotEl = hostEl.querySelector(`[data-slot="${slotDef.slotName}"]`);
+    let wrapper: HTMLElement;
+
+    if (dataSlotEl) {
+      // Use the data-slot element directly — clear fallback content and insert rendered nodes
+      wrapper = dataSlotEl as HTMLElement;
+      wrapper.innerHTML = '';
+    } else {
+      // Strategy 2: Fallback for Shadow DOM / native <slot> elements
+      wrapper = document.createElement('div');
+      wrapper.setAttribute('slot', slotDef.slotName);
+      wrapper.style.display = 'contents';
+      hostEl.appendChild(wrapper);
+    }
 
     const viewRef = this.vcr.createEmbeddedView(slotDef.templateRef);
     for (const node of viewRef.rootNodes) {
       wrapper.appendChild(node);
     }
-    hostEl.appendChild(wrapper);
 
     this.slots.set(slotDef.slotName, {
       type: 'named',
@@ -161,18 +183,15 @@ export class WccSlotsDirective implements AfterContentInit, OnDestroy {
       wrapperEl: wrapper,
       context: null,
     });
+
+    this.cdr.detectChanges();
   }
 
   // ─── Scoped Slot ────────────────────────────────────────────────────────
 
-  /** Scoped Slot: async registration + reactive rendering */
-  private async initScopedSlot(slotDef: WccSlotDef): Promise<void> {
+  /** Scoped Slot: registration + reactive rendering */
+  private initScopedSlot(slotDef: WccSlotDef): void {
     const hostEl = this.el.nativeElement;
-    const tagName = hostEl.tagName.toLowerCase();
-
-    // Wait for the custom element to be defined
-    await customElements.whenDefined(tagName);
-    if (this.destroyed) return;
 
     const state: SlotState = {
       type: 'scoped',
@@ -245,23 +264,51 @@ export class WccSlotsDirective implements AfterContentInit, OnDestroy {
     state.context = context;
 
     if (state.viewRef) {
+      // Update existing view context
       Object.assign(state.viewRef.context, context);
       state.viewRef.markForCheck();
+      // Re-insert nodes to reflect updated content (Angular doesn't auto-update DOM for detached views)
+      if (state.wrapperEl) {
+        state.wrapperEl.innerHTML = '';
+        for (const node of state.viewRef.rootNodes) {
+          state.wrapperEl.appendChild(node);
+        }
+      }
     } else {
       state.viewRef = this.vcr.createEmbeddedView(state.slotDef.templateRef, context);
       this.insertView(slotName, state);
     }
 
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 
   // ─── DOM Insertion ──────────────────────────────────────────────────────
 
-  /** Inserts view root nodes into the custom element's DOM via a wrapper div */
+  /**
+   * Inserts view root nodes into the custom element's DOM.
+   *
+   * Strategy:
+   * 1. Look for a [data-slot="slotName"] element inside the component (non-Shadow DOM)
+   *    → clear its content and insert the rendered nodes there
+   * 2. Fallback: append a wrapper <div slot="slotName"> to the host (Shadow DOM / native slots)
+   */
   private insertView(slotName: string, state: SlotState): void {
     if (!state.viewRef) return;
     const hostEl = this.el.nativeElement;
 
+    // Strategy 1: Find [data-slot] container inside the component's internal DOM
+    const dataSlotEl = hostEl.querySelector(`[data-slot="${slotName}"]`);
+    if (dataSlotEl) {
+      // Use the data-slot element as the wrapper (no extra div needed)
+      state.wrapperEl = dataSlotEl as HTMLElement;
+      state.wrapperEl.innerHTML = '';
+      for (const node of state.viewRef.rootNodes) {
+        state.wrapperEl.appendChild(node);
+      }
+      return;
+    }
+
+    // Strategy 2: Fallback for Shadow DOM / native <slot> elements
     if (!state.wrapperEl) {
       state.wrapperEl = document.createElement('div');
       state.wrapperEl.setAttribute('slot', slotName);
@@ -286,8 +333,14 @@ export class WccSlotsDirective implements AfterContentInit, OnDestroy {
       if (state.cleanup) {
         state.cleanup();
       }
-      if (state.wrapperEl && state.wrapperEl.parentNode) {
-        state.wrapperEl.parentNode.removeChild(state.wrapperEl);
+      if (state.wrapperEl) {
+        // If the wrapper is a [data-slot] element (part of the component's internal DOM),
+        // just clear its content rather than removing it from the DOM
+        if (state.wrapperEl.hasAttribute('data-slot')) {
+          state.wrapperEl.innerHTML = '';
+        } else if (state.wrapperEl.parentNode) {
+          state.wrapperEl.parentNode.removeChild(state.wrapperEl);
+        }
       }
     }
     this.slots.clear();
