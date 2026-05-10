@@ -1,37 +1,39 @@
 /**
  * Vue Vite plugin for WCC custom elements.
- * Configures isCustomElement and enables v-model:propName on custom elements.
+ * Configures isCustomElement and provides enhanced DX for v-model modifiers and scoped slots.
  *
  * @module @sprlab/wccompiler/integrations/vue
  *
- * IMPORTANT: This file is for vite.config.js (Node.js context).
- * For browser-side, use app.use(wccVue) from '@sprlab/wccompiler/adapters/vue'.
+ * IMPORTANT: This plugin is OPTIONAL for basic usage.
+ * WCC components work in Vue with zero WCC-specific config:
+ *   - Props: <wcc-counter :count="val"></wcc-counter>
+ *   - Events: <wcc-counter @count-changed="handler($event.detail)"></wcc-counter>
+ *   - v-model: <wcc-counter v-model:count="val"></wcc-counter> (Vue 3.4+ CE support)
+ *   - Named slots: <div slot="header">...</div>
  *
- * @example vite.config.js
+ * The only Vue-specific config needed (same as Lit, Shoelace, FAST):
+ *   vue({ template: { compilerOptions: { isCustomElement: tag => tag.includes('-') } } })
+ *
+ * This plugin adds:
+ *   1. isCustomElement config (so you don't need to write it manually)
+ *   2. v-model modifier support (.trim, .number, .lazy)
+ *   3. Scoped slot syntax: <template #item="{ name }">{{name}}</template>
+ *
+ * @example vite.config.js (with plugin — full DX)
  * ```js
  * import { wccVuePlugin } from '@sprlab/wccompiler/integrations/vue'
  * export default { plugins: [wccVuePlugin()] }
  * ```
  *
- * @example main.js (optional — only needed if NOT using wccVuePlugin)
+ * @example vite.config.js (without plugin — still works for basic usage)
  * ```js
- * import { wccVue } from '@sprlab/wccompiler/adapters/vue'
- * app.use(wccVue)
+ * import vue from '@vitejs/plugin-vue'
+ * export default {
+ *   plugins: [vue({
+ *     template: { compilerOptions: { isCustomElement: tag => tag.includes('-') } }
+ *   })]
+ * }
  * ```
- *
- * With wccVuePlugin(), v-model:propName works natively on WCC custom elements:
- * ```vue
- * <wcc-input v-model="text"></wcc-input>
- * <wcc-form v-model:count="countRef" v-model:title="titleRef"></wcc-form>
- * ```
- *
- * How it works:
- * The plugin runs BEFORE @vitejs/plugin-vue and rewrites the template string:
- *   v-model:count="expr"  →  :count="expr" @count-changed="expr = $event.detail"
- *   v-model="expr"        →  :model-value="expr" @model-value-changed="expr = $event.detail"
- *
- * The WCC component emits `propName-changed` CustomEvent with detail=value on internal writes.
- * Vue compiles @propName-changed as a normal event listener (not filtered like update:*).
  */
 
 import vue from '@vitejs/plugin-vue'
@@ -62,6 +64,13 @@ export function wccVuePlugin(options = {}) {
       if (!id.endsWith('.vue')) return null
 
       let result = code
+
+      // NOTE: As of WCC 0.10.3+, v-model:propName works WITHOUT this plugin
+      // because the compiled component emits 'update:propName' natively (Vue 3.4+ CE support).
+      // This transform is still useful for:
+      //   1. v-model modifiers (.trim, .number) — Vue doesn't apply modifiers to CE v-model natively
+      //   2. Older Vue versions (< 3.4) that don't support v-model on CE via update:propName
+      //   3. Scoped slot syntax transformation ({{prop}} → {%prop%})
 
       // Transform v-model:propName="expr" on custom elements (tags with hyphens)
       // Also handles modifiers: v-model:propName.trim.number="expr"
