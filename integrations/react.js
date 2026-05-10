@@ -745,3 +745,120 @@ export function wccReactPlugin(options = {}) {
     }
   }
 }
+
+
+/**
+ * Vite plugin that generates a virtual module `@wcc/react` (or custom id)
+ * exporting pre-built React wrapper components for all WCC components found
+ * in the project's compiled output directory.
+ *
+ * This enables the ideal import experience:
+ *   import { WccCounter, WccCard } from '@wcc/react'
+ *
+ * The plugin scans the output directory for compiled .js files, reads their
+ * `static __meta` declarations, and generates wrapper code using createWccWrapper.
+ *
+ * @param {Object} [options]
+ * @param {string} [options.moduleId='@wcc/react'] - Virtual module ID for imports
+ * @param {string} [options.componentsDir='./dist'] - Directory containing compiled WCC .js files
+ * @param {string} [options.prefix='wcc-'] - Tag prefix filter
+ * @returns {import('vite').Plugin}
+ *
+ * @example vite.config.js
+ * ```js
+ * import { wccReactPlugin, wccReactComponents } from '@sprlab/wccompiler/integrations/react'
+ * export default {
+ *   plugins: [
+ *     wccReactPlugin(),
+ *     wccReactComponents({ componentsDir: './src/wcc' })
+ *   ]
+ * }
+ * ```
+ *
+ * @example Component.jsx
+ * ```jsx
+ * import { WccCounter, WccCard } from '@wcc/react'
+ *
+ * <WccCounter count={count} onCountChange={setCount} />
+ * <WccCard><div slot="header">Title</div></WccCard>
+ * ```
+ */
+export function wccReactComponents(options = {}) {
+  const {
+    moduleId = '@wcc/react',
+    componentsDir = './dist',
+    prefix = 'wcc-'
+  } = options
+
+  const resolvedId = '\0' + moduleId
+
+  return {
+    name: 'vite-plugin-wcc-react-components',
+    resolveId(id) {
+      if (id === moduleId) return resolvedId
+      return null
+    },
+    async load(id) {
+      if (id !== resolvedId) return null
+
+      // Scan componentsDir for .js files and extract __meta
+      const fs = await import('fs')
+      const path = await import('path')
+
+      const dir = path.default.resolve(componentsDir)
+      if (!fs.default.existsSync(dir)) {
+        this.warn(`[wcc-react-components] Directory not found: ${dir}`)
+        return 'export {}'
+      }
+
+      const files = fs.default.readdirSync(dir).filter(f => f.endsWith('.js'))
+      const components = []
+
+      for (const file of files) {
+        const content = fs.default.readFileSync(path.default.join(dir, file), 'utf-8')
+        const metaMatch = content.match(/static __meta\s*=\s*(\{[^}]+\})/)
+        if (!metaMatch) continue
+
+        try {
+          // Parse the meta object (it's a JS object literal, evaluate safely)
+          const metaStr = metaMatch[1]
+            .replace(/'/g, '"')
+            .replace(/(\w+):/g, '"$1":')
+            .replace(/,\s*}/g, '}')
+            .replace(/,\s*]/g, ']')
+          const meta = JSON.parse(metaStr)
+
+          if (!meta.tag || !meta.tag.startsWith(prefix)) continue
+
+          const pascalName = meta.tag.split('-').map(s => s[0].toUpperCase() + s.slice(1)).join('')
+          components.push({ meta, pascalName, file })
+        } catch (e) {
+          // Skip files with unparseable meta
+        }
+      }
+
+      if (components.length === 0) {
+        return 'export {}'
+      }
+
+      // Generate the virtual module code
+      let code = `import { createWccWrapper } from '@sprlab/wccompiler/adapters/react';\n`
+
+      // Import each component file to ensure registration
+      for (const comp of components) {
+        code += `import '${path.default.resolve(dir, comp.file)}';\n`
+      }
+
+      code += '\n'
+
+      // Generate wrapper exports
+      for (const comp of components) {
+        const eventsArr = JSON.stringify(comp.meta.events || [])
+        const modelsArr = JSON.stringify(comp.meta.models || [])
+        code += `export const ${comp.pascalName} = createWccWrapper('${comp.meta.tag}', { events: ${eventsArr}, models: ${modelsArr} });\n`
+      }
+
+      return code
+    }
+  }
+}

@@ -106,10 +106,32 @@ export function useWccModel(propName, value, setValue, existingRef) {
 
 
 /**
+ * Converts a kebab-case event name to a React-idiomatic prop name.
+ *
+ * Rules:
+ * - 'change' → 'onChange'
+ * - 'count-changed' → 'onCountChange' (strips trailing 'd' from past tense)
+ * - 'value-updated' → 'onValueUpdate' (strips trailing 'd')
+ * - 'reset' → 'onReset'
+ * - 'item-click' → 'onItemClick'
+ *
+ * @param {string} eventName - kebab-case event name
+ * @returns {string} React prop name (onCamelCase)
+ */
+function toReactEventProp(eventName) {
+  const parts = eventName.split('-')
+  const camel = parts.map(s => s[0].toUpperCase() + s.slice(1)).join('')
+  // Strip trailing 'd' from past tense verbs (changed→Change, updated→Update)
+  const normalized = camel.replace(/(Changed|Updated|Removed|Added|Closed|Opened|Submitted|Cancelled)$/, (m) => m.slice(0, -1))
+  return 'on' + normalized
+}
+
+/**
  * Creates a React wrapper component for a WCC custom element.
  *
  * The wrapper provides idiomatic React DX:
- * - Event props: `onChange`, `onCountChanged` → automatically wired via addEventListener
+ * - Event props: `onChange`, `onCountChange` → automatically wired via addEventListener
+ *   Handlers receive the unwrapped value (event.detail), not the raw CustomEvent.
  * - Model props: two-way binding via attribute + event listener
  * - Regular props: passed as attributes on the custom element
  * - Children: passed through as-is (use `<div slot="name">` for named slots)
@@ -118,9 +140,9 @@ export function useWccModel(propName, value, setValue, existingRef) {
  * @param {string} tagName - The custom element tag name (e.g., 'wcc-card')
  * @param {Object} [config] - Configuration for the wrapper
  * @param {string[]} [config.events] - Custom event names to expose as onEventName props
- *   Event names are converted: 'count-changed' → onCountChanged prop
+ *   Event names are converted: 'count-changed' → onCountChange prop (React convention)
  * @param {string[]} [config.models] - Model prop names for two-way binding
- *   Each model 'name' creates: `name` prop (sets attribute) + `onNameChanged` event
+ *   Each model 'name' creates: `name` prop (sets attribute) + `onNameChange` event
  * @returns {import('react').ForwardRefExoticComponent} A React component
  *
  * @example
@@ -134,8 +156,8 @@ export function useWccModel(propName, value, setValue, existingRef) {
  *   return (
  *     <WccCounter
  *       count={count}
- *       onCountChanged={(e) => setCount(e.detail)}
- *       onChange={(e) => console.log('changed', e.detail)}
+ *       onCountChange={(value) => setCount(value)}
+ *       onChange={(value) => console.log('changed', value)}
  *       label="Clicks"
  *     >
  *       <div slot="footer">Footer content</div>
@@ -147,19 +169,21 @@ export function createWccWrapper(tagName, config = {}) {
   const { events = [], models = [] } = config
 
   // Build a set of event prop names for quick lookup
-  // 'count-changed' → 'onCountChanged'
+  // Convention: kebab-case event → React onCamelCase (without trailing 'd' from 'changed')
+  // 'count-changed' → 'onCountChange' (not 'onCountChanged')
   // 'change' → 'onChange'
+  // 'value-updated' → 'onValueUpdate' (strips trailing 'd' from past tense)
   const eventPropMap = new Map()
   for (const eventName of events) {
-    const propName = 'on' + eventName.split('-').map(s => s[0].toUpperCase() + s.slice(1)).join('')
+    const propName = toReactEventProp(eventName)
     eventPropMap.set(propName, eventName)
   }
 
-  // Model events: 'count' → 'count-changed' → 'onCountChanged'
+  // Model events: 'count' → 'count-changed' → 'onCountChange'
   const modelEventMap = new Map()
   for (const modelName of models) {
     const eventName = `${modelName}-changed`
-    const propName = 'on' + eventName.split('-').map(s => s[0].toUpperCase() + s.slice(1)).join('')
+    const propName = toReactEventProp(eventName)
     eventPropMap.set(propName, eventName)
     modelEventMap.set(modelName, eventName)
   }
@@ -207,7 +231,7 @@ export function createWccWrapper(tagName, config = {}) {
       for (const eventName of allEvents) {
         const listener = (e) => {
           const handler = handlersRef.current[eventName]
-          if (handler) handler(e)
+          if (handler) handler(e instanceof CustomEvent ? e.detail : e)
         }
         el.addEventListener(eventName, listener)
         listeners.push([eventName, listener])
@@ -268,7 +292,8 @@ export function createWccWrapper(tagName, config = {}) {
  * const WccCounter = wrapWccComponent(customElements.get('wcc-counter'))
  *
  * // Use idiomatically — no manual config needed
- * <WccCounter count={count} onCountChanged={setCount} onChange={handler} />
+ * // Handlers receive the value directly (not the event)
+ * <WccCounter count={count} onCountChange={setCount} onChange={(val) => console.log(val)} />
  */
 export function wrapWccComponent(WccClass) {
   const meta = WccClass?.__meta
