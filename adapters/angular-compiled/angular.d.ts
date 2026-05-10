@@ -25,7 +25,8 @@
  *
  * @module @sprlab/wccompiler/adapters/angular
  */
-import { QueryList, AfterContentInit, OnDestroy } from '@angular/core';
+import { TemplateRef, QueryList, AfterContentInit, OnDestroy } from '@angular/core';
+import * as i0 from "@angular/core";
 /** Context object passed to createEmbeddedView for scoped slots */
 export interface SlotContext {
     $implicit: any;
@@ -40,9 +41,11 @@ export interface SlotContext {
  *   <ng-template slot="stats" let-likes>{{likes}}</ng-template>
  */
 export declare class WccSlotDef {
-    readonly templateRef: any;
+    readonly templateRef: TemplateRef<any>;
     readonly slotName: string;
     constructor(name: string | null);
+    static ɵfac: i0.ɵɵFactoryDeclaration<WccSlotDef, [{ attribute: "slot"; }]>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<WccSlotDef, "ng-template[slot]", never, {}, {}, never, never, true, never>;
 }
 /**
  * Main directive that activates on elements with the [wccSlots] attribute.
@@ -79,8 +82,17 @@ export declare class WccSlotsDirective implements AfterContentInit, OnDestroy {
     buildContext(props: Record<string, any>): SlotContext;
     /** Creates or updates the EmbeddedView of a scoped slot */
     private renderSlot;
-    /** Inserts view root nodes into the custom element's DOM via a wrapper div */
+    /**
+     * Inserts view root nodes into the custom element's DOM.
+     *
+     * Strategy:
+     * 1. Look for a [data-slot="slotName"] element inside the component (non-Shadow DOM)
+     *    → clear its content and insert the rendered nodes there
+     * 2. Fallback: append a wrapper <div slot="slotName"> to the host (Shadow DOM / native slots)
+     */
     private insertView;
     /** Full cleanup on destroy */
     private cleanup;
+    static ɵfac: i0.ɵɵFactoryDeclaration<WccSlotsDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<WccSlotsDirective, "[wccSlots]", never, {}, {}, ["slotDefs"], never, true, never>;
 }

@@ -1,0 +1,299 @@
+/**
+ * Angular adapter for WCC Scoped Slots.
+ *
+ * Exports:
+ *   - WccSlotDef: Auxiliary directive for ng-template[slot]
+ *   - WccSlotsDirective: Main directive activated via [wccSlots] attribute
+ *   - SlotContext: Interface for template context typing
+ *
+ * Usage:
+ *   import { WccSlotsDirective, WccSlotDef } from '@sprlab/wccompiler/adapters/angular';
+ *
+ *   @Component({
+ *     imports: [WccSlotsDirective, WccSlotDef],
+ *     schemas: [CUSTOM_ELEMENTS_SCHEMA],
+ *     template: `
+ *       <wcc-card wccSlots>
+ *         <ng-template slot="header"><strong>Header</strong></ng-template>
+ *         <ng-template slot="stats" let-likes>{{ likes }} likes</ng-template>
+ *       </wcc-card>
+ *     `
+ *   })
+ *
+ * Note: Add the `wccSlots` attribute to any WCC custom element that uses slots.
+ * This is required because Angular AOT cannot evaluate dynamic selectors.
+ *
+ * @module @sprlab/wccompiler/adapters/angular
+ */
+import { Directive, TemplateRef, ElementRef, ViewContainerRef, ChangeDetectorRef, ContentChildren, inject, Attribute, } from '@angular/core';
+import * as i0 from "@angular/core";
+// ─── WccSlotDef — Auxiliary Directive ───────────────────────────────────────
+/**
+ * Auxiliary directive that marks an ng-template as slot content.
+ * Captures the TemplateRef and the slot name from the HTML 'slot' attribute.
+ *
+ * Usage:
+ *   <ng-template slot="header">...</ng-template>
+ *   <ng-template slot="stats" let-likes>{{likes}}</ng-template>
+ */
+export class WccSlotDef {
+    templateRef = inject(TemplateRef);
+    slotName;
+    constructor(name) {
+        this.slotName = name || '';
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "19.2.21", ngImport: i0, type: WccSlotDef, deps: [{ token: 'slot', attribute: true }], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "19.2.21", type: WccSlotDef, isStandalone: true, selector: "ng-template[slot]", ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.2.21", ngImport: i0, type: WccSlotDef, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: 'ng-template[slot]',
+                    standalone: true,
+                }]
+        }], ctorParameters: () => [{ type: undefined, decorators: [{
+                    type: Attribute,
+                    args: ['slot']
+                }] }] });
+// ─── WccSlotsDirective — Main Directive ─────────────────────────────────────
+/**
+ * Main directive that activates on elements with the [wccSlots] attribute.
+ * Classifies ng-template[slot] children as named or scoped slots and manages
+ * their lifecycle.
+ *
+ * Uses a simple attribute selector `[wccSlots]` instead of a dynamic exclusion
+ * selector, because Angular AOT cannot evaluate computed selector expressions.
+ */
+export class WccSlotsDirective {
+    slotDefs;
+    el = inject(ElementRef);
+    vcr = inject(ViewContainerRef);
+    cdr = inject(ChangeDetectorRef);
+    slots = new Map();
+    eventCleanups = [];
+    destroyed = false;
+    ngAfterContentInit() {
+        // Runtime guard: only proceed for custom elements (tag name contains hyphen)
+        if (!this.el.nativeElement.tagName.toLowerCase().includes('-'))
+            return;
+        this.classifyAndInitSlots();
+    }
+    ngOnDestroy() {
+        this.destroyed = true;
+        this.cleanup();
+    }
+    // ─── Classification ─────────────────────────────────────────────────────
+    /** Classifies slots using __scopedSlots from the host element and initializes them */
+    async classifyAndInitSlots() {
+        const hostEl = this.el.nativeElement;
+        const tagName = hostEl.tagName.toLowerCase();
+        // Wait for the custom element to be defined (ensures the class is upgraded)
+        await customElements.whenDefined(tagName);
+        if (this.destroyed)
+            return;
+        const element = hostEl;
+        // Read from instance getter or static property
+        const scopedNames = element.__scopedSlots
+            || (element.constructor && element.constructor.__scopedSlots)
+            || [];
+        for (const slotDef of this.slotDefs) {
+            if (!slotDef.slotName)
+                continue;
+            if (scopedNames.includes(slotDef.slotName)) {
+                this.initScopedSlot(slotDef);
+            }
+            else {
+                this.initNamedSlot(slotDef);
+            }
+        }
+    }
+    // ─── Named Slot ─────────────────────────────────────────────────────────
+    /** Named Slot: immediate static rendering */
+    initNamedSlot(slotDef) {
+        const hostEl = this.el.nativeElement;
+        // Strategy 1: Find [data-slot] container inside the component's internal DOM
+        const dataSlotEl = hostEl.querySelector(`[data-slot="${slotDef.slotName}"]`);
+        let wrapper;
+        if (dataSlotEl) {
+            // Use the data-slot element directly — clear fallback content and insert rendered nodes
+            wrapper = dataSlotEl;
+            wrapper.innerHTML = '';
+        }
+        else {
+            // Strategy 2: Fallback for Shadow DOM / native <slot> elements
+            wrapper = document.createElement('div');
+            wrapper.setAttribute('slot', slotDef.slotName);
+            wrapper.style.display = 'contents';
+            hostEl.appendChild(wrapper);
+        }
+        const viewRef = this.vcr.createEmbeddedView(slotDef.templateRef);
+        for (const node of viewRef.rootNodes) {
+            wrapper.appendChild(node);
+        }
+        this.slots.set(slotDef.slotName, {
+            type: 'named',
+            slotDef,
+            viewRef,
+            cleanup: null,
+            wrapperEl: wrapper,
+            context: null,
+        });
+        this.cdr.detectChanges();
+    }
+    // ─── Scoped Slot ────────────────────────────────────────────────────────
+    /** Scoped Slot: registration + reactive rendering */
+    initScopedSlot(slotDef) {
+        const hostEl = this.el.nativeElement;
+        const state = {
+            type: 'scoped',
+            slotDef,
+            viewRef: null,
+            cleanup: null,
+            wrapperEl: null,
+            context: null,
+        };
+        this.slots.set(slotDef.slotName, state);
+        // Register renderer
+        const element = hostEl;
+        if (typeof element.registerSlotRenderer === 'function') {
+            state.cleanup = element.registerSlotRenderer(slotDef.slotName, (props) => this.renderSlot(slotDef.slotName, props));
+        }
+        else {
+            // Fallback: listen for wcc:slot-update event
+            const handler = (e) => {
+                if (e.detail?.slot === slotDef.slotName) {
+                    this.renderSlot(slotDef.slotName, e.detail.props);
+                }
+            };
+            hostEl.addEventListener('wcc:slot-update', handler);
+            this.eventCleanups.push(() => hostEl.removeEventListener('wcc:slot-update', handler));
+        }
+    }
+    // ─── Context Construction ───────────────────────────────────────────────
+    /**
+     * Builds the Angular context for createEmbeddedView.
+     *
+     * Rules:
+     * - 0 props: $implicit = undefined
+     * - 1 prop: $implicit = that single value, plus the named prop key
+     * - N props (N > 1): $implicit = full props object, plus all named props
+     */
+    buildContext(props) {
+        const keys = Object.keys(props);
+        if (keys.length === 0) {
+            return { $implicit: undefined };
+        }
+        if (keys.length === 1) {
+            return { $implicit: props[keys[0]], ...props };
+        }
+        return { $implicit: props, ...props };
+    }
+    // ─── Render Slot ────────────────────────────────────────────────────────
+    /** Creates or updates the EmbeddedView of a scoped slot */
+    renderSlot(slotName, props) {
+        const state = this.slots.get(slotName);
+        if (!state || this.destroyed)
+            return;
+        if (props == null) {
+            if (state.viewRef) {
+                state.viewRef.destroy();
+                state.viewRef = null;
+            }
+            return;
+        }
+        const context = this.buildContext(props);
+        state.context = context;
+        if (state.viewRef) {
+            // Update existing view context
+            Object.assign(state.viewRef.context, context);
+            state.viewRef.markForCheck();
+            // Re-insert nodes to reflect updated content (Angular doesn't auto-update DOM for detached views)
+            if (state.wrapperEl) {
+                state.wrapperEl.innerHTML = '';
+                for (const node of state.viewRef.rootNodes) {
+                    state.wrapperEl.appendChild(node);
+                }
+            }
+        }
+        else {
+            state.viewRef = this.vcr.createEmbeddedView(state.slotDef.templateRef, context);
+            this.insertView(slotName, state);
+        }
+        this.cdr.detectChanges();
+    }
+    // ─── DOM Insertion ──────────────────────────────────────────────────────
+    /**
+     * Inserts view root nodes into the custom element's DOM.
+     *
+     * Strategy:
+     * 1. Look for a [data-slot="slotName"] element inside the component (non-Shadow DOM)
+     *    → clear its content and insert the rendered nodes there
+     * 2. Fallback: append a wrapper <div slot="slotName"> to the host (Shadow DOM / native slots)
+     */
+    insertView(slotName, state) {
+        if (!state.viewRef)
+            return;
+        const hostEl = this.el.nativeElement;
+        // Strategy 1: Find [data-slot] container inside the component's internal DOM
+        const dataSlotEl = hostEl.querySelector(`[data-slot="${slotName}"]`);
+        if (dataSlotEl) {
+            // Use the data-slot element as the wrapper (no extra div needed)
+            state.wrapperEl = dataSlotEl;
+            state.wrapperEl.innerHTML = '';
+            for (const node of state.viewRef.rootNodes) {
+                state.wrapperEl.appendChild(node);
+            }
+            return;
+        }
+        // Strategy 2: Fallback for Shadow DOM / native <slot> elements
+        if (!state.wrapperEl) {
+            state.wrapperEl = document.createElement('div');
+            state.wrapperEl.setAttribute('slot', slotName);
+            state.wrapperEl.style.display = 'contents';
+            hostEl.appendChild(state.wrapperEl);
+        }
+        state.wrapperEl.innerHTML = '';
+        for (const node of state.viewRef.rootNodes) {
+            state.wrapperEl.appendChild(node);
+        }
+    }
+    // ─── Cleanup ────────────────────────────────────────────────────────────
+    /** Full cleanup on destroy */
+    cleanup() {
+        for (const [, state] of this.slots) {
+            if (state.viewRef) {
+                state.viewRef.destroy();
+            }
+            if (state.cleanup) {
+                state.cleanup();
+            }
+            if (state.wrapperEl) {
+                // If the wrapper is a [data-slot] element (part of the component's internal DOM),
+                // just clear its content rather than removing it from the DOM
+                if (state.wrapperEl.hasAttribute('data-slot')) {
+                    state.wrapperEl.innerHTML = '';
+                }
+                else if (state.wrapperEl.parentNode) {
+                    state.wrapperEl.parentNode.removeChild(state.wrapperEl);
+                }
+            }
+        }
+        this.slots.clear();
+        for (const fn of this.eventCleanups) {
+            fn();
+        }
+        this.eventCleanups = [];
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "19.2.21", ngImport: i0, type: WccSlotsDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "19.2.21", type: WccSlotsDirective, isStandalone: true, selector: "[wccSlots]", queries: [{ propertyName: "slotDefs", predicate: WccSlotDef }], ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.2.21", ngImport: i0, type: WccSlotsDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[wccSlots]',
+                    standalone: true,
+                }]
+        }], propDecorators: { slotDefs: [{
+                type: ContentChildren,
+                args: [WccSlotDef]
+            }] } });
