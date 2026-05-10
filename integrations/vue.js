@@ -65,11 +65,15 @@ export function wccVuePlugin(options = {}) {
 
       let result = code
 
-      // NOTE: As of WCC 0.10.3+, v-model:propName works WITHOUT this plugin
-      // because the compiled component emits 'update:propName' natively (Vue 3.4+ CE support).
-      // This transform is still useful for:
-      //   1. v-model modifiers (.trim, .number) — Vue doesn't apply modifiers to CE v-model natively
-      //   2. Older Vue versions (< 3.4) that don't support v-model on CE via update:propName
+      // NOTE: As of WCC 0.10.3+, basic events work WITHOUT this plugin because
+      // the compiled component emits events in multiple formats (kebab, camelCase, lowercase).
+      // However, v-model:propName STILL REQUIRES this plugin because Vue assigns the raw
+      // Event object to the ref — it doesn't extract .detail automatically.
+      // This transform rewrites v-model:prop to @prop-changed="ref = $event.detail".
+      //
+      // This plugin is needed for:
+      //   1. v-model:propName (Vue can't unwrap CustomEvent.detail natively)
+      //   2. v-model modifiers (.trim, .number)
       //   3. Scoped slot syntax transformation ({{prop}} → {%prop%})
 
       // Transform v-model:propName="expr" on custom elements (tags with hyphens)
