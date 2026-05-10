@@ -636,6 +636,76 @@ Component-level `standalone` always takes precedence over the global config. Thi
 
 Each standalone component has its own isolated reactive runtime. Signals from component A cannot be observed by effects in component B — they are completely independent. This is by design for distribution scenarios where components must be self-contained. If you need cross-component reactivity (e.g., shared state), use the default shared mode (`standalone: false`).
 
+## Framework Integrations
+
+WCC components are native custom elements — they work in any framework. Optional integration helpers reduce configuration friction:
+
+### Vue 3 (Vite)
+
+```js
+// vite.config.js
+import { wccVuePlugin } from '@sprlab/wccompiler/integrations/vue'
+
+export default defineConfig({
+  plugins: [wccVuePlugin()]
+})
+
+// Custom prefix:
+// plugins: [wccVuePlugin({ prefix: 'my-' })]
+```
+
+### React
+
+React 19+ supports custom elements natively. For React 18, use the event hook to bridge CustomEvents:
+
+```jsx
+import { useRef } from 'react'
+import { useWccEvent } from '@sprlab/wccompiler/integrations/react'
+
+function App() {
+  // Form 1: Pass an existing ref
+  const counterRef = useRef(null)
+  useWccEvent(counterRef, 'change', (e) => console.log(e.detail))
+  return <wcc-counter ref={counterRef}></wcc-counter>
+}
+
+// Form 2: Let the hook create the ref
+function App2() {
+  const ref = useWccEvent('change', (e) => console.log(e.detail))
+  return <wcc-counter ref={ref}></wcc-counter>
+}
+```
+
+### Angular
+
+Add `CUSTOM_ELEMENTS_SCHEMA` to your component or module — this is Angular's built-in way to allow custom elements:
+
+```ts
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+
+// Standalone component (Angular 17+)
+@Component({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `<wcc-counter></wcc-counter>`
+})
+export class AppComponent {}
+
+// Or NgModule approach
+@NgModule({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+})
+export class AppModule {}
+```
+
+### Vanilla
+
+No configuration needed:
+
+```html
+<script type="module" src="dist/wcc-counter.js"></script>
+<wcc-counter></wcc-counter>
+```
+
 ## Editor Support
 
 The **wcCompiler (.wcc) Language Support** extension is available on the VS Code Marketplace. It provides syntax highlighting, completions, and diagnostics for `.wcc` files.
