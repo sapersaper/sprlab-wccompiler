@@ -140,7 +140,8 @@ export function wccVuePlugin(options = {}) {
       }
 
       // Handle scoped slots: <template #name="{ prop1, prop2 }">...</template>
-      // → <div slot="name" slot-props="prop1, prop2">content with {%prop%}</div>
+      // → <div slot="name" slot-props="prop1, prop2" hidden>content with {%prop%}</div>
+      // The 'hidden' attribute prevents {%prop%} tokens from flashing before the WCC runtime processes them.
       // Only inside custom elements (tag names with hyphens)
       prev = ''
       while (prev !== result) {
@@ -149,13 +150,13 @@ export function wccVuePlugin(options = {}) {
           /(<[\w]+-[\w-]*[^>]*>)([\s\S]*?)<template\s+#(\w+)="\{\s*([^}]*)\s*\}">([\s\S]*?)<\/template>/,
           (match, openTag, before, slotName, propsExpr, content) => {
             const { transformed, props } = transformScopedContent(content, propsExpr)
-            return `${openTag}${before}<div slot="${slotName}" slot-props="${props.join(', ')}">${transformed}</div>`
+            return `${openTag}${before}<div slot="${slotName}" slot-props="${props.join(', ')}" hidden>${transformed}</div>`
           }
         )
       }
 
       // Handle scoped slots: <template v-slot:name="{ prop1, prop2 }">...</template>
-      // → <div slot="name" slot-props="prop1, prop2">content with {%prop%}</div>
+      // → <div slot="name" slot-props="prop1, prop2" hidden>content with {%prop%}</div>
       // Only inside custom elements (tag names with hyphens)
       prev = ''
       while (prev !== result) {
@@ -164,7 +165,7 @@ export function wccVuePlugin(options = {}) {
           /(<[\w]+-[\w-]*[^>]*>)([\s\S]*?)<template\s+v-slot:(\w+)="\{\s*([^}]*)\s*\}">([\s\S]*?)<\/template>/,
           (match, openTag, before, slotName, propsExpr, content) => {
             const { transformed, props } = transformScopedContent(content, propsExpr)
-            return `${openTag}${before}<div slot="${slotName}" slot-props="${props.join(', ')}">${transformed}</div>`
+            return `${openTag}${before}<div slot="${slotName}" slot-props="${props.join(', ')}" hidden>${transformed}</div>`
           }
         )
       }
