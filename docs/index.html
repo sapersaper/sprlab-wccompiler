@@ -209,6 +209,20 @@ Compiled: wcc-counter.wcc</code></pre>
             <td>No</td>
             <td>Yes (let:)</td>
           </tr>
+          <tr>
+            <td>Cross-framework v-model</td>
+            <td><strong>defineModel</strong></td>
+            <td>Manual</td>
+            <td>Manual</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>Framework zero-config</td>
+            <td><strong>Vue/React/Angular</strong></td>
+            <td>Vue/React/Angular</td>
+            <td>React/Angular</td>
+            <td>No (Svelte only)</td>
+          </tr>
         </tbody>
       </table>
     </section>
@@ -275,6 +289,7 @@ function increment() {
           <tr><td><code>watch(signal, (n, o) => {})</code></td><td>Observe a signal or getter with old/new values</td></tr>
           <tr><td><code>defineProps({ key: default })</code></td><td>Declare external props with defaults</td></tr>
           <tr><td><code>defineEmits(['event'])</code></td><td>Declare custom events (validated at compile time)</td></tr>
+          <tr><td><code>defineModel({ name, default })</code></td><td>Two-way binding prop — emits change events cross-framework</td></tr>
           <tr><td><code>templateRef('name')</code></td><td>Get a DOM element reference from the template</td></tr>
           <tr><td><code>onMount(() => {})</code></td><td>Lifecycle: connectedCallback (supports async)</td></tr>
           <tr><td><code>onDestroy(() => {})</code></td><td>Lifecycle: disconnectedCallback</td></tr>
@@ -341,13 +356,16 @@ function increment() {
         </div>
         <div class="feature-card">
           <h3>🔗 Framework Integrations</h3>
-          <p>Optional helpers for Vue, React, and Angular. Zero config needed — just import and use.</p>
-          <pre class="feature-code"><code>// Vue
-import { wccVuePlugin } from '@sprlab/wccompiler/integrations/vue'
-// React
-import { useWccEvent } from '@sprlab/wccompiler/integrations/react'
-// Angular
-import { WCC_SCHEMAS } from '@sprlab/wccompiler/integrations/angular'</code></pre>
+          <p>Native in any framework. Props, events, named slots, and two-way binding work out of the box. Optional plugins for scoped slots and idiomatic DX.</p>
+          <pre class="feature-code"><code>// Zero-config — just use it
+// Vue:  &lt;wcc-counter :count="ref"&gt;
+// React: &lt;wcc-counter count={state}&gt;
+// Angular: &lt;wcc-counter [(count)]="signal"&gt;
+
+// Optional plugins for premium DX:
+import { wccVuePlugin } from '...integrations/vue'
+import { wccReactPlugin } from '...integrations/react'
+import { WccSlotsDirective } from '...adapters/angular'</code></pre>
         </div>
       </div>
     </section>
@@ -355,7 +373,7 @@ import { WCC_SCHEMAS } from '@sprlab/wccompiler/integrations/angular'</code></pr
 
   <!-- ── 8. Footer ── -->
   <footer class="footer">
-    <p><strong>wcCompiler</strong> v0.7.0 — MIT License — by <a href="https://github.com/sapersaper">sprlab</a></p>
+    <p><strong>wcCompiler</strong> v0.10.5 — MIT License — by <a href="https://github.com/sapersaper">sprlab</a></p>
     <p class="footer-links">
       <a href="https://github.com/sapersaper/sprlab-wccompiler">GitHub</a> ·
       <a href="https://www.npmjs.com/package/@sprlab/wccompiler">npm</a> ·

@@ -192,6 +192,11 @@ watch(count, (newVal, oldVal) => {
 watch(() => props.count, (newVal, oldVal) => {
   console.log(`Prop changed: ${oldVal} → ${newVal}`)
 })
+
+// Watch a derived expression
+watch(() => count() * 2, (newVal, oldVal) => {
+  console.log(`Doubled changed: ${oldVal} → ${newVal}`)
+})
 ```
 
 `watch` observes a specific signal or getter and provides both old and new values. The callback does not run on initial mount — only on subsequent changes.
@@ -247,6 +252,58 @@ const emit = defineEmits<{ (e: 'change', value: number): void }>()
 ```
 
 The compiler validates emit calls against declared events at compile time.
+
+## defineModel (Two-Way Binding)
+
+`defineModel` declares a prop that supports two-way binding across frameworks:
+
+```js
+import { defineModel } from 'wcc'
+
+const count = defineModel({ name: 'count', default: 0 })
+const title = defineModel({ name: 'title', default: 'untitled' })
+```
+
+Read and write like a signal:
+```js
+count()          // read current value
+count.set(5)     // write — updates internal state + emits events
+```
+
+**Events emitted on write:**
+
+| Event | Purpose |
+|-------|---------|
+| `count-changed` | Kebab-case — for Vue plugin, addEventListener |
+| `countChanged` | camelCase — for Angular, direct binding |
+| `countChange` | Angular `[(count)]` banana-box syntax |
+| `wcc:model` | Generic — for vanilla JS and WCC-to-WCC |
+
+**Usage per framework:**
+
+```vue
+<!-- Vue (with plugin) -->
+<wcc-counter v-model:count="ref"></wcc-counter>
+
+<!-- Vue (without plugin) -->
+<wcc-counter :count="ref" @count-changed="ref = $event.detail"></wcc-counter>
+```
+
+```jsx
+// React (with wrapper)
+<WccCounter count={count} onCountChange={(value) => setCount(value)} />
+
+// React (native CE)
+<wcc-counter count={count} oncountchanged={(e) => setCount(e.detail)} />
+```
+
+```html
+<!-- Angular (zero-config two-way) -->
+<wcc-counter [(count)]="signal"></wcc-counter>
+
+<!-- Angular (manual) -->
+<wcc-counter [count]="signal()" (countChange)="signal.set($event.detail)"></wcc-counter>
+```
 
 ## Template Directives
 
@@ -638,63 +695,96 @@ Each standalone component has its own isolated reactive runtime. Signals from co
 
 ## Framework Integrations
 
-WCC components are native custom elements — they work in any framework. Optional integration helpers reduce configuration friction:
+WCC components are native custom elements — they work in any framework. Props, events, and named slots work natively with zero WCC-specific config. Two-way binding is zero-config in Angular; Vue and React require a lightweight plugin. Scoped slots require a framework plugin for idiomatic syntax.
 
-### Vue 3 (Vite)
+### Zero-Config (works immediately)
+
+Just import the compiled component and use it:
+
+```html
+<script type="module" src="dist/wcc-counter.js"></script>
+```
+
+**Vue:**
+```vue
+<wcc-counter :count="ref" @count-changed="handler($event.detail)">
+  <div slot="footer">Footer content</div>
+</wcc-counter>
+```
+
+**React 19:**
+```jsx
+<wcc-counter count={state} onCountchanged={(e) => handler(e.detail)}>
+  <div slot="footer">Footer content</div>
+</wcc-counter>
+```
+
+**Angular:**
+```html
+<wcc-counter [count]="signal()" (count-changed)="handler($event.detail)" [(count)]="signal">
+  <div slot="footer">Footer content</div>
+</wcc-counter>
+```
+
+### Vue Plugin (v-model, modifiers, scoped slots)
 
 ```js
 // vite.config.js
 import { wccVuePlugin } from '@sprlab/wccompiler/integrations/vue'
-
-export default defineConfig({
-  plugins: [wccVuePlugin()]
-})
-
-// Custom prefix:
-// plugins: [wccVuePlugin({ prefix: 'my-' })]
+export default defineConfig({ plugins: [wccVuePlugin()] })
 ```
 
-### React
+```vue
+<wcc-input v-model="text" v-model:count.number="count"></wcc-input>
+<wcc-card>
+  <template #header><strong>Title</strong></template>
+  <template #stats="{ likes }">{{ likes }} likes</template>
+</wcc-card>
+```
 
-React 19+ supports custom elements natively. For React 18, use the event hook to bridge CustomEvents:
+The plugin is needed for: v-model:prop (Vue assigns raw Event, not detail), v-model modifiers (.trim, .number), and scoped slot syntax (`{{prop}}` → `{%prop%}` escape).
+
+Without the plugin, use `:prop` + `@prop-changed` for two-way binding manually.
+
+### React Plugin + Wrappers (scoped slots, typed events, two-way)
+
+```js
+// vite.config.js
+import { wccReactPlugin } from '@sprlab/wccompiler/integrations/react'
+import react from '@vitejs/plugin-react'
+export default defineConfig({ plugins: [wccReactPlugin(), react()] })
+```
 
 ```jsx
-import { useRef } from 'react'
-import { useWccEvent } from '@sprlab/wccompiler/integrations/react'
+// Auto-generated wrappers — events unwrapped, React-idiomatic naming
+import { createWccWrappers } from '@sprlab/wccompiler/adapters/react'
+const { WccCounter, WccCard } = createWccWrappers()
 
-function App() {
-  // Form 1: Pass an existing ref
-  const counterRef = useRef(null)
-  useWccEvent(counterRef, 'change', (e) => console.log(e.detail))
-  return <wcc-counter ref={counterRef}></wcc-counter>
-}
-
-// Form 2: Let the hook create the ref
-function App2() {
-  const ref = useWccEvent('change', (e) => console.log(e.detail))
-  return <wcc-counter ref={ref}></wcc-counter>
-}
+<WccCounter count={count} onCountChange={(value) => setCount(value)} />
+<WccCard renderStats={(likes) => <span>{likes} likes</span>}>
+  <p>Body</p>
+</WccCard>
 ```
 
-### Angular
+Wrappers read component metadata (`static __meta`) automatically — no manual event/model config needed.
 
-Add `CUSTOM_ELEMENTS_SCHEMA` to your component or module — this is Angular's built-in way to allow custom elements:
+### Angular Directive (scoped slots only)
+
+Angular needs no plugin for props, events, or two-way binding. The directive is only needed for scoped slots:
 
 ```ts
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import { WccSlotsDirective, WccSlotDef } from '@sprlab/wccompiler/adapters/angular'
 
-// Standalone component (Angular 17+)
 @Component({
+  imports: [WccSlotsDirective, WccSlotDef],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  template: `<wcc-counter></wcc-counter>`
+  template: `
+    <wcc-card wccSlots>
+      <ng-template slot="header"><strong>Title</strong></ng-template>
+      <ng-template slot="stats" let-likes>{{ likes }} likes</ng-template>
+    </wcc-card>
+  `
 })
-export class AppComponent {}
-
-// Or NgModule approach
-@NgModule({
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-})
-export class AppModule {}
 ```
 
 ### Vanilla
