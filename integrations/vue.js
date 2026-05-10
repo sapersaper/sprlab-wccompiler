@@ -64,28 +64,54 @@ export function wccVuePlugin(options = {}) {
       let result = code
 
       // Transform v-model:propName="expr" on custom elements (tags with hyphens)
+      // Also handles modifiers: v-model:propName.trim.number="expr"
       // → :propName="expr" @propName-changed="expr = $event.detail"
+      //   with modifiers applied to the event handler value:
+      //   .trim   → $event.detail.trim()  (for string values)
+      //   .number → Number($event.detail)
+      //   .lazy   → uses @propName-changed (same event, no difference for CE)
       // Run in a loop to handle multiple v-model on the same element
       let prev = ''
       while (prev !== result) {
         prev = result
         result = result.replace(
-          /(<[\w]+-[\w-]*(?:\s[^>]*?)?)\bv-model:(\w+)="([^"]+)"/,
-          (match, prefix, prop, expr) => {
-            return `${prefix}:${prop}="${expr}" @${prop}-changed="${expr} = $event.detail"`
+          /(<[\w]+-[\w-]*(?:\s[^>]*?)?)\bv-model:(\w+)((?:\.\w+)*)="([^"]+)"/,
+          (match, prefix, prop, modifiersStr, expr) => {
+            const modifiers = modifiersStr ? modifiersStr.slice(1).split('.') : []
+            let value = '$event.detail'
+            // Apply modifiers in order
+            for (const mod of modifiers) {
+              if (mod === 'trim') {
+                value = `(typeof ${value} === 'string' ? (${value}).trim() : ${value})`
+              } else if (mod === 'number') {
+                value = `Number(${value})`
+              }
+              // .lazy is a no-op for custom elements (they already use change events)
+            }
+            return `${prefix}:${prop}="${expr}" @${prop}-changed="${expr} = ${value}"`
           }
         )
       }
 
       // Transform v-model="expr" (without argument) on custom elements
+      // Also handles modifiers: v-model.trim.lazy="expr"
       // → :model-value="expr" @model-value-changed="expr = $event.detail"
       prev = ''
       while (prev !== result) {
         prev = result
         result = result.replace(
-          /(<[\w]+-[\w-]*(?:\s[^>]*?)?)\bv-model="([^"]+)"/,
-          (match, prefix, expr) => {
-            return `${prefix}:model-value="${expr}" @model-value-changed="${expr} = $event.detail"`
+          /(<[\w]+-[\w-]*(?:\s[^>]*?)?)\bv-model((?:\.\w+)*)="([^"]+)"/,
+          (match, prefix, modifiersStr, expr) => {
+            const modifiers = modifiersStr ? modifiersStr.slice(1).split('.') : []
+            let value = '$event.detail'
+            for (const mod of modifiers) {
+              if (mod === 'trim') {
+                value = `(typeof ${value} === 'string' ? (${value}).trim() : ${value})`
+              } else if (mod === 'number') {
+                value = `Number(${value})`
+              }
+            }
+            return `${prefix}:model-value="${expr}" @model-value-changed="${expr} = ${value}"`
           }
         )
       }
