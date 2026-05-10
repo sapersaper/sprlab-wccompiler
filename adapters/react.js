@@ -8,19 +8,21 @@
  * The integrations/react file is for vite.config.js only (contains Babel).
  *
  * Usage:
- *   import { useWccEvent, useWccModel } from '@sprlab/wccompiler/adapters/react'
+ *   import { useWccEvent, useWccModel, createWccWrapper } from '@sprlab/wccompiler/adapters/react'
  *
- *   // Listen to custom events
+ *   // Option A: Low-level hooks (full control)
  *   const ref = useWccEvent('change', (e) => console.log(e.detail))
  *   <wcc-counter ref={ref}></wcc-counter>
  *
- *   // Two-way binding with defineModel
- *   const [text, setText] = useState('')
- *   const inputRef = useWccModel('value', text, setText)
- *   <wcc-input ref={inputRef}></wcc-input>
+ *   // Option B: Wrapper components (idiomatic React DX)
+ *   const WccCounter = createWccWrapper('wcc-counter', {
+ *     events: ['change'],
+ *     models: ['count']
+ *   })
+ *   <WccCounter onChange={handler} count={count} onCountChanged={setCount} />
  */
 
-import { useRef, useEffect } from 'react'
+import React, { useRef, useEffect } from 'react'
 
 /**
  * Hook that attaches a CustomEvent listener to a DOM element via ref.
@@ -101,3 +103,149 @@ export function useWccModel(propName, value, setValue, existingRef) {
 
   return elementRef
 }
+
+
+/**
+ * Creates a React wrapper component for a WCC custom element.
+ *
+ * The wrapper provides idiomatic React DX:
+ * - Event props: `onChange`, `onCountChanged` → automatically wired via addEventListener
+ * - Model props: two-way binding via attribute + event listener
+ * - Regular props: passed as attributes on the custom element
+ * - Children: passed through as-is (use `<div slot="name">` for named slots)
+ * - Ref forwarding: supports React refs via forwardRef
+ *
+ * @param {string} tagName - The custom element tag name (e.g., 'wcc-card')
+ * @param {Object} [config] - Configuration for the wrapper
+ * @param {string[]} [config.events] - Custom event names to expose as onEventName props
+ *   Event names are converted: 'count-changed' → onCountChanged prop
+ * @param {string[]} [config.models] - Model prop names for two-way binding
+ *   Each model 'name' creates: `name` prop (sets attribute) + `onNameChanged` event
+ * @returns {import('react').ForwardRefExoticComponent} A React component
+ *
+ * @example
+ * const WccCounter = createWccWrapper('wcc-counter', {
+ *   events: ['change'],
+ *   models: ['count']
+ * })
+ *
+ * function App() {
+ *   const [count, setCount] = useState(0)
+ *   return (
+ *     <WccCounter
+ *       count={count}
+ *       onCountChanged={(e) => setCount(e.detail)}
+ *       onChange={(e) => console.log('changed', e.detail)}
+ *       label="Clicks"
+ *     >
+ *       <div slot="footer">Footer content</div>
+ *     </WccCounter>
+ *   )
+ * }
+ */
+export function createWccWrapper(tagName, config = {}) {
+  const { events = [], models = [] } = config
+
+  // Build a set of event prop names for quick lookup
+  // 'count-changed' → 'onCountChanged'
+  // 'change' → 'onChange'
+  const eventPropMap = new Map()
+  for (const eventName of events) {
+    const propName = 'on' + eventName.split('-').map(s => s[0].toUpperCase() + s.slice(1)).join('')
+    eventPropMap.set(propName, eventName)
+  }
+
+  // Model events: 'count' → 'count-changed' → 'onCountChanged'
+  const modelEventMap = new Map()
+  for (const modelName of models) {
+    const eventName = `${modelName}-changed`
+    const propName = 'on' + eventName.split('-').map(s => s[0].toUpperCase() + s.slice(1)).join('')
+    eventPropMap.set(propName, eventName)
+    modelEventMap.set(modelName, eventName)
+  }
+
+  // Reserved prop names that should not be passed as attributes
+  const SKIP_PROPS = new Set(['children', 'key', 'ref', 'style', 'className', 'dangerouslySetInnerHTML'])
+
+  const WccWrapper = React.forwardRef(function WccWrapper(props, externalRef) {
+    const internalRef = useRef(null)
+    const ref = externalRef || internalRef
+
+    // Store event handlers in a ref to avoid re-subscribing on every render
+    const handlersRef = useRef({})
+
+    // Collect event handlers and regular props
+    const regularProps = {}
+    const eventHandlers = {}
+
+    for (const [key, value] of Object.entries(props)) {
+      if (SKIP_PROPS.has(key)) continue
+
+      if (eventPropMap.has(key)) {
+        eventHandlers[eventPropMap.get(key)] = value
+      } else if (key.startsWith('on') && key.length > 2 && key[2] >= 'A' && key[2] <= 'Z') {
+        // Generic React event handler pattern: onClick, onFocus, etc.
+        // Convert onSomething → 'something' (lowercase first char)
+        const nativeEvent = key[2].toLowerCase() + key.slice(3)
+        eventHandlers[nativeEvent] = value
+      } else {
+        regularProps[key] = value
+      }
+    }
+
+    // Update handlers ref
+    handlersRef.current = eventHandlers
+
+    // Subscribe to custom events
+    useEffect(() => {
+      const el = typeof ref === 'function' ? null : ref?.current
+      if (!el) return
+
+      const listeners = []
+      const allEvents = new Set([...eventPropMap.values(), ...Object.keys(eventHandlers)])
+
+      for (const eventName of allEvents) {
+        const listener = (e) => {
+          const handler = handlersRef.current[eventName]
+          if (handler) handler(e)
+        }
+        el.addEventListener(eventName, listener)
+        listeners.push([eventName, listener])
+      }
+
+      return () => {
+        for (const [name, listener] of listeners) {
+          el.removeEventListener(name, listener)
+        }
+      }
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Sync regular props as attributes
+    useEffect(() => {
+      const el = typeof ref === 'function' ? null : ref?.current
+      if (!el) return
+
+      for (const [key, value] of Object.entries(regularProps)) {
+        if (value == null || value === false) {
+          el.removeAttribute(key)
+        } else if (value === true) {
+          el.setAttribute(key, '')
+        } else {
+          el.setAttribute(key, String(value))
+        }
+      }
+    })
+
+    // Build the element props for React's createElement
+    const elementProps = { ref }
+    if (props.style) elementProps.style = props.style
+    if (props.className) elementProps.className = props.className
+
+    return React.createElement(tagName, elementProps, props.children)
+  })
+
+  WccWrapper.displayName = tagName.split('-').map(s => s[0].toUpperCase() + s.slice(1)).join('')
+
+  return WccWrapper
+}
+
