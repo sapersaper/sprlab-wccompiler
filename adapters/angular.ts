@@ -3,7 +3,7 @@
  *
  * Exports:
  *   - WccSlotDef: Auxiliary directive for ng-template[slot]
- *   - WccSlotsDirective: Main directive that auto-activates on custom elements
+ *   - WccSlotsDirective: Main directive activated via [wccSlots] attribute
  *   - SlotContext: Interface for template context typing
  *
  * Usage:
@@ -13,12 +13,15 @@
  *     imports: [WccSlotsDirective, WccSlotDef],
  *     schemas: [CUSTOM_ELEMENTS_SCHEMA],
  *     template: `
- *       <wcc-card>
+ *       <wcc-card wccSlots>
  *         <ng-template slot="header"><strong>Header</strong></ng-template>
  *         <ng-template slot="stats" let-likes>{{ likes }} likes</ng-template>
  *       </wcc-card>
  *     `
  *   })
+ *
+ * Note: Add the `wccSlots` attribute to any WCC custom element that uses slots.
+ * This is required because Angular AOT cannot evaluate dynamic selectors.
  *
  * @module @sprlab/wccompiler/adapters/angular
  */
@@ -83,21 +86,15 @@ export class WccSlotDef {
 // ─── WccSlotsDirective — Main Directive ─────────────────────────────────────
 
 /**
- * Exclusion selector: lists all standard HTML elements.
- * Custom elements (which MUST contain a hyphen) are not excluded.
- */
-const STANDARD_ELEMENTS = 'div,span,p,a,button,input,form,section,article,header,footer,nav,main,ul,ol,li,table,tr,td,th,thead,tbody,tfoot,img,h1,h2,h3,h4,h5,h6,label,select,textarea,option,fieldset,legend,details,summary,dialog,slot,template,canvas,video,audio,source,iframe,pre,code,blockquote,hr,br,strong,em,small,sub,sup,mark,del,ins,figure,figcaption,picture,svg,math,body,html,head,script,style,link,meta,title,base,col,colgroup,caption,abbr,address,area,aside,b,bdi,bdo,cite,data,dd,dfn,dl,dt,i,kbd,map,meter,noscript,output,progress,q,rp,rt,ruby,s,samp,time,u,var,wbr';
-
-/** Build the exclusion selector string */
-const EXCLUSION_SELECTOR = STANDARD_ELEMENTS.split(',').map(t => `:not(${t})`).join('');
-
-/**
- * Main directive that auto-activates on custom elements (tags with hyphen).
+ * Main directive that activates on elements with the [wccSlots] attribute.
  * Classifies ng-template[slot] children as named or scoped slots and manages
  * their lifecycle.
+ *
+ * Uses a simple attribute selector `[wccSlots]` instead of a dynamic exclusion
+ * selector, because Angular AOT cannot evaluate computed selector expressions.
  */
 @Directive({
-  selector: EXCLUSION_SELECTOR,
+  selector: '[wccSlots]',
   standalone: true,
 })
 export class WccSlotsDirective implements AfterContentInit, OnDestroy {
@@ -131,7 +128,6 @@ export class WccSlotsDirective implements AfterContentInit, OnDestroy {
     const scopedNames: string[] = element.__scopedSlots || [];
 
     for (const slotDef of this.slotDefs) {
-      // Ignore templates with empty slot name
       if (!slotDef.slotName) continue;
 
       if (scopedNames.includes(slotDef.slotName)) {
@@ -237,7 +233,6 @@ export class WccSlotsDirective implements AfterContentInit, OnDestroy {
     const state = this.slots.get(slotName);
     if (!state || this.destroyed) return;
 
-    // Props null/undefined: clear the view
     if (props == null) {
       if (state.viewRef) {
         state.viewRef.destroy();
@@ -250,11 +245,9 @@ export class WccSlotsDirective implements AfterContentInit, OnDestroy {
     state.context = context;
 
     if (state.viewRef) {
-      // Update existing context
       Object.assign(state.viewRef.context, context);
       state.viewRef.markForCheck();
     } else {
-      // Create new view
       state.viewRef = this.vcr.createEmbeddedView(state.slotDef.templateRef, context);
       this.insertView(slotName, state);
     }
@@ -276,7 +269,6 @@ export class WccSlotsDirective implements AfterContentInit, OnDestroy {
       hostEl.appendChild(state.wrapperEl);
     }
 
-    // Clear previous wrapper content and append new nodes
     state.wrapperEl.innerHTML = '';
     for (const node of state.viewRef.rootNodes) {
       state.wrapperEl.appendChild(node);
@@ -287,7 +279,6 @@ export class WccSlotsDirective implements AfterContentInit, OnDestroy {
 
   /** Full cleanup on destroy */
   private cleanup(): void {
-    // Destroy views, invoke cleanup functions, remove wrappers
     for (const [, state] of this.slots) {
       if (state.viewRef) {
         state.viewRef.destroy();
@@ -301,7 +292,6 @@ export class WccSlotsDirective implements AfterContentInit, OnDestroy {
     }
     this.slots.clear();
 
-    // Remove event listeners
     for (const fn of this.eventCleanups) {
       fn();
     }
