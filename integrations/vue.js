@@ -76,12 +76,14 @@ export function wccVuePlugin(options = {}) {
 
       // Transform v-model:propName="expr" on custom elements (tags with hyphens)
       // Also handles modifiers: v-model:propName.trim.number="expr"
-      // → :propName="expr" @wcc:model="$event.detail.prop === 'propName' && (expr = value)"
+      // → :propName="expr" + merged @wcc:model handler
       //   with modifiers applied to the extracted value:
       //   .trim   → value.trim()  (for string values)
       //   .number → Number(value)
       //   .lazy   → no-op for custom elements
-      // Run in a loop to handle multiple v-model on the same element
+      //
+      // Multiple v-model:prop on the same element are merged into a single
+      // @wcc:model handler with semicolons (avoids Vue "Duplicate attribute" error).
       let prev = ''
       while (prev !== result) {
         prev = result
@@ -99,14 +101,23 @@ export function wccVuePlugin(options = {}) {
               }
               // .lazy is a no-op for custom elements (they already use change events)
             }
-            return `${prefix}:${prop}="${expr}" @wcc:model="$event.detail.prop === '${prop}' && (${expr} = ${value})"`
+            const handler = `$event.detail.prop === '${prop}' && (${expr} = ${value})`
+            // Check if there's already a @wcc:model on this element — append to it
+            if (prefix.includes('@wcc:model="')) {
+              const merged = prefix.replace(
+                /@wcc:model="([^"]*)"/,
+                (_, existing) => `@wcc:model="${existing}; ${handler}"`
+              )
+              return `${merged}:${prop}="${expr}"`
+            }
+            return `${prefix}:${prop}="${expr}" @wcc:model="${handler}"`
           }
         )
       }
 
       // Transform v-model="expr" (without argument) on custom elements
       // Also handles modifiers: v-model.trim.lazy="expr"
-      // → :model-value="expr" @wcc:model="$event.detail.prop === 'modelValue' && (expr = value)"
+      // → :model-value="expr" + merged @wcc:model handler
       prev = ''
       while (prev !== result) {
         prev = result
@@ -122,10 +133,28 @@ export function wccVuePlugin(options = {}) {
                 value = `Number(${value})`
               }
             }
-            return `${prefix}:model-value="${expr}" @wcc:model="$event.detail.prop === 'modelValue' && (${expr} = ${value})"`
+            const handler = `$event.detail.prop === 'modelValue' && (${expr} = ${value})`
+            // Check if there's already a @wcc:model on this element — append to it
+            if (prefix.includes('@wcc:model="')) {
+              const merged = prefix.replace(
+                /@wcc:model="([^"]*)"/,
+                (_, existing) => `@wcc:model="${existing}; ${handler}"`
+              )
+              return `${merged}:model-value="${expr}"`
+            }
+            return `${prefix}:model-value="${expr}" @wcc:model="${handler}"`
           }
         )
       }
+
+      // Post-process: merge any duplicate @wcc:model attributes on the same element
+      // This handles the case where v-model (no arg) was before v-model:prop in source order
+      result = result.replace(
+        /<([\w]+-[\w-]*)((?:\s[^>]*?)?)@wcc:model="([^"]*)"((?:\s[^>]*?)?)@wcc:model="([^"]*)"([^>]*?)>/g,
+        (match, tag, before, handler1, middle, handler2, after) => {
+          return `<${tag}${before}@wcc:model="${handler1}; ${handler2}"${middle}${after}>`
+        }
+      )
 
       // ── Slot transforms ──
       // Transform <template #name>content</template> inside custom elements
