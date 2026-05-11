@@ -3,9 +3,9 @@
 ## 🔴 PRIORIDAD ALTA
 
 - [ ] ⏫ **Tipado de componentes WCC en frameworks (DX)**
-  - Vue: registrar stubs generados como tipos globales de Volar (autocompletado de props/events en templates)
-  - React: ya funciona (JSX + .d.ts generados por `wcc build`)
-  - Angular: generar interfaces tipadas (limitado por CUSTOM_ELEMENTS_SCHEMA)
+  - ~~Vue: registrar stubs generados como tipos globales de Volar~~ ✅ v0.11.10 (`wcc build` genera `declare module 'vue' { GlobalComponents }`)
+  - ~~React: ya funciona (JSX + .d.ts generados por `wcc build`)~~ ✅ (limitación de React: custom elements son `any` en JSX)
+  - ~~Angular: generar interfaces tipadas~~ ✅ N/A (`CUSTOM_ELEMENTS_SCHEMA` desactiva type-checking por diseño)
   - WCC-to-WCC: language server lee `defineProps<T>` del hijo y ofrece autocompletado en template del padre
 
 - [ ] ⏫ **Source maps** — generar `.map` que mapee el JS compilado al `.wcc` original
