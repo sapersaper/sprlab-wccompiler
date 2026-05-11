@@ -36,6 +36,7 @@ async function build(config, cwd) {
       const { code, usesSharedRuntime } = await compile(file, {
         standalone: config.standalone,
         minify: config.minify,
+        comments: config.comments,
         runtimeImportPath,
       });
 
@@ -212,6 +213,7 @@ async function main() {
 
   // CLI flags override config
   if (process.argv.includes('--minify')) config.minify = true;
+  if (process.argv.includes('--comments')) config.comments = true;
 
   if (command === 'build') {
     const errors = await build(config, cwd);
@@ -241,6 +243,7 @@ async function main() {
         const { code, usesSharedRuntime } = await compile(filePath, {
           standalone: config.standalone,
           minify: config.minify,
+          comments: config.comments,
           runtimeImportPath,
         });
 
