@@ -357,15 +357,20 @@ function increment() {
         <div class="feature-card">
           <h3>🔗 Framework Integrations</h3>
           <p>Native in any framework. Props, events, named slots, and two-way binding work out of the box. Optional plugins for scoped slots and idiomatic DX.</p>
-          <pre class="feature-code"><code>// Zero-config — just use it
-// Vue:  &lt;wcc-counter :count="ref"&gt;
-// React: &lt;wcc-counter count={state}&gt;
-// Angular: &lt;wcc-counter [(count)]="signal"&gt;
+          <pre class="feature-code"><code>// Vue
+&lt;wcc-counter v-model:count="ref"&gt;
+  &lt;template #item="{ name }"&gt;{{name}}&lt;/template&gt;
+&lt;/wcc-counter&gt;
 
-// Optional plugins for premium DX:
-import { wccVuePlugin } from '...integrations/vue'
-import { wccReactPlugin } from '...integrations/react'
-import { WccSlotsDirective } from '...adapters/angular'</code></pre>
+// React
+&lt;WccCard&gt;
+  &lt;WccCard.Header&gt;Title&lt;/WccCard.Header&gt;
+&lt;/WccCard&gt;
+
+// Angular
+&lt;wcc-counter [(count)]="signal"&gt;
+  &lt;ng-template slot="item" let-name&gt;{{name}}&lt;/ng-template&gt;
+&lt;/wcc-counter&gt;</code></pre>
         </div>
       </div>
     </section>
@@ -373,7 +378,7 @@ import { WccSlotsDirective } from '...adapters/angular'</code></pre>
 
   <!-- ── 8. Footer ── -->
   <footer class="footer">
-    <p><strong>wcCompiler</strong> v0.10.5 — MIT License — by <a href="https://github.com/sapersaper">sprlab</a></p>
+    <p><strong>wcCompiler</strong> v0.10.11 — MIT License — by <a href="https://github.com/sapersaper">sprlab</a></p>
     <p class="footer-links">
       <a href="https://github.com/sapersaper/sprlab-wccompiler">GitHub</a> ·
       <a href="https://www.npmjs.com/package/@sprlab/wccompiler">npm</a> ·
