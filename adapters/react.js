@@ -143,12 +143,15 @@ function toReactEventProp(eventName) {
  *   Event names are converted: 'count-changed' → onCountChange prop (React convention)
  * @param {string[]} [config.models] - Model prop names for two-way binding
  *   Each model 'name' creates: `name` prop (sets attribute) + `onNameChange` event
- * @returns {import('react').ForwardRefExoticComponent} A React component
+ * @param {string[]} [config.slots] - Named slot names for compound sub-components
+ *   Each slot 'name' creates a `.Name` sub-component that renders `<div slot="name">`
+ * @returns {import('react').ForwardRefExoticComponent} A React component with compound sub-components
  *
  * @example
  * const WccCounter = createWccWrapper('wcc-counter', {
  *   events: ['change'],
- *   models: ['count']
+ *   models: ['count'],
+ *   slots: ['header', 'footer']
  * })
  *
  * function App() {
@@ -160,13 +163,15 @@ function toReactEventProp(eventName) {
  *       onChange={(value) => console.log('changed', value)}
  *       label="Clicks"
  *     >
- *       <div slot="footer">Footer content</div>
+ *       <WccCounter.Header><strong>Title</strong></WccCounter.Header>
+ *       <p>Body content</p>
+ *       <WccCounter.Footer>Footer text</WccCounter.Footer>
  *     </WccCounter>
  *   )
  * }
  */
 export function createWccWrapper(tagName, config = {}) {
-  const { events = [], models = [] } = config
+  const { events = [], models = [], slots = [] } = config
 
   // Build a set of event prop names for quick lookup
   // Convention: kebab-case event → React onCamelCase (without trailing 'd' from 'changed')
@@ -270,6 +275,24 @@ export function createWccWrapper(tagName, config = {}) {
 
   WccWrapper.displayName = tagName.split('-').map(s => s[0].toUpperCase() + s.slice(1)).join('')
 
+  // Compound components: generate .SlotName sub-components for each named slot
+  // This enables the pattern: <WccLayout.Header>content</WccLayout.Header>
+  // which renders as: <div slot="header">content</div>
+  for (const slotName of slots) {
+    if (!slotName) continue // skip default slot
+    const pascalSlot = slotName[0].toUpperCase() + slotName.slice(1)
+    const SlotComponent = function WccSlot({ children, ...rest }) {
+      const slotProps = { slot: slotName, style: { display: 'contents' } }
+      // Pass through any extra props as attributes on the wrapper div
+      for (const [key, value] of Object.entries(rest)) {
+        slotProps[key] = value
+      }
+      return React.createElement('div', slotProps, children)
+    }
+    SlotComponent.displayName = `${WccWrapper.displayName}.${pascalSlot}`
+    WccWrapper[pascalSlot] = SlotComponent
+  }
+
   return WccWrapper
 }
 
@@ -304,6 +327,7 @@ export function wrapWccComponent(WccClass) {
   return createWccWrapper(meta.tag, {
     events: meta.events || [],
     models: meta.models || [],
+    slots: meta.slots || [],
   })
 }
 
@@ -326,8 +350,12 @@ export function wrapWccComponent(WccClass) {
  * export const { WccCounter, WccCard } = createWccWrappers()
  *
  * // Then use anywhere:
- * <WccCounter count={count} onCountChanged={setCount} />
- * <WccCard><div slot="header">Title</div></WccCard>
+ * <WccCounter count={count} onCountChange={setCount} />
+ * <WccCard>
+ *   <WccCard.Header><strong>Title</strong></WccCard.Header>
+ *   <p>Body</p>
+ *   <WccCard.Footer>Footer</WccCard.Footer>
+ * </WccCard>
  */
 export function createWccWrappers(options = {}) {
   const { prefix = 'wcc-' } = options
