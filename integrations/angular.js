@@ -44,12 +44,12 @@
  * ```
  *
  * @example Two-way binding with [(prop)]
- * The adapter translates wcc:model events to Angular's propChange convention.
+ * The WccModel directive translates wcc:model events to Angular's propChange convention.
  * Angular's banana-in-a-box [(prop)] expands to:
  *   [prop]="value" (propChange)="value = $event.detail"
  *
  * So when the WCC component emits wcc:model with { prop: 'value', value: 'new' },
- * the adapter re-dispatches as 'valueChange' CustomEvent, which Angular picks up.
+ * the WccModel directive re-dispatches as 'valueChange' CustomEvent, which Angular picks up.
  *
  * @example ngModel support (requires ControlValueAccessor)
  * For ngModel/ReactiveForms, see the WccValueAccessor guide in:

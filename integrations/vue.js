@@ -65,11 +65,9 @@ export function wccVuePlugin(options = {}) {
 
       let result = code
 
-      // NOTE: As of WCC 0.10.3+, basic events work WITHOUT this plugin because
-      // the compiled component emits events in multiple formats (kebab, camelCase, lowercase).
-      // However, v-model:propName STILL REQUIRES this plugin because Vue assigns the raw
-      // Event object to the ref — it doesn't extract .detail automatically.
-      // This transform rewrites v-model:prop to @prop-changed="ref = $event.detail".
+      // NOTE: The compiled WCC component emits only `wcc:model` as its single
+      // canonical model change event. Framework-specific event formats are handled
+      // by each framework's adapter/plugin.
       //
       // This plugin is needed for:
       //   1. v-model:propName (Vue can't unwrap CustomEvent.detail natively)
@@ -78,11 +76,11 @@ export function wccVuePlugin(options = {}) {
 
       // Transform v-model:propName="expr" on custom elements (tags with hyphens)
       // Also handles modifiers: v-model:propName.trim.number="expr"
-      // → :propName="expr" @propName-changed="expr = $event.detail"
-      //   with modifiers applied to the event handler value:
-      //   .trim   → $event.detail.trim()  (for string values)
-      //   .number → Number($event.detail)
-      //   .lazy   → uses @propName-changed (same event, no difference for CE)
+      // → :propName="expr" @wcc:model="$event.detail.prop === 'propName' && (expr = value)"
+      //   with modifiers applied to the extracted value:
+      //   .trim   → value.trim()  (for string values)
+      //   .number → Number(value)
+      //   .lazy   → no-op for custom elements
       // Run in a loop to handle multiple v-model on the same element
       let prev = ''
       while (prev !== result) {
@@ -91,7 +89,7 @@ export function wccVuePlugin(options = {}) {
           /(<[\w]+-[\w-]*(?:\s[^>]*?)?)\bv-model:(\w+)((?:\.\w+)*)="([^"]+)"/,
           (match, prefix, prop, modifiersStr, expr) => {
             const modifiers = modifiersStr ? modifiersStr.slice(1).split('.') : []
-            let value = '$event.detail'
+            let value = '$event.detail.value'
             // Apply modifiers in order
             for (const mod of modifiers) {
               if (mod === 'trim') {
@@ -101,14 +99,14 @@ export function wccVuePlugin(options = {}) {
               }
               // .lazy is a no-op for custom elements (they already use change events)
             }
-            return `${prefix}:${prop}="${expr}" @${prop}-changed="${expr} = ${value}"`
+            return `${prefix}:${prop}="${expr}" @wcc:model="$event.detail.prop === '${prop}' && (${expr} = ${value})"`
           }
         )
       }
 
       // Transform v-model="expr" (without argument) on custom elements
       // Also handles modifiers: v-model.trim.lazy="expr"
-      // → :model-value="expr" @model-value-changed="expr = $event.detail"
+      // → :model-value="expr" @wcc:model="$event.detail.prop === 'modelValue' && (expr = value)"
       prev = ''
       while (prev !== result) {
         prev = result
@@ -116,7 +114,7 @@ export function wccVuePlugin(options = {}) {
           /(<[\w]+-[\w-]*(?:\s[^>]*?)?)\bv-model((?:\.\w+)*)="([^"]+)"/,
           (match, prefix, modifiersStr, expr) => {
             const modifiers = modifiersStr ? modifiersStr.slice(1).split('.') : []
-            let value = '$event.detail'
+            let value = '$event.detail.value'
             for (const mod of modifiers) {
               if (mod === 'trim') {
                 value = `(typeof ${value} === 'string' ? (${value}).trim() : ${value})`
@@ -124,7 +122,7 @@ export function wccVuePlugin(options = {}) {
                 value = `Number(${value})`
               }
             }
-            return `${prefix}:model-value="${expr}" @model-value-changed="${expr} = ${value}"`
+            return `${prefix}:model-value="${expr}" @wcc:model="$event.detail.prop === 'modelValue' && (${expr} = ${value})"`
           }
         )
       }

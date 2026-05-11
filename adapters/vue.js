@@ -20,11 +20,11 @@
  */
 
 // ── Vue directive: v-wcc-model ──────────────────────────────────────
-// Fallback for non-Vite setups. Listens for propName-changed events directly.
+// Fallback for non-Vite setups. Listens for wcc:model and filters by prop name.
 
 /**
  * Vue custom directive for two-way binding with WCC defineModel props.
- * Listens for `propName-changed` CustomEvent (emitted by WCC _modelSet).
+ * Listens for `wcc:model` CustomEvent and filters by prop name.
  */
 export const vWccModel = {
   mounted(el, binding) {
@@ -39,9 +39,10 @@ export const vWccModel = {
       el.setAttribute(propName, String(binding.value));
     }
 
-    // Listen for propName-changed (WCC → Vue)
-    const kebabName = propName.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+    // Listen for wcc:model (WCC → Vue), filter by prop name
     const handler = (e) => {
+      if (e.detail?.prop !== propName) return;
+      const newVal = e.detail.value;
       // Try to update the Vue ref via setupState
       const instance = binding.instance;
       if (instance) {
@@ -51,9 +52,9 @@ export const vWccModel = {
           const val = setupState[key];
           if (val === binding.value || val?.value === binding.value) {
             if (val?.value !== undefined) {
-              val.value = e.detail;
+              val.value = newVal;
             } else {
-              setupState[key] = e.detail;
+              setupState[key] = newVal;
             }
             break;
           }
@@ -61,9 +62,9 @@ export const vWccModel = {
       }
     };
 
-    el.addEventListener(`${kebabName}-changed`, handler);
+    el.addEventListener('wcc:model', handler);
     el.__wccModelHandlers = el.__wccModelHandlers || {};
-    el.__wccModelHandlers[propName] = { handler, eventName: `${kebabName}-changed` };
+    el.__wccModelHandlers[propName] = { handler, eventName: 'wcc:model' };
   },
 
   updated(el, binding) {
