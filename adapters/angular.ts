@@ -127,12 +127,47 @@ export class WccSlotsDirective implements AfterContentInit, OnDestroy {
     // Runtime guard: only proceed for custom elements (tag name contains hyphen)
     if (!this.el.nativeElement.tagName.toLowerCase().includes('-')) return;
 
+    // Normalize Angular-style slot attributes: slot-header → slot="header"
+    this.normalizeSlotAttributes();
+
     this.classifyAndInitSlots();
   }
 
   ngOnDestroy(): void {
     this.destroyed = true;
     this.cleanup();
+  }
+
+  // ─── Slot Attribute Normalization ───────────────────────────────────────
+
+  /**
+   * Normalizes Angular-style slot attributes to standard HTML slot attributes.
+   * Converts: <div slot-header> → <div slot="header">
+   *
+   * This enables the Angular ng-content select pattern:
+   *   <wcc-card wccSlots>
+   *     <nav slot-header>Title</nav>
+   *     <span slot-footer>Footer</span>
+   *   </wcc-card>
+   *
+   * Skips reserved prefixes: slot-props, slot-template-*
+   */
+  private normalizeSlotAttributes(): void {
+    const hostEl = this.el.nativeElement;
+    for (const child of Array.from(hostEl.children)) {
+      for (const attr of Array.from(child.attributes)) {
+        if (
+          attr.name.startsWith('slot-') &&
+          !attr.value &&
+          attr.name !== 'slot-props' &&
+          !attr.name.startsWith('slot-template-')
+        ) {
+          const slotName = attr.name.slice(5); // "slot-header" → "header"
+          child.removeAttribute(attr.name);
+          child.setAttribute('slot', slotName);
+        }
+      }
+    }
   }
 
   // ─── Classification ─────────────────────────────────────────────────────

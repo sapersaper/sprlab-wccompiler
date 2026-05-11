@@ -1,26 +1,37 @@
 /**
- * Angular adapter for WCC Scoped Slots.
+ * Angular adapter for WCC Scoped Slots and Event Binding.
  *
  * Exports:
  *   - WccSlotDef: Auxiliary directive for ng-template[slot]
  *   - WccSlotsDirective: Main directive activated via [wccSlots] attribute
+ *   - WccEvent: Single-event directive (wccEvent="name" + wccEmit output)
+ *   - WccEvents: Multi-event bridging directive (kebab-case → camelCase)
  *   - SlotContext: Interface for template context typing
  *
  * Usage:
- *   import { WccSlotsDirective, WccSlotDef } from '@sprlab/wccompiler/adapters/angular';
+ *   import { WccSlotsDirective, WccSlotDef, WccEvent, WccEvents } from '@sprlab/wccompiler/adapters/angular';
  *
  *   @Component({
- *     imports: [WccSlotsDirective, WccSlotDef],
+ *     imports: [WccSlotsDirective, WccSlotDef, WccEvent, WccEvents],
  *     schemas: [CUSTOM_ELEMENTS_SCHEMA],
  *     template: `
  *       <wcc-card wccSlots>
  *         <ng-template slot="header"><strong>Header</strong></ng-template>
  *         <ng-template slot="stats" let-likes>{{ likes }} likes</ng-template>
  *       </wcc-card>
+ *
+ *       <!-- Event binding option 1: single event with unwrapped detail -->
+ *       <wcc-counter wccEvent="count-changed" (wccEmit)="onCount($event)"></wcc-counter>
+ *
+ *       <!-- Event binding option 2: camelCase event names -->
+ *       <wcc-counter wccEvents (countChanged)="onCount($event.detail)"></wcc-counter>
+ *
+ *       <!-- Event binding option 3: standard Angular (always works) -->
+ *       <wcc-counter (count-changed)="onCount($event.detail)"></wcc-counter>
  *     `
  *   })
  *
- * Note: Add the `wccSlots` attribute to any WCC custom element that uses slots.
+ * Note: Add the `wccSlots` attribute to any WCC element that uses slots.
  * This is required because Angular AOT cannot evaluate dynamic selectors.
  *
  * @module @sprlab/wccompiler/adapters/angular
@@ -76,11 +87,41 @@ export class WccSlotsDirective {
         // Runtime guard: only proceed for custom elements (tag name contains hyphen)
         if (!this.el.nativeElement.tagName.toLowerCase().includes('-'))
             return;
+        // Normalize Angular-style slot attributes: slot-header → slot="header"
+        this.normalizeSlotAttributes();
         this.classifyAndInitSlots();
     }
     ngOnDestroy() {
         this.destroyed = true;
         this.cleanup();
+    }
+    // ─── Slot Attribute Normalization ───────────────────────────────────────
+    /**
+     * Normalizes Angular-style slot attributes to standard HTML slot attributes.
+     * Converts: <div slot-header> → <div slot="header">
+     *
+     * This enables the Angular ng-content select pattern:
+     *   <wcc-card wccSlots>
+     *     <nav slot-header>Title</nav>
+     *     <span slot-footer>Footer</span>
+     *   </wcc-card>
+     *
+     * Skips reserved prefixes: slot-props, slot-template-*
+     */
+    normalizeSlotAttributes() {
+        const hostEl = this.el.nativeElement;
+        for (const child of Array.from(hostEl.children)) {
+            for (const attr of Array.from(child.attributes)) {
+                if (attr.name.startsWith('slot-') &&
+                    !attr.value &&
+                    attr.name !== 'slot-props' &&
+                    !attr.name.startsWith('slot-template-')) {
+                    const slotName = attr.name.slice(5); // "slot-header" → "header"
+                    child.removeAttribute(attr.name);
+                    child.setAttribute('slot', slotName);
+                }
+            }
+        }
     }
     // ─── Classification ─────────────────────────────────────────────────────
     /** Classifies slots using __scopedSlots from the host element and initializes them */
