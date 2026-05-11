@@ -897,6 +897,43 @@ No configuration needed:
 </wcc-list>
 ```
 
+### TypeScript Types for Frameworks
+
+`wcc build` auto-generates typed stubs for each framework in the `dist/` folder:
+
+```
+dist/
+├── wcc-vue.d.ts      ← Vue/Volar prop autocompletion
+├── wcc-vue.js        ← Vue component stubs
+├── wcc-react.d.ts    ← React compound component types
+├── wcc-react.js      ← React component stubs
+└── ...
+```
+
+**Vue (Volar autocompletion)**
+
+Add `dist/wcc-vue.d.ts` to your tsconfig to get prop/event autocompletion in `.vue` templates:
+
+```json
+// tsconfig.json
+{
+  "include": ["src/**/*", "dist/wcc-vue.d.ts"]
+}
+```
+
+After this, Volar provides:
+- Prop autocompletion: `<wcc-counter :la|` → suggests `label`
+- Type-checking: `<wcc-counter :count="'string'">` → type error (expects number)
+- Event types on hover
+
+**React**
+
+React 19 treats custom elements (hyphenated tags) as `any` in JSX — this is by React's design. No additional type setup needed. Compound component stubs (`WccCard.Header`) are typed via `dist/wcc-react.d.ts` and work when imported directly.
+
+**Angular**
+
+Angular's `CUSTOM_ELEMENTS_SCHEMA` disables all type-checking on custom elements. No additional type setup possible from the library side.
+
 ## Editor Support
 
 The **wcCompiler (.wcc) Language Support** extension is available on the VS Code Marketplace. It provides syntax highlighting, completions, and diagnostics for `.wcc` files.
