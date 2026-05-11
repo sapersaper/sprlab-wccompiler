@@ -643,9 +643,102 @@ export function wccReactPlugin(options = {}) {
           const openingElement = path.node.openingElement
           const nameNode = openingElement.name
 
+          // ── Compound component transform ──
+          // <WccCard.Header>children</WccCard.Header> → <div slot="header" style={{display:'contents'}}>children</div>
+          // <WccCard.Stats>{(likes) => <span>{likes}</span>}</WccCard.Stats> → scoped slot div
+          if (nameNode.type === 'JSXMemberExpression') {
+            const objectName = nameNode.object?.name // e.g., 'WccCard'
+            const propName = nameNode.property?.name // e.g., 'Header'
+            if (!objectName || !propName) return
+
+            // Convert PascalCase object to kebab-case and check if it's a custom element
+            const kebab = objectName.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '')
+            if (!kebab.includes('-')) return
+            if (prefix && !kebab.startsWith(prefix)) return
+
+            // Derive slot name: Header → header, FooterNav → footerNav (lcfirst)
+            const slotName = propName[0].toLowerCase() + propName.slice(1)
+
+            // Check if children is a function (scoped slot / render prop pattern)
+            const children = path.node.children
+            const isScopedSlot = children.length === 1
+              && children[0].type === 'JSXExpressionContainer'
+              && children[0].expression.type === 'ArrowFunctionExpression'
+
+            if (isScopedSlot) {
+              // Scoped slot: <WccCard.Stats>{(likes) => <span>{likes}</span>}</WccCard.Stats>
+              const arrowFn = children[0].expression
+              const params = (arrowFn.params || []).map(p => p.name || '')
+              const body = arrowFn.body
+
+              // Warn on unsupported expressions
+              const renderWarnings = []
+              serializeJsxToHtml(body, params, renderWarnings)
+              if (renderWarnings.length > 0) {
+                pluginCtx.warn(`[wcc-react] ${id} — ${objectName}.${propName}: ${renderWarnings[0]}`)
+                return
+              }
+
+              // Replace with scoped slot element
+              const scopedEl = generateScopedSlotElement(slotName, params, body)
+              path.replaceWith(scopedEl)
+              transformed = true
+            } else {
+              // Named slot: <WccCard.Header><strong>Title</strong></WccCard.Header>
+              // → <div slot="header" style={{display:'contents'}}>children</div>
+              const slotAttr = {
+                type: 'JSXAttribute',
+                name: { type: 'JSXIdentifier', name: 'slot' },
+                value: { type: 'StringLiteral', value: slotName }
+              }
+              const styleAttr = {
+                type: 'JSXAttribute',
+                name: { type: 'JSXIdentifier', name: 'style' },
+                value: {
+                  type: 'JSXExpressionContainer',
+                  expression: {
+                    type: 'ObjectExpression',
+                    properties: [{
+                      type: 'ObjectProperty',
+                      key: { type: 'Identifier', name: 'display' },
+                      value: { type: 'StringLiteral', value: 'contents' },
+                      computed: false,
+                      shorthand: false
+                    }]
+                  }
+                }
+              }
+
+              openingElement.name = { type: 'JSXIdentifier', name: 'div' }
+              openingElement.attributes = [...openingElement.attributes, slotAttr, styleAttr]
+              if (path.node.closingElement) {
+                path.node.closingElement.name = { type: 'JSXIdentifier', name: 'div' }
+              }
+              transformed = true
+            }
+            return
+          }
+
+          // ── PascalCase custom element transform ──
+          // <WccCard> → <wcc-card> (only if it maps to a hyphenated tag)
+          if (nameNode.type === 'JSXIdentifier' && /^[A-Z]/.test(nameNode.name)) {
+            const kebab = nameNode.name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '')
+            if (!kebab.includes('-')) return
+            if (prefix && !kebab.startsWith(prefix)) return
+
+            // Rewrite tag name to kebab-case
+            openingElement.name = { type: 'JSXIdentifier', name: kebab }
+            if (path.node.closingElement) {
+              path.node.closingElement.name = { type: 'JSXIdentifier', name: kebab }
+            }
+            transformed = true
+            // Fall through to process props on this element
+          }
+
           // Only process elements with hyphenated tag names (custom elements)
-          if (nameNode.type !== 'JSXIdentifier') return
-          const tagName = nameNode.name
+          const currentName = openingElement.name
+          if (currentName.type !== 'JSXIdentifier') return
+          const tagName = currentName.name
           if (!tagName.includes('-')) return
 
           // Apply prefix filtering if set
