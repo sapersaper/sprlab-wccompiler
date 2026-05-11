@@ -60,6 +60,29 @@ Complete list of features supported by the compiler for building native web comp
 | Scoped slot | `<template #name="{ prop }">{{prop}}</template>` | Receive reactive data from slot |
 | Default slot | Plain child elements | Content for the default slot |
 
+## Angular Native Scoped Slots
+
+Native Angular integration for WCC scoped slots using idiomatic Angular syntax (`ng-template`, `let-*`).
+
+| Feature | Syntax | Description |
+|---|---|---|
+| Import directives | `import { WccSlotsDirective, WccSlotDef } from '@sprlab/wccompiler/adapters/angular'` | Import into component `imports` array |
+| Named slot | `<ng-template slot="header">content</ng-template>` | Static content projected into named slot |
+| Scoped slot (single prop) | `<ng-template slot="stats" let-likes>{{likes}}</ng-template>` | Reactive data from slot via `$implicit` |
+| Scoped slot (multi-prop) | `<ng-template slot="details" let-likes="likes" let-total="total">` | Multiple named props from slot |
+| Auto-activation | No attribute needed | Directive activates on custom elements (tags with hyphen) |
+| OnPush compatible | `changeDetection: ChangeDetectionStrategy.OnPush` | Works with OnPush via `markForCheck()` |
+| Backward compatible | `slot-template-*` still works | Legacy token replacement preserved as fallback |
+
+**How it works:**
+- `WccSlotDef` captures `TemplateRef` and slot name from the HTML `slot` attribute on `ng-template`
+- `WccSlotsDirective` classifies slots as named or scoped using the `__scopedSlots` static array emitted by codegen
+- Named slots render immediately into `<div slot="name" style="display:contents">` wrappers
+- Scoped slots register a renderer callback via `element.registerSlotRenderer()` and render reactively
+- The `wcc:slot-update` event provides a fallback mechanism for components without `registerSlotRenderer`
+
+**Adapter module:** `adapters/angular.ts`
+
 ## CSS
 
 | Feature | Description |

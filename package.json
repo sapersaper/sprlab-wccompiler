@@ -1,13 +1,19 @@
 {
   "name": "@sprlab/wccompiler",
-  "version": "0.7.3",
+  "version": "0.10.12",
   "description": "Zero-runtime compiler that transforms .wcc single-file components into native web components with signals-based reactivity",
   "type": "module",
   "exports": {
     ".": "./lib/compiler.js",
     "./integrations/vue": "./integrations/vue.js",
     "./integrations/react": "./integrations/react.js",
-    "./integrations/angular": "./integrations/angular.js"
+    "./integrations/angular": "./integrations/angular.js",
+    "./adapters/vue": "./adapters/vue.js",
+    "./adapters/angular": {
+      "types": "./adapters/angular-compiled/angular.d.ts",
+      "default": "./adapters/angular-compiled/angular.mjs"
+    },
+    "./adapters/react": "./adapters/react.js"
   },
   "bin": {
     "wcc": "./bin/wcc.js"
@@ -17,6 +23,7 @@
     "lib/*.js",
     "!lib/*.test.js",
     "integrations/",
+    "adapters/",
     "types/",
     "README.md"
   ],
@@ -38,20 +45,32 @@
     "access": "public"
   },
   "dependencies": {
+    "@babel/generator": "^7.27.0",
+    "@babel/parser": "^7.27.0",
+    "@babel/traverse": "^7.27.0",
+    "@babel/types": "^7.27.0",
     "esbuild": "^0.27.0",
     "linkedom": "^0.18.12"
   },
   "peerDependencies": {
+    "@angular/core": ">=14.0.0",
     "@vitejs/plugin-vue": ">=4.0.0",
-    "vue": ">=3.0.0",
     "react": ">=18.0.0",
-    "@angular/core": ">=14.0.0"
+    "vue": ">=3.0.0"
   },
   "peerDependenciesMeta": {
-    "@vitejs/plugin-vue": { "optional": true },
-    "vue": { "optional": true },
-    "react": { "optional": true },
-    "@angular/core": { "optional": true }
+    "@angular/core": {
+      "optional": true
+    },
+    "@vitejs/plugin-vue": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "fast-check": "^4.1.1",

@@ -192,6 +192,11 @@ watch(count, (newVal, oldVal) => {
 watch(() => props.count, (newVal, oldVal) => {
   console.log(`Prop changed: ${oldVal} → ${newVal}`)
 })
+
+// Watch a derived expression
+watch(() => count() * 2, (newVal, oldVal) => {
+  console.log(`Doubled changed: ${oldVal} → ${newVal}`)
+})
 ```
 
 `watch` observes a specific signal or getter and provides both old and new values. The callback does not run on initial mount — only on subsequent changes.
@@ -247,6 +252,58 @@ const emit = defineEmits<{ (e: 'change', value: number): void }>()
 ```
 
 The compiler validates emit calls against declared events at compile time.
+
+## defineModel (Two-Way Binding)
+
+`defineModel` declares a prop that supports two-way binding across frameworks:
+
+```js
+import { defineModel } from 'wcc'
+
+const count = defineModel({ name: 'count', default: 0 })
+const title = defineModel({ name: 'title', default: 'untitled' })
+```
+
+Read and write like a signal:
+```js
+count()          // read current value
+count.set(5)     // write — updates internal state + emits events
+```
+
+**Events emitted on write:**
+
+| Event | Purpose |
+|-------|---------|
+| `count-changed` | Kebab-case — for Vue plugin, addEventListener |
+| `countChanged` | camelCase — for Angular, direct binding |
+| `countChange` | Angular `[(count)]` banana-box syntax |
+| `wcc:model` | Generic — for vanilla JS and WCC-to-WCC |
+
+**Usage per framework:**
+
+```vue
+<!-- Vue (with plugin) -->
+<wcc-counter v-model:count="ref"></wcc-counter>
+
+<!-- Vue (without plugin) -->
+<wcc-counter :count="ref" @count-changed="ref = $event.detail"></wcc-counter>
+```
+
+```jsx
+// React (with wrapper)
+<WccCounter count={count} onCountChange={(value) => setCount(value)} />
+
+// React (native CE)
+<wcc-counter count={count} oncountchanged={(e) => setCount(e.detail)} />
+```
+
+```html
+<!-- Angular (zero-config two-way) -->
+<wcc-counter [(count)]="signal"></wcc-counter>
+
+<!-- Angular (manual) -->
+<wcc-counter [count]="signal()" (countChange)="signal.set($event.detail)"></wcc-counter>
+```
 
 ## Template Directives
 
@@ -638,72 +695,206 @@ Each standalone component has its own isolated reactive runtime. Signals from co
 
 ## Framework Integrations
 
-WCC components are native custom elements — they work in any framework. Optional integration helpers reduce configuration friction:
+WCC components are native custom elements — they work in any framework. Props, events, and named slots work natively with zero WCC-specific config. Two-way binding is zero-config in Angular; Vue requires a plugin. Scoped slots require a framework plugin or directive for idiomatic syntax.
 
-### Vue 3 (Vite)
+### Feature Support Matrix
+
+| Feature | Vue (plugin) | Angular (directive) | React 19 (plugin) |
+|---------|--------------|--------------------|--------------------|
+| Props | ✅ `:count="ref"` | ✅ `[count]="signal()"` | ✅ `count={state}` |
+| Events | ✅ `@count-changed="handler($event.detail)"` | ✅ `(count-changed)="handler($event.detail)"` | ✅ `oncountchanged={(e) => handler(e.detail)}` |
+| Two-way binding | ✅ `v-model:count="ref"` | ✅ `[(count)]="signal"` | ❌ Not applicable |
+| Default slot | ✅ children | ✅ children | ✅ children |
+| Named slots | ✅ `<template #name>` | ✅ `<div slot-name>` | ✅ `<WccCard.Header>` |
+| Scoped slots | ✅ `<template #name="{ prop }">` | ✅ `<ng-template slot="name" let-prop>` | ✅ `<WccList.Item>{(prop) => jsx}</WccList.Item>` |
+
+### Vue (with `wccVuePlugin`)
 
 ```js
 // vite.config.js
 import { wccVuePlugin } from '@sprlab/wccompiler/integrations/vue'
-
-export default defineConfig({
-  plugins: [wccVuePlugin()]
-})
-
-// Custom prefix:
-// plugins: [wccVuePlugin({ prefix: 'my-' })]
+export default defineConfig({ plugins: [wccVuePlugin()] })
 ```
 
-### React
+```vue
+<script setup>
+import { ref } from 'vue'
+const count = ref(0)
+const text = ref('')
+</script>
 
-React 19+ supports custom elements natively. For React 18, use the event hook to bridge CustomEvents:
+<template>
+  <!-- Props -->
+  <wcc-counter :count="count" label="Clicks"></wcc-counter>
 
-```jsx
-import { useRef } from 'react'
-import { useWccEvent } from '@sprlab/wccompiler/integrations/react'
+  <!-- Events -->
+  <wcc-counter @count-changed="count = $event.detail"></wcc-counter>
 
-function App() {
-  // Form 1: Pass an existing ref
-  const counterRef = useRef(null)
-  useWccEvent(counterRef, 'change', (e) => console.log(e.detail))
-  return <wcc-counter ref={counterRef}></wcc-counter>
-}
+  <!-- Two-way binding (v-model) -->
+  <wcc-counter v-model:count="count"></wcc-counter>
+  <wcc-input v-model.trim="text"></wcc-input>
 
-// Form 2: Let the hook create the ref
-function App2() {
-  const ref = useWccEvent('change', (e) => console.log(e.detail))
-  return <wcc-counter ref={ref}></wcc-counter>
-}
+  <!-- Default slot -->
+  <wcc-card>
+    <p>Body content</p>
+  </wcc-card>
+
+  <!-- Named slots -->
+  <wcc-card>
+    <template #header><strong>Title</strong></template>
+    <p>Body</p>
+    <template #footer>Footer text</template>
+  </wcc-card>
+
+  <!-- Scoped slots -->
+  <wcc-list>
+    <template #item="{ item, index }">
+      <li>{{ index }}: {{ item }}</li>
+    </template>
+  </wcc-list>
+</template>
 ```
 
-### Angular
+The plugin provides: `isCustomElement` config, `v-model:prop` support, v-model modifiers (`.trim`, `.number`), and scoped slot syntax (`{{prop}}` → `{%prop%}` escape).
 
-Add `CUSTOM_ELEMENTS_SCHEMA` to your component or module — this is Angular's built-in way to allow custom elements:
+### Angular (with `WccSlotsDirective`)
 
 ```ts
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import { WccSlotsDirective, WccSlotDef } from '@sprlab/wccompiler/adapters/angular'
 
-// Standalone component (Angular 17+)
 @Component({
+  imports: [WccSlotsDirective, WccSlotDef],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  template: `<wcc-counter></wcc-counter>`
-})
-export class AppComponent {}
+  template: `
+    <!-- Props -->
+    <wcc-counter [count]="count" label="Clicks"></wcc-counter>
 
-// Or NgModule approach
-@NgModule({
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    <!-- Events -->
+    <wcc-counter (count-changed)="onCount($event.detail)"></wcc-counter>
+
+    <!-- Two-way binding (banana-box) -->
+    <wcc-counter [(count)]="count"></wcc-counter>
+
+    <!-- Default slot -->
+    <wcc-card>
+      <p>Body content</p>
+    </wcc-card>
+
+    <!-- Named slots -->
+    <wcc-card wccSlots>
+      <strong slot-header>Title</strong>
+      <p>Body</p>
+      <span slot-footer>Footer text</span>
+    </wcc-card>
+
+    <!-- Scoped slots -->
+    <wcc-list wccSlots>
+      <ng-template slot="item" let-item let-index="index">
+        <li>{{ index }}: {{ item }}</li>
+      </ng-template>
+    </wcc-list>
+  `
 })
-export class AppModule {}
+export class AppComponent {
+  count = 0
+  onCount(value: number) { this.count = value }
+}
 ```
 
-### Vanilla
+Angular needs no plugin for props, events, or two-way binding — only `CUSTOM_ELEMENTS_SCHEMA`. The directive is only needed for named slots (with `slot-name` syntax) and scoped slots.
+
+### React 19 (with `wccReactPlugin`)
+
+```js
+// vite.config.js
+import { wccReactPlugin } from '@sprlab/wccompiler/integrations/react'
+import react from '@vitejs/plugin-react'
+export default defineConfig({ plugins: [wccReactPlugin({ prefix: 'wcc-' }), react()] })
+```
+
+```jsx
+import { useState } from 'react'
+import { WccCard, WccList } from './dist/wcc-react'
+
+export default function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <>
+      {/* Props */}
+      <wcc-counter count={count} label="Clicks"></wcc-counter>
+
+      {/* Events */}
+      <wcc-counter oncountchanged={(e) => setCount(e.detail)}></wcc-counter>
+
+      {/* Default slot */}
+      <WccCard>
+        <p>Body content</p>
+      </WccCard>
+
+      {/* Named slots (compound pattern) */}
+      <WccCard>
+        <WccCard.Header><strong>Title</strong></WccCard.Header>
+        <p>Body</p>
+        <WccCard.Footer>Footer text</WccCard.Footer>
+      </WccCard>
+
+      {/* Named slots (props pattern) */}
+      <wcc-card header={<strong>Title</strong>} footer="Footer text">
+        <p>Body</p>
+      </wcc-card>
+
+      {/* Scoped slots (compound pattern) */}
+      <WccList>
+        <WccList.Item>{(item, index) => <li>{index}: {item}</li>}</WccList.Item>
+      </WccList>
+
+      {/* Scoped slots (render prop pattern) */}
+      <wcc-list renderItem={(item, index) => <li>{index}: {item}</li>} />
+    </>
+  )
+}
+```
+
+The plugin transforms PascalCase tags, compound components, props-as-slots, and render props at build time. Import stubs from `./dist/wcc-react` (auto-generated by `wcc build`).
+
+### Vanilla (no framework)
 
 No configuration needed:
 
 ```html
 <script type="module" src="dist/wcc-counter.js"></script>
-<wcc-counter></wcc-counter>
+<script type="module" src="dist/wcc-card.js"></script>
+<script type="module" src="dist/wcc-list.js"></script>
+
+<!-- Props (attributes) -->
+<wcc-counter count="0" label="Clicks"></wcc-counter>
+
+<!-- Events -->
+<script>
+  document.querySelector('wcc-counter')
+    .addEventListener('count-changed', (e) => console.log(e.detail))
+</script>
+
+<!-- Default slot -->
+<wcc-card>
+  <p>Body content</p>
+</wcc-card>
+
+<!-- Named slots -->
+<wcc-card>
+  <strong slot="header">Title</strong>
+  <p>Body</p>
+  <span slot="footer">Footer text</span>
+</wcc-card>
+
+<!-- Scoped slots -->
+<wcc-list>
+  <template #item="{ item, index }">
+    <li>{{index}}: {{item}}</li>
+  </template>
+</wcc-list>
 ```
 
 ## Editor Support
