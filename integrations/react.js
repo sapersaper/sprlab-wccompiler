@@ -841,130 +841,19 @@ export function wccReactPlugin(options = {}) {
 
 
 /**
- * Vite plugin that generates a virtual module with component stubs for
- * PascalCase imports. These stubs satisfy the linter/IDE (component is "defined")
- * and the wccReactPlugin transforms them to native custom elements at build time.
+ * @deprecated Use the CLI-generated stubs instead (dist/wcc-react.js).
+ * The `wcc build` command now auto-generates importable stubs with types.
+ * This virtual module plugin is kept for backward compatibility but will be removed.
  *
- * This enables the standard React import pattern:
- *   import { WccCounter, WccCard } from '@wcc/react'
- *
- * The stubs are zero-runtime — they're just tag name strings with slot name
- * properties. The wccReactPlugin handles the actual JSX transformation.
- *
- * @param {Object} [options]
- * @param {string} [options.moduleId='@wcc/react'] - Virtual module ID for imports
- * @param {string} [options.componentsDir='./dist'] - Directory containing compiled WCC .js files
- * @param {string} [options.prefix='wcc-'] - Tag prefix filter
- * @returns {import('vite').Plugin}
- *
- * @example vite.config.js
- * ```js
- * import { wccReactPlugin, wccReactComponents } from '@sprlab/wccompiler/integrations/react'
- * export default {
- *   plugins: [
- *     wccReactComponents({ componentsDir: './src/wcc' }),
- *     wccReactPlugin(),
- *     react()
- *   ]
- * }
- * ```
- *
- * @example Component.jsx
- * ```jsx
- * import { WccCard, WccList } from '@wcc/react'
- *
- * <WccCard>
- *   <WccCard.Header><strong>Title</strong></WccCard.Header>
- *   <p>Body</p>
- * </WccCard>
- *
- * <WccList>
- *   <WccList.Item>{(item) => <li>{item}</li>}</WccList.Item>
- * </WccList>
- * ```
+ * Migration:
+ *   Before: import { WccCard } from '@wcc/react'  (virtual module)
+ *   After:  import { WccCard } from './dist/wcc-react'  (real file, tree-shakeable)
  */
 export function wccReactComponents(options = {}) {
-  const {
-    moduleId = '@wcc/react',
-    componentsDir = './dist',
-    prefix = 'wcc-'
-  } = options
-
-  const resolvedId = '\0' + moduleId
-
   return {
-    name: 'vite-plugin-wcc-react-components',
-    resolveId(id) {
-      if (id === moduleId) return resolvedId
-      return null
-    },
-    async load(id) {
-      if (id !== resolvedId) return null
-
-      // Scan componentsDir for .js files and extract __meta
-      const fs = await import('fs')
-      const path = await import('path')
-
-      const dir = path.default.resolve(componentsDir)
-      if (!fs.default.existsSync(dir)) {
-        this.warn(`[wcc-react-components] Directory not found: ${dir}`)
-        return 'export {}'
-      }
-
-      const files = fs.default.readdirSync(dir).filter(f => f.endsWith('.js'))
-      const components = []
-
-      for (const file of files) {
-        const content = fs.default.readFileSync(path.default.join(dir, file), 'utf-8')
-        const metaMatch = content.match(/static __meta\s*=\s*(\{[^}]+\})/)
-        if (!metaMatch) continue
-
-        try {
-          const metaStr = metaMatch[1]
-            .replace(/'/g, '"')
-            .replace(/(\w+):/g, '"$1":')
-            .replace(/,\s*}/g, '}')
-            .replace(/,\s*]/g, ']')
-          const meta = JSON.parse(metaStr)
-
-          if (!meta.tag || !meta.tag.startsWith(prefix)) continue
-
-          const pascalName = meta.tag.split('-').map(s => s[0].toUpperCase() + s.slice(1)).join('')
-          components.push({ meta, pascalName, file })
-        } catch (e) {
-          // Skip files with unparseable meta
-        }
-      }
-
-      if (components.length === 0) {
-        return 'export {}'
-      }
-
-      // Generate lightweight stubs (zero runtime)
-      // The wccReactPlugin transforms these at build time
-      let code = '// Auto-generated WCC component stubs (transformed by wccReactPlugin at build time)\n'
-
-      // Import each component file to ensure custom element registration
-      for (const comp of components) {
-        code += `import '${path.default.resolve(dir, comp.file)}';\n`
-      }
-
-      code += '\n'
-
-      // Generate stub exports with compound slot properties
-      // Use Object.assign to create an object that holds the tag name and slot sub-properties
-      for (const comp of components) {
-        const slots = comp.meta.slots || []
-        code += `export const ${comp.pascalName} = Object.assign(() => '${comp.meta.tag}', { __tag: '${comp.meta.tag}'`
-        for (const slot of slots) {
-          if (!slot) continue
-          const pascalSlot = slot[0].toUpperCase() + slot.slice(1)
-          code += `, ${pascalSlot}: '${slot}'`
-        }
-        code += ` });\n`
-      }
-
-      return code
+    name: 'vite-plugin-wcc-react-components-deprecated',
+    buildStart() {
+      this.warn('[wcc] wccReactComponents() is deprecated. Use the CLI-generated stubs from dist/wcc-react.js instead.')
     }
   }
 }
