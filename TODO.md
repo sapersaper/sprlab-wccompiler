@@ -13,6 +13,12 @@
 
 ## ✅ COMPLETADO (v0.8.8)
 
+- [x] ~~**Scoped slots cross-framework (slotProps)**~~ → v0.8.8+
+  - Sintaxis escape `{%prop%}` + `slot-template-name` attribute ✅
+  - Vue plugin: auto-transform `{{prop}}` → `{%prop%}` para props declarados ✅
+  - Angular: `slot-template-*` attribute + `WccSlotsDirective` con `registerSlotRenderer` ✅
+  - React: render props + compound components via `wccReactPlugin` ✅
+  - Regex combinado: matchea tanto `{{prop}}` como `{%prop%}` ✅
 - [x] ~~**Slots cross-framework: soportar `slot="name"` en elementos regulares**~~ → v0.8.8
   - Runtime: slot parser detecta `slot="name"` en elementos regulares ✅
   - Vue plugin: transforma `<template #name>` y `<template v-slot:name>` → `<div slot="name">` ✅
@@ -25,14 +31,6 @@
 - [x] ~~**Two-way binding nativo para frameworks**~~ → v0.8.0
   - `_modelSet` emite: `wcc:model` + `propChange`
   - React: `useWccModel` hook
-
-## 🔴 PRIORIDAD MÁXIMA
-
-- [ ] **Scoped slots cross-framework (slotProps)**
-  - Spec creado: `.kiro/specs/cross-framework-scoped-slots/`
-  - Problema: `{{prop}}` dentro de scoped slots es interceptado por Vue/Angular compilers
-  - Solución propuesta: sintaxis escape `{%prop%}` + `slot-template-name` attribute + Vue plugin auto-transform
-  - Pendiente: design + tasks + implementación
 
 ## core
 
