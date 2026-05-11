@@ -80,14 +80,28 @@ function generateFrameworkStubs(outputDir) {
 
   for (const file of files) {
     const content = readFileSync(join(outputDir, file), 'utf-8');
-    const metaMatch = content.match(/static __meta\s*=\s*\{([^}]+)\}/);
-    if (!metaMatch) continue;
+    // Match static __meta = { ... }; with balanced braces
+    const metaStart = content.indexOf('static __meta = {');
+    if (metaStart === -1) continue;
+
+    // Find the balanced closing brace
+    let depth = 0;
+    let metaEnd = -1;
+    for (let i = metaStart + 'static __meta = '.length; i < content.length; i++) {
+      if (content[i] === '{') depth++;
+      else if (content[i] === '}') {
+        depth--;
+        if (depth === 0) { metaEnd = i + 1; break; }
+      }
+    }
+    if (metaEnd === -1) continue;
+
+    const metaStr = content.slice(metaStart + 'static __meta = '.length, metaEnd);
 
     try {
-      const metaStr = '{' + metaMatch[1] + '}';
       const parsed = metaStr
         .replace(/'/g, '"')
-        .replace(/(\w+):/g, '"$1":')
+        .replace(/(\w+)\s*:/g, '"$1":')
         .replace(/,\s*}/g, '}')
         .replace(/,\s*]/g, ']');
       const meta = JSON.parse(parsed);
@@ -153,8 +167,10 @@ function generateFrameworkStubs(outputDir) {
 
     // TypeScript declaration with props/events/slots info
     const propTypes = props.map(p => {
-      const type = typeof p.default === 'number' || /^\d/.test(p.default) ? 'number'
-        : p.default === 'true' || p.default === 'false' ? 'boolean' : 'string';
+      const def = String(p.default);
+      const type = def === 'true' || def === 'false' ? 'boolean'
+        : /^-?\d+(\.\d+)?$/.test(def) ? 'number'
+        : 'string';
       return `    ${p.name}?: ${type};`;
     }).join('\n');
 
@@ -164,7 +180,7 @@ function generateFrameworkStubs(outputDir) {
 
     vueDts += `export declare const ${comp.pascalName}: '${comp.meta.tag}';\n`;
     vueDts += `/** Component: ${comp.meta.tag} */\n`;
-    vueDts += `export interface ${comp.pascalName}Props {\n${propTypes}\n}\n`;
+    if (props.length) vueDts += `export interface ${comp.pascalName}Props {\n${propTypes}\n}\n`;
     if (events.length) vueDts += `export interface ${comp.pascalName}Events {\n${eventTypes}\n}\n`;
     if (models.length) vueDts += `export interface ${comp.pascalName}Models {\n${modelTypes}\n}\n`;
     if (slots.filter(s => s).length) vueDts += `export interface ${comp.pascalName}Slots {\n${slotTypeEntries}\n}\n`;
