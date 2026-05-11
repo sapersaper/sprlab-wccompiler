@@ -23,5 +23,6 @@ declare module 'wcc' {
 
   export function onMount(fn: () => void | Promise<void>): void;
   export function onDestroy(fn: () => void | Promise<void>): void;
+  export function onAdopt(fn: () => void | Promise<void>): void;
   export function defineExpose(bindings: Record<string, any>): void;
 }
