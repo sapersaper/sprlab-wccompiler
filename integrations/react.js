@@ -841,15 +841,15 @@ export function wccReactPlugin(options = {}) {
 
 
 /**
- * Vite plugin that generates a virtual module `@wcc/react` (or custom id)
- * exporting pre-built React wrapper components for all WCC components found
- * in the project's compiled output directory.
+ * Vite plugin that generates a virtual module with component stubs for
+ * PascalCase imports. These stubs satisfy the linter/IDE (component is "defined")
+ * and the wccReactPlugin transforms them to native custom elements at build time.
  *
- * This enables the ideal import experience:
+ * This enables the standard React import pattern:
  *   import { WccCounter, WccCard } from '@wcc/react'
  *
- * The plugin scans the output directory for compiled .js files, reads their
- * `static __meta` declarations, and generates wrapper code using createWccWrapper.
+ * The stubs are zero-runtime — they're just tag name strings with slot name
+ * properties. The wccReactPlugin handles the actual JSX transformation.
  *
  * @param {Object} [options]
  * @param {string} [options.moduleId='@wcc/react'] - Virtual module ID for imports
@@ -862,18 +862,25 @@ export function wccReactPlugin(options = {}) {
  * import { wccReactPlugin, wccReactComponents } from '@sprlab/wccompiler/integrations/react'
  * export default {
  *   plugins: [
+ *     wccReactComponents({ componentsDir: './src/wcc' }),
  *     wccReactPlugin(),
- *     wccReactComponents({ componentsDir: './src/wcc' })
+ *     react()
  *   ]
  * }
  * ```
  *
  * @example Component.jsx
  * ```jsx
- * import { WccCounter, WccCard } from '@wcc/react'
+ * import { WccCard, WccList } from '@wcc/react'
  *
- * <WccCounter count={count} onCountChange={setCount} />
- * <WccCard><div slot="header">Title</div></WccCard>
+ * <WccCard>
+ *   <WccCard.Header><strong>Title</strong></WccCard.Header>
+ *   <p>Body</p>
+ * </WccCard>
+ *
+ * <WccList>
+ *   <WccList.Item>{(item) => <li>{item}</li>}</WccList.Item>
+ * </WccList>
  * ```
  */
 export function wccReactComponents(options = {}) {
@@ -913,7 +920,6 @@ export function wccReactComponents(options = {}) {
         if (!metaMatch) continue
 
         try {
-          // Parse the meta object (it's a JS object literal, evaluate safely)
           const metaStr = metaMatch[1]
             .replace(/'/g, '"')
             .replace(/(\w+):/g, '"$1":')
@@ -934,21 +940,28 @@ export function wccReactComponents(options = {}) {
         return 'export {}'
       }
 
-      // Generate the virtual module code
-      let code = `import { createWccWrapper } from '@sprlab/wccompiler/adapters/react';\n`
+      // Generate lightweight stubs (zero runtime)
+      // The wccReactPlugin transforms these at build time
+      let code = '// Auto-generated WCC component stubs (transformed by wccReactPlugin at build time)\n'
 
-      // Import each component file to ensure registration
+      // Import each component file to ensure custom element registration
       for (const comp of components) {
         code += `import '${path.default.resolve(dir, comp.file)}';\n`
       }
 
       code += '\n'
 
-      // Generate wrapper exports
+      // Generate stub exports with compound slot properties
+      // Use Object.assign to create an object that holds the tag name and slot sub-properties
       for (const comp of components) {
-        const eventsArr = JSON.stringify(comp.meta.events || [])
-        const modelsArr = JSON.stringify(comp.meta.models || [])
-        code += `export const ${comp.pascalName} = createWccWrapper('${comp.meta.tag}', { events: ${eventsArr}, models: ${modelsArr} });\n`
+        const slots = comp.meta.slots || []
+        code += `export const ${comp.pascalName} = Object.assign(() => '${comp.meta.tag}', { __tag: '${comp.meta.tag}'`
+        for (const slot of slots) {
+          if (!slot) continue
+          const pascalSlot = slot[0].toUpperCase() + slot.slice(1)
+          code += `, ${pascalSlot}: '${slot}'`
+        }
+        code += ` });\n`
       }
 
       return code
