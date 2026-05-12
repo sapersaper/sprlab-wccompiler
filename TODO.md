@@ -2,11 +2,6 @@
 
 ## 🔴 PRIORIDAD ALTA
 
-- [ ] ⏫ **WCC-to-WCC: autocompletado de props de componentes hijos en template**
-  - El language server (`vscode-wcc/`) actualmente lee `defineProps<T>` del componente **propio** y expone las variables al template
-  - Falta: cuando escribís `<wcc-child :` en un template, resolver el archivo `wcc-child.wcc`, leer su `defineProps`, y ofrecer autocompletado de sus props/events
-  - Impacto alto — es la DX principal para WCC-to-WCC
-
 - [ ] ⏫ **Source maps** — generar `.map` que mapee el JS compilado al `.wcc` original
 
 ## core
@@ -34,12 +29,17 @@
 <details>
 <summary>v0.11.x</summary>
 
+- [x] WCC-to-WCC autocompletado de props de hijos en template → v0.11.11
+  - `wcc build` genera `dist/wcc-html-data.json` (HTMLDataV1)
+  - Configurar `.vscode/settings.json`: `"html.customData": ["./dist/wcc-html-data.json"]`
+  - Funciona en Kiro y VS Code sin extensión adicional
 - [x] Tipado Vue: `wcc build` genera `dist/wcc-vue.d.ts` con `declare module 'vue' { GlobalComponents }` → v0.11.10
   - Consumidor agrega `"dist/wcc-vue.d.ts"` a tsconfig `include` y Volar ofrece autocompletado
 - [x] Tipado React: stubs `.d.ts` generados por `wcc build` (custom elements son `any` en JSX por diseño de React)
 - [x] Tipado Angular: N/A (`CUSTOM_ELEMENTS_SCHEMA` desactiva type-checking por diseño del framework)
+- [x] Top-level section comments en output (`--comments`) → v0.11.9
 - [x] Tree-shake runtime inline en standalone mode → v0.11.8
-- [x] Comentarios inline opcionales en output (`--comments`) → v0.11.7/v0.11.9
+- [x] Comentarios inline opcionales en output (`--comments`) → v0.11.7
 - [x] `onAdopt` lifecycle hook (adoptedCallback) → v0.11.4/v0.11.6
 - [x] Minificación opcional via esbuild (`--minify`) → v0.11.5
 - [x] Nombres descriptivos para bindings DOM → v0.11.2/v0.11.3
@@ -63,23 +63,32 @@
 
 ## Notas de integración
 
-### Vue — Autocompletado en templates
+### IDE — Autocompletado de props en templates
 
-`wcc build` genera `dist/wcc-vue.d.ts` con tipos globales para Volar. Para activar:
+`wcc build` genera `dist/wcc-html-data.json`. Configurar en `.vscode/settings.json`:
 
 ```json
-// tsconfig.json del proyecto consumidor
+{
+  "html.customData": ["./dist/wcc-html-data.json"]
+}
+```
+
+Después de eso, al escribir `<wcc-counter :` el editor sugiere `:label`, `:initial`, `@change`.
+
+### Vue — Autocompletado en templates (Volar)
+
+`wcc build` genera `dist/wcc-vue.d.ts` con tipos globales. Agregar a `tsconfig.json`:
+
+```json
 {
   "include": ["src/**/*", "dist/wcc-vue.d.ts"]
 }
 ```
 
-Después de eso, Volar ofrece autocompletado de props y events en templates `.vue`.
-
 ### React — Custom Elements
 
-React 19 trata custom elements (tags con hyphen) como `any` en JSX — no hay type-checking de props. Los stubs de compound components (`WccCard.Header`) requieren el `wccReactPlugin()` activo para funcionar.
+React 19 trata custom elements (tags con hyphen) como `any` en JSX. Los stubs de compound components (`WccCard.Header`) requieren `wccReactPlugin()` activo.
 
 ### Angular — CUSTOM_ELEMENTS_SCHEMA
 
-Angular desactiva todo type-checking en custom elements cuando se usa `CUSTOM_ELEMENTS_SCHEMA`. No hay forma de forzar tipos desde la librería.
+Angular desactiva todo type-checking en custom elements con `CUSTOM_ELEMENTS_SCHEMA`.
