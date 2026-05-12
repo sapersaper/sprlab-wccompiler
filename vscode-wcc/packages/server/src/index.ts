@@ -4,6 +4,7 @@ import { create as createHtmlService } from 'volar-service-html';
 import { create as createCssService } from 'volar-service-css';
 import * as ts from 'typescript';
 import { wccLanguagePlugin } from './languagePlugin';
+import { createWccCompletionService } from './wccCompletionService';
 
 const connection = createConnection();
 const server = createServer(connection);
@@ -14,7 +15,7 @@ connection.onInitialize((params) => {
     createTypeScriptProject(ts, undefined, () => ({
       languagePlugins: [wccLanguagePlugin],
     })),
-    [createHtmlService(), createCssService(), ...createTsService(ts)],
+    [createHtmlService(), createCssService(), ...createTsService(ts), createWccCompletionService()],
   );
 });
 
