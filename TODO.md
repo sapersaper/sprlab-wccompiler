@@ -2,11 +2,15 @@
 
 ## 🔴 PRIORIDAD ALTA
 
-- [ ] ⏫ **Bug: TypeScript hover/go-to-definition no funciona en .wcc**
-  - El TS service de Volar no provee tipos en script ni template
-  - Autocompletado HTML y props de hijos SÍ funcionan
-  - Reproducible en VS Code y Kiro con la extensión 0.1.5
-  - Investigar: `getServiceScript`/`getExtraServiceScripts` en languagePlugin.ts, dependencias de Volar
+- [ ] ⏫ **PascalCase + self-closing en templates WCC**
+  - Soportar `<WccBadge color="red" />` como equivalente a `<wcc-badge color="red"></wcc-badge>`
+  - Language server: ya sugiere PascalCase ✅ (v0.1.7)
+  - Compiler (tree-walker/parser): transformar PascalCase → kebab-case y self-closing → open+close
+  - Impacto: mejor DX, menos verbosidad en templates
+
+- [x] ~~**Bug: TypeScript hover/go-to-definition no funciona en .wcc**~~ ✅
+  - Causa: `.vsix` se empaquetaba con `--no-dependencies` (sin node_modules)
+  - Fix: empaquetar sin esa flag — incluye todas las dependencias del server
 
 ## core
 
