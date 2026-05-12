@@ -20,7 +20,13 @@
 
 ## volar-language-server
 
-- [ ]* ⏫ Semantic tokens para colorear props, signals y computeds en template
+- [x] ~~⏫ Autocompletado de `ref`, `@events` DOM y directivas WCC en templates~~ ✅ (v0.1.8)
+  - `ref` sugerido en custom elements
+  - 26 eventos DOM comunes (`@click`, `@input`, `@change`, `@focus`, etc.)
+  - Directivas WCC (`show`, `if`, `else-if`, `else`, `each`, `model`)
+  - `model:propName` para two-way binding en custom elements
+  - Todo registrado como `globalAttributes` (disponible en elementos HTML nativos también)
+- [ ]* Semantic tokens para colorear props, signals y computeds en template
 
 ## interop / compatibilidad (baja prioridad)
 
@@ -72,9 +78,9 @@
 
 ## Notas de integración
 
-### IDE — Autocompletado de props en templates
+### IDE — Autocompletado en templates
 
-El language server escanea automáticamente los `.wcc` del workspace y ofrece autocompletado de props y events al escribir `<wcc-child :`. No requiere configuración.
+El language server escanea automáticamente los `.wcc` del workspace y ofrece autocompletado de props (`:propName`), eventos (`@eventName`), `ref`, directivas (`show`, `if`, `each`) y `model:propName` al escribir dentro de tags. No requiere configuración.
 
 Opcionalmente, `wcc build` también genera `dist/wcc-html-data.json` que puede usarse en proyectos sin la extensión WCC:
 
