@@ -1,5 +1,5 @@
 <script>
-import { defineComponent, signal, onMount, onDestroy } from 'wcc'
+import { defineComponent, signal, onMount, onDestroy, templateRef } from 'wcc'
 import WccPageHome from './wcc-page-home.wcc'
 import WccPageAbout from './wcc-page-about.wcc'
 import WccPageContact from './wcc-page-contact.wcc'
@@ -8,12 +8,50 @@ export default defineComponent({ tag: 'wcc-router-app' })
 
 const route = signal(location.hash.slice(1) || '/')
 const listenerId = signal(0)
+const navEl = templateRef('nav')
+const outletEl = templateRef('outlet')
 
 onMount(() => {
+  const routeConfig = [{ path: '/', tag: 'wcc-page-home', label: 'Home' }, { path: '/about', tag: 'wcc-page-about', label: 'About' }, { path: '/contact', tag: 'wcc-page-contact', label: 'Contact' }]
+
+  const render = () => {
+    const outlet = outletEl.value
+    if (!outlet) return
+    outlet.innerHTML = ''
+    const match = routeConfig.find(r => r.path === route())
+    if (match) {
+      outlet.appendChild(document.createElement(match.tag))
+    } else {
+      outlet.innerHTML = '<div class="not-found"><h2>404</h2><p>Page not found: ' + route() + '</p><a href="#/">← Go home</a></div>'
+    }
+    navEl.value.querySelectorAll('a').forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + route())
+    })
+  }
+
+  // Build navbar
+  for (const r of routeConfig) {
+    const a = document.createElement('a')
+    a.href = '#' + r.path
+    a.textContent = r.label
+    a.addEventListener('click', (e) => {
+      e.preventDefault()
+      location.hash = r.path
+      route.set(r.path)
+      render()
+    })
+    navEl.value.appendChild(a)
+  }
+
+  // Initial render
+  render()
+
+  // Poll for hash changes (back/forward)
   const id = setInterval(() => {
     const current = location.hash.slice(1) || '/'
     if (current !== route()) {
       route.set(current)
+      render()
     }
   }, 50)
   listenerId.set(id)
@@ -26,32 +64,10 @@ onDestroy(() => {
 
 <template>
 <div class="app">
-  <nav class="navbar">
+  <nav class="navbar" ref="nav">
     <span class="brand">WCC Router</span>
-    <a href="#/" :class="{ active: route() === '/' }">Home</a>
-    <a href="#/about" :class="{ active: route() === '/about' }">About</a>
-    <a href="#/contact" :class="{ active: route() === '/contact' }">Contact</a>
   </nav>
-
-  <main class="content">
-    <div if="route() === '/'">
-      <wcc-page-home></wcc-page-home>
-      <span show="false">{{route()}}</span>
-    </div>
-    <div else-if="route() === '/about'">
-      <wcc-page-about></wcc-page-about>
-      <span show="false">{{route()}}</span>
-    </div>
-    <div else-if="route() === '/contact'">
-      <wcc-page-contact></wcc-page-contact>
-      <span show="false">{{route()}}</span>
-    </div>
-    <div else class="not-found">
-      <h2>404</h2>
-      <p>Page not found: {{route()}}</p>
-      <a href="#/">← Go home</a>
-    </div>
-  </main>
+  <main class="content" ref="outlet"></main>
 </div>
 </template>
 
