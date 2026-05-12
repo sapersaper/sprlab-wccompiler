@@ -1,0 +1,64 @@
+<script>
+import { defineComponent, signal, computed } from 'wcc'
+import DynPanelA from './dyn-panel-a.wcc'
+import DynPanelB from './dyn-panel-b.wcc'
+import DynPanelC from './dyn-panel-c.wcc'
+
+export default defineComponent({ tag: 'dyn-switcher' })
+
+const current = signal('dyn-panel-a')
+const label = signal('Panel A')
+const count = signal(0)
+
+const isEmpty = computed(() => current() === '')
+
+function showA() {
+  current.set('dyn-panel-a')
+  label.set('Panel A')
+}
+
+function showB() {
+  current.set('dyn-panel-b')
+  label.set('Panel B')
+}
+
+function showC() {
+  current.set('dyn-panel-c')
+  label.set('Panel C')
+}
+
+function showNone() {
+  current.set('')
+  label.set('None')
+}
+
+function increment() {
+  count.set(count() + 1)
+}
+</script>
+
+<template>
+<div class="switcher">
+  <div class="controls">
+    <button id="btn-a" @click="showA">Show A</button>
+    <button id="btn-b" @click="showB">Show B</button>
+    <button id="btn-c" @click="showC">Show C</button>
+    <button id="btn-none" @click="showNone">Show None</button>
+    <button id="btn-inc" @click="increment">Count: {{count()}}</button>
+  </div>
+  <div class="current-label">Current: <span id="label">{{label()}}</span></div>
+  <div class="outlet">
+    <component :is="current()" :title="label()" :count="count()" @action="increment"></component>
+  </div>
+  <div id="empty-msg" show="isEmpty()">No component selected</div>
+</div>
+</template>
+
+<style>
+.switcher { font-family: system-ui; padding: 16px; }
+.controls { display: flex; gap: 8px; margin-bottom: 12px; }
+button { padding: 6px 12px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; }
+.current-label { margin-bottom: 8px; font-size: 14px; color: #555; }
+.outlet { border: 1px solid #ddd; border-radius: 4px; min-height: 60px; padding: 8px; }
+#empty-msg { margin-top: 8px; color: #999; font-style: italic; }
+</style>
