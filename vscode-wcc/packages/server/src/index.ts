@@ -60,6 +60,55 @@ function scanWccFiles(dir: string): { tag: string; props: { name: string; type: 
   return results;
 }
 
+// ── Common DOM events ────────────────────────────────────────────────
+
+/** DOM events that should be suggested on any element via @event syntax */
+const COMMON_DOM_EVENTS = [
+  { name: 'click', description: 'Fired when the element is clicked' },
+  { name: 'dblclick', description: 'Fired on double click' },
+  { name: 'input', description: 'Fired when the value of an input changes' },
+  { name: 'change', description: 'Fired when the value is committed (blur/enter)' },
+  { name: 'submit', description: 'Fired when a form is submitted' },
+  { name: 'focus', description: 'Fired when the element receives focus' },
+  { name: 'blur', description: 'Fired when the element loses focus' },
+  { name: 'keydown', description: 'Fired when a key is pressed down' },
+  { name: 'keyup', description: 'Fired when a key is released' },
+  { name: 'keypress', description: 'Fired when a key produces a character' },
+  { name: 'mouseenter', description: 'Fired when pointer enters the element' },
+  { name: 'mouseleave', description: 'Fired when pointer leaves the element' },
+  { name: 'mouseover', description: 'Fired when pointer moves over the element' },
+  { name: 'mouseout', description: 'Fired when pointer moves out of the element' },
+  { name: 'mousedown', description: 'Fired when a mouse button is pressed' },
+  { name: 'mouseup', description: 'Fired when a mouse button is released' },
+  { name: 'contextmenu', description: 'Fired on right-click' },
+  { name: 'touchstart', description: 'Fired when a touch point is placed' },
+  { name: 'touchend', description: 'Fired when a touch point is removed' },
+  { name: 'touchmove', description: 'Fired when a touch point moves' },
+  { name: 'scroll', description: 'Fired when the element is scrolled' },
+  { name: 'wheel', description: 'Fired on mouse wheel/trackpad scroll' },
+  { name: 'dragstart', description: 'Fired when drag operation begins' },
+  { name: 'dragend', description: 'Fired when drag operation ends' },
+  { name: 'drop', description: 'Fired when an element is dropped' },
+  { name: 'dragover', description: 'Fired when dragged element is over a drop target' },
+];
+
+// ── WCC directives ──────────────────────────────────────────────────
+
+/** Global attributes for WCC directives (available on any element) */
+const WCC_GLOBAL_ATTRIBUTES = [
+  { name: 'ref', description: { kind: 'markdown', value: '(wcc) Template element reference — use with `templateRef(\'name\')`' } },
+  { name: 'show', description: { kind: 'markdown', value: '(wcc) Conditional visibility — `show="expression"`' } },
+  { name: 'if', description: { kind: 'markdown', value: '(wcc) Conditional rendering — `if="expression"`' } },
+  { name: 'else-if', description: { kind: 'markdown', value: '(wcc) Conditional branch — `else-if="expression"`' } },
+  { name: 'else', description: { kind: 'markdown', value: '(wcc) Fallback branch — `else`' } },
+  { name: 'each', description: { kind: 'markdown', value: '(wcc) List rendering — `each="item in items()"` or `each="(item, index) in items()"`' } },
+];
+
+/** Attributes specific to form elements */
+const WCC_FORM_ATTRIBUTES = [
+  { name: 'model', description: { kind: 'markdown', value: '(wcc) Two-way binding — `model="signalName"`' } },
+];
+
 // ── Server ──────────────────────────────────────────────────────────
 
 connection.onInitialize((params) => {
@@ -81,9 +130,17 @@ connection.onInitialize((params) => {
 
   function buildTagEntries(comp: { tag: string; props: { name: string; type: string }[]; events: string[] }) {
     const attributes = [
+      // Props: static and dynamic bindings
       ...comp.props.map(p => ({ name: p.name, description: { kind: 'markdown', value: `(prop) \`${p.type}\` — static value` } })),
       ...comp.props.map(p => ({ name: `:${p.name}`, description: { kind: 'markdown', value: `(prop) \`${p.type}\` — dynamic binding` } })),
-      ...comp.events.map(e => ({ name: `@${e}`, description: { kind: 'markdown', value: `(event)` } })),
+      // Custom events from defineEmits
+      ...comp.events.map(e => ({ name: `@${e}`, description: { kind: 'markdown', value: `(event) custom — from \`defineEmits\`` } })),
+      // Common DOM events
+      ...COMMON_DOM_EVENTS.map(e => ({ name: `@${e.name}`, description: { kind: 'markdown', value: `(event) DOM — ${e.description}` } })),
+      // model:propName for two-way binding on custom elements
+      ...comp.props.map(p => ({ name: `model:${p.name}`, description: { kind: 'markdown', value: `(model) \`${p.type}\` — two-way binding to \`${p.name}\`` } })),
+      // WCC directives
+      ...WCC_GLOBAL_ATTRIBUTES,
     ];
     // Add both kebab-case and PascalCase variants
     tags.push({ name: comp.tag, attributes, void: false });
@@ -119,13 +176,22 @@ connection.onInitialize((params) => {
 
   try { fs.appendFileSync('/tmp/wcc-server.log', `tags: ${tags.length}, names: ${tags.map(t => t.name).join(', ')}\n`); } catch {}
 
+  // Build global attributes (available on ALL elements in WCC templates)
+  const globalAttributes = [
+    ...WCC_GLOBAL_ATTRIBUTES.map(a => ({ name: a.name, description: a.description as { kind: 'markdown'; value: string } })),
+    ...WCC_FORM_ATTRIBUTES.map(a => ({ name: a.name, description: a.description as { kind: 'markdown'; value: string } })),
+    ...COMMON_DOM_EVENTS.map(e => ({ name: `@${e.name}`, description: { kind: 'markdown' as const, value: `(event) DOM — ${e.description}` } })),
+  ];
+
   // Create HTML service with WCC custom data
-  const wccDataProvider = tags.length > 0
-    ? newHTMLDataProvider('wcc-components', { version: 1.1, tags })
-    : null;
+  const wccDataProvider = newHTMLDataProvider('wcc-components', {
+    version: 1.1,
+    tags: tags.length > 0 ? tags : undefined,
+    globalAttributes,
+  });
 
   const htmlService = createHtmlService({
-    getCustomData: async () => wccDataProvider ? [wccDataProvider] : [],
+    getCustomData: async () => [wccDataProvider],
   });
 
   return server.initialize(
