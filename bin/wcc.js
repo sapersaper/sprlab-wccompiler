@@ -77,11 +77,21 @@ async function build(config, cwd) {
  */
 function generateFrameworkStubs(outputDir) {
 
-  const files = readdirSync(outputDir).filter(f => f.endsWith('.js') && !f.startsWith('__') && f !== 'wcc-runtime.js' && f !== 'wcc-react.js' && f !== 'wcc-vue.js');
+  const files = [];
+  function collectJsFiles(dir) {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        collectJsFiles(join(dir, entry.name));
+      } else if (entry.isFile() && entry.name.endsWith('.js') && !entry.name.startsWith('__') && entry.name !== 'wcc-runtime.js' && entry.name !== 'wcc-react.js' && entry.name !== 'wcc-vue.js') {
+        files.push(join(dir, entry.name));
+      }
+    }
+  }
+  collectJsFiles(outputDir);
   const components = [];
 
   for (const file of files) {
-    const content = readFileSync(join(outputDir, file), 'utf-8');
+    const content = readFileSync(file, 'utf-8');
     // Match static __meta = { ... }; with balanced braces
     const metaStart = content.indexOf('static __meta = {');
     if (metaStart === -1) continue;
@@ -236,6 +246,35 @@ function generateFrameworkStubs(outputDir) {
 
   writeFileSync(join(outputDir, 'wcc-vue.js'), vueJs);
   writeFileSync(join(outputDir, 'wcc-vue.d.ts'), vueDts);
+
+  // ── HTML Custom Data (for VS Code / Kiro HTML intellisense) ──
+  const htmlData = {
+    version: 1.1,
+    tags: components.map(comp => {
+      const props = comp.meta.props || [];
+      const events = comp.meta.events || [];
+      const models = comp.meta.models || [];
+
+      const attributes = [
+        ...props.map(p => {
+          const def = String(p.default);
+          const type = def === 'true' || def === 'false' ? 'boolean'
+            : /^-?\d+(\.\d+)?$/.test(def) ? 'number' : 'string';
+          return { name: `:${p.name}`, description: `(prop) ${type}` };
+        }),
+        ...models.map(m => ({ name: `:${m}`, description: `(model) two-way binding` })),
+        ...events.map(e => ({ name: `@${e}`, description: `(event)` })),
+      ];
+
+      return {
+        name: comp.meta.tag,
+        description: `WCC Component: ${comp.meta.tag}`,
+        attributes,
+      };
+    }),
+  };
+
+  writeFileSync(join(outputDir, 'wcc-html-data.json'), JSON.stringify(htmlData, null, 2));
 }
 
 function discoverFiles(dir) {
