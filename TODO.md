@@ -2,10 +2,10 @@
 
 ## 🔴 PRIORIDAD ALTA
 
-- [ ] ⏫ **PascalCase + self-closing en templates WCC**
+- [x] ~~⏫ **PascalCase + self-closing en templates WCC**~~ ✅
   - Soportar `<WccBadge color="red" />` como equivalente a `<wcc-badge color="red"></wcc-badge>`
   - Language server: ya sugiere PascalCase ✅ (v0.1.7)
-  - Compiler (tree-walker/parser): transformar PascalCase → kebab-case y self-closing → open+close
+  - Compiler: `template-normalizer.js` transforma PascalCase → kebab-case y self-closing → open+close antes de linkedom
   - Impacto: mejor DX, menos verbosidad en templates
 
 - [x] ~~**Bug: TypeScript hover/go-to-definition no funciona en .wcc**~~ ✅
