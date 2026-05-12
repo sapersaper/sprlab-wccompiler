@@ -26,10 +26,10 @@
 <details>
 <summary>v0.11.x</summary>
 
-- [x] WCC-to-WCC autocompletado de props de hijos en template → v0.11.11
-  - `wcc build` genera `dist/wcc-html-data.json` (HTMLDataV1)
-  - Configurar `.vscode/settings.json`: `"html.customData": ["./dist/wcc-html-data.json"]`
-  - Funciona en Kiro y VS Code sin extensión adicional
+- [x] WCC-to-WCC autocompletado automático de props de hijos en template → v0.11.11
+  - El language server escanea los `.wcc` del workspace al inicializar
+  - Ofrece `:propName` y `@eventName` sin config del usuario
+  - Funciona en Kiro y VS Code automáticamente
 - [x] Tipado Vue: `wcc build` genera `dist/wcc-vue.d.ts` con `declare module 'vue' { GlobalComponents }` → v0.11.10
   - Consumidor agrega `"dist/wcc-vue.d.ts"` a tsconfig `include` y Volar ofrece autocompletado
 - [x] Tipado React: stubs `.d.ts` generados por `wcc build` (custom elements son `any` en JSX por diseño de React)
@@ -62,15 +62,16 @@
 
 ### IDE — Autocompletado de props en templates
 
-`wcc build` genera `dist/wcc-html-data.json`. Configurar en `.vscode/settings.json`:
+El language server escanea automáticamente los `.wcc` del workspace y ofrece autocompletado de props y events al escribir `<wcc-child :`. No requiere configuración.
+
+Opcionalmente, `wcc build` también genera `dist/wcc-html-data.json` que puede usarse en proyectos sin la extensión WCC:
 
 ```json
+// .vscode/settings.json (solo si no usás la extensión WCC)
 {
   "html.customData": ["./dist/wcc-html-data.json"]
 }
 ```
-
-Después de eso, al escribir `<wcc-counter :` el editor sugiere `:label`, `:initial`, `@change`.
 
 ### Vue — Autocompletado en templates (Volar)
 
