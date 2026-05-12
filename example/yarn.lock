@@ -928,13 +928,13 @@ __metadata:
     "@sprlab/wccompiler": "npm:^0.3.0"
     esbuild: "npm:^0.27.0"
     jsdom: "npm:^29.0.2"
-    wccompiler: "file:.."
+    wccompiler: "portal:.."
   languageName: unknown
   linkType: soft
 
-"wccompiler@file:..::locator=wcc-v2-example%40workspace%3A.":
-  version: 0.11.10
-  resolution: "wccompiler@file:..#..::hash=aba7b1&locator=wcc-v2-example%40workspace%3A."
+"wccompiler@portal:..::locator=wcc-v2-example%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "wccompiler@portal:..::locator=wcc-v2-example%40workspace%3A."
   dependencies:
     "@babel/generator": "npm:^7.27.0"
     "@babel/parser": "npm:^7.27.0"
@@ -958,9 +958,8 @@ __metadata:
       optional: true
   bin:
     wcc: ./bin/wcc.js
-  checksum: 10c0/1b36886e2d8af8904878d0a3aac7d74a3f4942d4bd8e9283d0eef954c1b7d71c67e72bdc5f3027bebdf35586d8bb358ef1e1f05d1a75d73959c3637287373dc3
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "webidl-conversions@npm:^8.0.1":
   version: 8.0.1

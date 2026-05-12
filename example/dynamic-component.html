@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WCC Dynamic Component Demo</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #fafafa;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    h1 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 16px;
+    }
+    code {
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <h1><code>&lt;component :is="expr"&gt;</code> — Dynamic Component Demo</h1>
+  <dyn-switcher></dyn-switcher>
+
+  <script src="dist/bundle.js"></script>
+</body>
+</html>
