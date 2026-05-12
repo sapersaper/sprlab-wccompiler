@@ -1,11 +1,8 @@
 # TODO — Tareas pendientes
 
-## 🔴 PRIORIDAD ALTA
-
-- [ ] ⏫ **Source maps** — generar `.map` que mapee el JS compilado al `.wcc` original
-
 ## core
 
+- [ ]* Source maps — generar `.map` que mapee el JS compilado al `.wcc` original
 - [ ]* Opciones adicionales en defineComponent (shadow, extends, formAssociated, mode)
 - [ ]* Componente dinámico (`<component :is="...">`)
 
