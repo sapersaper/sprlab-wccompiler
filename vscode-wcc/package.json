@@ -2,7 +2,7 @@
   "name": "wcc-language",
   "displayName": "wcCompiler (.wcc) Language Support",
   "description": "Syntax highlighting and intellisense for wcCompiler Single File Components (.wcc)",
-  "version": "0.1.2",
+  "version": "0.1.6",
   "publisher": "SPRLab",
   "license": "MIT",
   "repository": {

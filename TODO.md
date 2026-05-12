@@ -1,5 +1,13 @@
 # TODO — Tareas pendientes
 
+## 🔴 PRIORIDAD ALTA
+
+- [ ] ⏫ **Bug: TypeScript hover/go-to-definition no funciona en .wcc**
+  - El TS service de Volar no provee tipos en script ni template
+  - Autocompletado HTML y props de hijos SÍ funcionan
+  - Reproducible en VS Code y Kiro con la extensión 0.1.5
+  - Investigar: `getServiceScript`/`getExtraServiceScripts` en languagePlugin.ts, dependencias de Volar
+
 ## core
 
 - [ ]* Source maps — generar `.map` que mapee el JS compilado al `.wcc` original
