@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent, defineProps, signal, templateRef } from 'wcc'
-import type { WccBadge } from './wcc-badge.wcc'
+import WccBadge from './wcc-badge.wcc'
+import type { WccBadge as WccBadgeType } from './wcc-badge.wcc'
 
 export default defineComponent({
   tag: 'wcc-profile',
@@ -8,7 +9,7 @@ export default defineComponent({
 
 defineProps({ name: 'Anonymous', role: 'user' })
 const clicks = signal(0)
-const badge = templateRef<WccBadge>('badge')
+const badge = templateRef<WccBadgeType>('badge')
 
 function greet() {
   clicks.set(clicks() + 1)
@@ -26,6 +27,7 @@ function greet() {
 <template>
 <div class="profile">
   <h3>{{name}}</h3>
+  <WccBadge ref="badge" :label="role" color="#4a90d9"></WccBadge>
   <p>Greeted {{clicks()}} times</p>
   <button @click="greet">Say Hi</button>
 </div>

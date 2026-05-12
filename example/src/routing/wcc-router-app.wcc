@@ -1,0 +1,115 @@
+<script>
+import { defineComponent, signal, onMount, onDestroy } from 'wcc'
+import WccPageHome from './wcc-page-home.wcc'
+import WccPageAbout from './wcc-page-about.wcc'
+import WccPageContact from './wcc-page-contact.wcc'
+
+export default defineComponent({ tag: 'wcc-router-app' })
+
+const route = signal(location.hash.slice(1) || '/')
+const listenerId = signal(0)
+
+onMount(() => {
+  const id = setInterval(() => {
+    const current = location.hash.slice(1) || '/'
+    if (current !== route()) {
+      route.set(current)
+    }
+  }, 50)
+  listenerId.set(id)
+})
+
+onDestroy(() => {
+  clearInterval(listenerId())
+})
+</script>
+
+<template>
+<div class="app">
+  <nav class="navbar">
+    <span class="brand">WCC Router</span>
+    <a href="#/" :class="{ active: route() === '/' }">Home</a>
+    <a href="#/about" :class="{ active: route() === '/about' }">About</a>
+    <a href="#/contact" :class="{ active: route() === '/contact' }">Contact</a>
+  </nav>
+
+  <main class="content">
+    <div if="route() === '/'">
+      <wcc-page-home></wcc-page-home>
+      <span show="false">{{route()}}</span>
+    </div>
+    <div else-if="route() === '/about'">
+      <wcc-page-about></wcc-page-about>
+      <span show="false">{{route()}}</span>
+    </div>
+    <div else-if="route() === '/contact'">
+      <wcc-page-contact></wcc-page-contact>
+      <span show="false">{{route()}}</span>
+    </div>
+    <div else class="not-found">
+      <h2>404</h2>
+      <p>Page not found: {{route()}}</p>
+      <a href="#/">← Go home</a>
+    </div>
+  </main>
+</div>
+</template>
+
+<style>
+.app {
+  font-family: system-ui, -apple-system, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  background: #2c3e50;
+  border-radius: 8px 8px 0 0;
+}
+
+.brand {
+  font-weight: bold;
+  color: #ecf0f1;
+  margin-right: auto;
+}
+
+.navbar a {
+  color: #bdc3c7;
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.navbar a:hover {
+  color: #ecf0f1;
+}
+
+.navbar a.active {
+  color: #fff;
+  background: #3498db;
+}
+
+.content {
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  min-height: 200px;
+}
+
+.not-found {
+  padding: 40px;
+  text-align: center;
+  color: #666;
+}
+
+.not-found h2 {
+  font-size: 48px;
+  margin: 0;
+  color: #ccc;
+}
+</style>

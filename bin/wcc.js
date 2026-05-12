@@ -291,6 +291,26 @@ function discoverFiles(dir) {
   return results;
 }
 
+/**
+ * Discovers compiled .js entry points in the output directory.
+ * Excludes runtime files, stubs, and metadata.
+ */
+function discoverCompiledEntries(outputDir) {
+  const skip = new Set(['__wcc-signals.js', 'wcc-runtime.js', 'wcc-react.js', 'wcc-vue.js', 'bundle.js']);
+  const results = [];
+  function walk(dir) {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        walk(join(dir, entry.name));
+      } else if (entry.isFile() && entry.name.endsWith('.js') && !skip.has(entry.name) && !entry.name.endsWith('.d.ts')) {
+        results.push(join(dir, entry.name));
+      }
+    }
+  }
+  walk(outputDir);
+  return results;
+}
+
 async function main() {
   const cwd = process.cwd();
   const config = await loadConfig(cwd);
@@ -298,10 +318,43 @@ async function main() {
   // CLI flags override config
   if (process.argv.includes('--minify')) config.minify = true;
   if (process.argv.includes('--comments')) config.comments = true;
+  const shouldBundle = process.argv.includes('--bundle');
 
   if (command === 'build') {
     const errors = await build(config, cwd);
     if (errors > 0) process.exit(1);
+
+    // Bundle step: produce a single IIFE file from all compiled entry points
+    if (shouldBundle) {
+      const { build: esbuild } = await import('esbuild');
+      const outputDir = resolve(cwd, config.output);
+      const entryPoints = discoverCompiledEntries(outputDir);
+
+      if (entryPoints.length > 0) {
+        // Generate a virtual entry that imports all components
+        const bundleEntry = join(outputDir, '__bundle-entry.js');
+        const imports = entryPoints.map(f => {
+          let rel = relative(outputDir, f).replace(/\\/g, '/');
+          if (!rel.startsWith('.')) rel = './' + rel;
+          return `import '${rel}';`;
+        }).join('\n');
+        writeFileSync(bundleEntry, imports);
+
+        await esbuild({
+          entryPoints: [bundleEntry],
+          bundle: true,
+          format: 'iife',
+          outfile: join(outputDir, 'bundle.js'),
+          minify: !!config.minify,
+        });
+
+        // Clean up temp entry
+        const { unlinkSync } = await import('node:fs');
+        unlinkSync(bundleEntry);
+
+        console.log(`Bundled ${entryPoints.length} components → ${config.output}/bundle.js`);
+      }
+    }
   } else if (command === 'dev') {
     await build(config, cwd);
     const outputDir = resolve(cwd, config.output);

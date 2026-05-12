@@ -317,9 +317,18 @@ function increment() {
         <thead><tr><th>Command</th><th>Description</th></tr></thead>
         <tbody>
           <tr><td><code>wcc build</code></td><td>Compile all .wcc files to output directory</td></tr>
+          <tr><td><code>wcc build --bundle</code></td><td>Compile + produce a single <code>bundle.js</code> (IIFE, works from file://)</td></tr>
+          <tr><td><code>wcc build --minify</code></td><td>Compile with minification</td></tr>
+          <tr><td><code>wcc build --bundle --minify</code></td><td>Production bundle (smallest output, no server needed)</td></tr>
           <tr><td><code>wcc dev</code></td><td>Build + watch + SSE live-reload dev server</td></tr>
         </tbody>
       </table>
+
+      <h4>Bundle Mode</h4>
+      <p>The <code>--bundle</code> flag produces a single <code>dist/bundle.js</code> that includes all components in one file. It uses no ES module imports — just a plain <code>&lt;script&gt;</code> tag. Works by opening the HTML file directly from disk (no server required).</p>
+      <pre class="code-block"><code>&lt;!-- Works from file:// — no server needed --&gt;
+&lt;script src="dist/bundle.js"&gt;&lt;/script&gt;
+&lt;wcc-my-app&gt;&lt;/wcc-my-app&gt;</code></pre>
 
       <h3>Configuration (wcc.config.js)</h3>
       <table class="api-table">

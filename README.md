@@ -458,12 +458,13 @@ Consumer (receives data via template props):
 
 ## Nested Components
 
-Components can use other components in their templates. Import the child `.wcc` file and use its tag in the template:
+Components can import and use other components in their templates using PascalCase tags:
 
 ```html
+<!-- src/nested/wcc-profile.wcc -->
 <script>
 import { defineComponent, signal } from 'wcc'
-import './wcc-badge.wcc'
+import WccBadge from './wcc-badge.wcc'
 
 export default defineComponent({ tag: 'wcc-profile' })
 
@@ -476,15 +477,17 @@ function increment() {
 
 <template>
 <div class="profile">
-  <wcc-badge :count="count()" @click="increment"></wcc-badge>
+  <WccBadge :count="count()" @click="increment"></WccBadge>
 </div>
 </template>
 ```
 
-- **Manual import**: `import './wcc-child.wcc'` — the compiler registers the child component
-- **Auto-detect**: If a custom element tag in the template matches a `.wcc` file in the same directory, it's auto-imported
+- **Named import**: `import WccBadge from './wcc-badge.wcc'` — the PascalCase identifier becomes the tag alias in the template
+- **Side-effect import**: `import './wcc-child.wcc'` — registers the child without using it in the template (for programmatic creation)
 - **Reactive props**: Use `:prop="expr"` to pass reactive data down — updates automatically when the expression changes
 - **Event listening**: Use `@event="handler"` to listen to custom events emitted by the child
+- **Compile-time validation**: Using a PascalCase tag without a matching import throws an error at build time
+- **Hyphenated tags**: Tags like `<my-element>` without a corresponding import are treated as plain custom elements (no import generated)
 
 ## Lifecycle Hooks
 
@@ -613,11 +616,47 @@ timer.value!.start() // ✅ typed
 ## CLI
 
 ```bash
-wcc build    # Compile all .wcc files from input/ to output/
-wcc dev      # Build + watch + live-reload dev server
+wcc build              # Compile all .wcc files from input/ to output/
+wcc build --bundle     # Compile + produce a single bundle.js (works from file://)
+wcc build --minify     # Compile with minification
+wcc build --bundle --minify  # Production bundle (smallest output)
+wcc dev                # Build + watch + live-reload dev server
 ```
 
 The CLI discovers all `.wcc` files in your source directory and compiles each into a standalone `.js` file.
+
+### Bundle Mode
+
+The `--bundle` flag produces a single `bundle.js` file that includes all components and their dependencies in one IIFE (Immediately Invoked Function Expression). This file:
+
+- Works with `<script src="bundle.js">` (no `type="module"` needed)
+- Works from `file://` protocol (no server required)
+- Includes all child component imports resolved and inlined
+- Includes the reactive runtime
+- Supports `--minify` for production
+
+```html
+<!-- Works by double-clicking the HTML file — no server needed -->
+<!DOCTYPE html>
+<html>
+<body>
+  <wcc-my-app></wcc-my-app>
+  <script src="dist/bundle.js"></script>
+</body>
+</html>
+```
+
+**When to use `--bundle`:**
+- Static HTML files opened from disk
+- Electron apps loading local files
+- Offline-first applications
+- Quick prototyping without a dev server
+- Distributing a complete app as HTML + JS
+
+**When NOT to use `--bundle`:**
+- Apps served via HTTP (use ES modules for better caching)
+- When you need per-component lazy loading
+- When using a bundler like Vite/Webpack (they handle bundling themselves)
 
 ### Configuration
 

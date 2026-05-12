@@ -144,3 +144,24 @@ The following files from the v1 project (`../` relative to this v2 directory) ca
 - `lib/codegen.js` — code generation (partial rewrite: new transform patterns)
 - `lib/parser.js` — script analysis (partial rewrite: reads .ts directly, new API names)
 - `lib/compiler.js` — pipeline orchestration (partial rewrite: new entry point resolution)
+
+
+### VSCode Extension (vscode-wcc) — IMPORTANT
+
+The WCC language extension provides IntelliSense for `.wcc` files via a Volar-based language server.
+
+**CRITICAL: Packaging the .vsix**
+
+When building the `.vsix`, **NEVER use `--no-dependencies`**. The language server requires all its dependencies bundled inside the vsix (TypeScript, @volar/*, vscode-languageserver, etc.). Without them, the server crashes silently and provides no types or suggestions.
+
+```bash
+cd vscode-wcc
+npm run build
+npx @vscode/vsce package   # ← NO --no-dependencies flag!
+```
+
+The resulting `.vsix` will be ~6 MB (includes TypeScript compiler, Volar core, etc.). This is expected.
+
+**Location:** `vscode-wcc/`
+**Current version:** 0.1.9
+**Install:** Cmd+Shift+P → "Extensions: Install from VSIX..." → select the `.vsix` file
