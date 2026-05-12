@@ -1,0 +1,43 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({ tag: 'wcc-page-home' })
+
+const visits = signal(0)
+
+function countVisit() {
+  visits.set(visits() + 1)
+}
+</script>
+
+<template>
+<div class="page">
+  <h2>🏠 Home</h2>
+  <p>Welcome to the WCC routing demo!</p>
+  <p>You've clicked the button <strong>{{visits()}}</strong> times on this page.</p>
+  <button @click="countVisit">Click me</button>
+  <p class="note">Notice: the navbar above never re-renders when you navigate.</p>
+</div>
+</template>
+
+<style>
+.page {
+  padding: 20px;
+}
+.note {
+  margin-top: 16px;
+  font-size: 12px;
+  color: #888;
+  font-style: italic;
+}
+button {
+  padding: 8px 16px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f5f5f5;
+}
+button:hover {
+  background: #e0e0e0;
+}
+</style>

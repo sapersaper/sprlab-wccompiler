@@ -1,0 +1,80 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({ tag: 'wcc-page-contact' })
+
+const name = signal('')
+const message = signal('')
+const submitted = signal(false)
+
+function submit() {
+  if (name() && message()) {
+    submitted.set(true)
+  }
+}
+</script>
+
+<template>
+<div class="page">
+  <h2>✉️ Contact</h2>
+  <div if="!submitted()">
+    <div class="field">
+      <label>Name:</label>
+      <input type="text" model="name" placeholder="Your name">
+    </div>
+    <div class="field">
+      <label>Message:</label>
+      <textarea model="message" placeholder="Your message"></textarea>
+    </div>
+    <button @click="submit">Send</button>
+  </div>
+  <div else class="success">
+    <p>✅ Thanks, <strong>{{name()}}</strong>! Message sent.</p>
+  </div>
+</div>
+</template>
+
+<style>
+.page {
+  padding: 20px;
+}
+.field {
+  margin: 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+label {
+  font-weight: bold;
+  font-size: 14px;
+}
+input, textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+button {
+  margin-top: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #4a90d9;
+  color: white;
+  font-size: 14px;
+}
+button:hover {
+  background: #357abd;
+}
+.success {
+  padding: 16px;
+  background: #d4edda;
+  border-radius: 8px;
+  color: #155724;
+}
+</style>

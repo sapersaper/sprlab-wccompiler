@@ -1,0 +1,30 @@
+<script>
+import { defineComponent } from 'wcc'
+
+export default defineComponent({ tag: 'wcc-page-about' })
+</script>
+
+<template>
+<div class="page">
+  <h2>ℹ️ About</h2>
+  <p>This is a routing demo built entirely with WCC.</p>
+  <ul>
+    <li>Hash-based routing (no server needed)</li>
+    <li>Navbar persists across navigation (never re-renders)</li>
+    <li>Each page is a separate .wcc component</li>
+    <li>State is preserved within each page's lifecycle</li>
+  </ul>
+</div>
+</template>
+
+<style>
+.page {
+  padding: 20px;
+}
+ul {
+  padding-left: 20px;
+}
+li {
+  margin: 6px 0;
+}
+</style>
