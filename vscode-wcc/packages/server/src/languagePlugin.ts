@@ -281,6 +281,14 @@ export class WccCode implements VirtualCode {
             }
           }
         }
+
+        // Extract PascalCase tag names from template (component imports used as tags)
+        const pascalTagRe = /<([A-Z][a-zA-Z0-9]*)/g;
+        let tagMatch: RegExpExecArray | null;
+        while ((tagMatch = pascalTagRe.exec(parsed.template.content)) !== null) {
+          usages.add(tagMatch[1]);
+        }
+
         if (usages.size > 0) {
           usageSuffix = '\n' + [...usages].map(u => `${u};`).join('\n') + '\n';
         }
