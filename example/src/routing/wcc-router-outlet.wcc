@@ -1,0 +1,28 @@
+<script>
+import { defineComponent, defineProps, watch, templateRef, onMount } from 'wcc'
+
+export default defineComponent({ tag: 'wcc-router-outlet' })
+
+const props = defineProps({ view: '' })
+const container = templateRef('container')
+
+onMount(() => {
+  const el = container.value
+  if (el && props.view) {
+    el.appendChild(document.createElement(props.view))
+  }
+})
+
+watch(() => props.view, (newTag, oldTag) => {
+  const el = container.value
+  if (!el) return
+  el.innerHTML = ''
+  if (newTag) {
+    el.appendChild(document.createElement(newTag))
+  }
+})
+</script>
+
+<template>
+<div ref="container"></div>
+</template>

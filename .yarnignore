@@ -1,0 +1,13 @@
+node_modules/
+example/
+.git/
+.kiro/
+.vscode/
+.yarn/
+e2e/
+framework-testing/
+*.test.js
+vitest.config.*
+yarn.lock
+.pnp.cjs
+.pnp.loader.mjs

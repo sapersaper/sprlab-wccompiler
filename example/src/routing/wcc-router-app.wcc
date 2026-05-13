@@ -1,5 +1,6 @@
 <script>
-import { defineComponent, signal, onMount, onDestroy } from 'wcc'
+import { defineComponent, signal, computed, effect, onMount, onDestroy } from 'wcc'
+import WccRouterOutlet from './wcc-router-outlet.wcc'
 import WccPageHome from './wcc-page-home.wcc'
 import WccPageAbout from './wcc-page-about.wcc'
 import WccPageContact from './wcc-page-contact.wcc'
@@ -8,6 +9,21 @@ export default defineComponent({ tag: 'wcc-router-app' })
 
 const route = signal(location.hash.slice(1) || '/')
 const listenerId = signal(0)
+
+const currentView = computed(() => {
+  const routes = { '/': 'wcc-page-home', '/about': 'wcc-page-about', '/contact': 'wcc-page-contact' }
+  return routes[route()] || ''
+})
+
+const isHome = computed(() => route() === '/')
+const isAbout = computed(() => route() === '/about')
+const isContact = computed(() => route() === '/contact')
+const is404 = computed(() => !currentView())
+
+function navigate(path) {
+  location.hash = path
+  route.set(path)
+}
 
 onMount(() => {
   const id = setInterval(() => {
@@ -28,25 +44,14 @@ onDestroy(() => {
 <div class="app">
   <nav class="navbar">
     <span class="brand">WCC Router</span>
-    <a href="#/" :class="{ active: route() === '/' }">Home</a>
-    <a href="#/about" :class="{ active: route() === '/about' }">About</a>
-    <a href="#/contact" :class="{ active: route() === '/contact' }">Contact</a>
+    <a href="#/" :class="{ active: isHome() }">Home</a>
+    <a href="#/about" :class="{ active: isAbout() }">About</a>
+    <a href="#/contact" :class="{ active: isContact() }">Contact</a>
   </nav>
 
   <main class="content">
-    <div if="route() === '/'">
-      <wcc-page-home></wcc-page-home>
-      <span show="false">{{route()}}</span>
-    </div>
-    <div else-if="route() === '/about'">
-      <wcc-page-about></wcc-page-about>
-      <span show="false">{{route()}}</span>
-    </div>
-    <div else-if="route() === '/contact'">
-      <wcc-page-contact></wcc-page-contact>
-      <span show="false">{{route()}}</span>
-    </div>
-    <div else class="not-found">
+    <wcc-router-outlet :view="currentView()"></wcc-router-outlet>
+    <div show="is404()" class="not-found">
       <h2>404</h2>
       <p>Page not found: {{route()}}</p>
       <a href="#/">← Go home</a>

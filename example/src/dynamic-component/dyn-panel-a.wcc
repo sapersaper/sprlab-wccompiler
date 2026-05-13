@@ -1,0 +1,25 @@
+<script>
+import { defineComponent, defineProps, defineEmits } from 'wcc'
+
+export default defineComponent({ tag: 'dyn-panel-a' })
+
+const props = defineProps({ title: 'Panel A', count: 0 })
+const emit = defineEmits(['action'])
+
+function handleClick() {
+  emit('action')
+}
+</script>
+
+<template>
+<div class="panel panel-a" data-testid="panel-a">
+  <h3>🅰️ {{props.title}}</h3>
+  <p>Count from parent: <strong id="count-a">{{props.count}}</strong></p>
+  <button @click="handleClick">Trigger action</button>
+</div>
+</template>
+
+<style>
+.panel-a { background: #e3f2fd; border-radius: 4px; padding: 12px; }
+h3 { margin: 0 0 8px; }
+</style>

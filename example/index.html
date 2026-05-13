@@ -163,6 +163,22 @@
       <span>watch()</span>
     </div>
     <wcc-typescript title="Demo" :count="count" @update="handleUpdate"></wcc-typescript>
+
+
+    <section>
+      <h2>Dynamic Component</h2>
+      <div class="feature-tags">
+        <span>TypeScript</span>
+        <span>generics</span>
+        <span>interfaces</span>
+        <span>defineProps&lt;T&gt;</span>
+        <span>defineEmits&lt;T&gt;</span>
+        <span>signal&lt;T&gt;</span>
+        <span>computed&lt;T&gt;</span>
+        <span>watch()</span>
+      </div>
+      <dyn-switcher></dyn-switcher>
+    </section>
   </section>
 
   <script type="module">
@@ -174,6 +190,7 @@
     import './dist/nested/wcc-profile.js';
     import './dist/wcc-lifecycle.js';
     import './dist/wcc-typescript.js';
+    import './dist/dynamic-component/dyn-switcher.js'
     import { init, on, set, get } from './dist/wcc-runtime.js';
 
     on('handleUpdate', (e) => {

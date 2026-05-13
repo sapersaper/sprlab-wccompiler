@@ -26,3 +26,6 @@ example/.yarn/
 
 # Test environments
 framework-testing/
+
+# npm lockfile (project uses yarn)
+package-lock.json
