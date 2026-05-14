@@ -1,11 +1,13 @@
 # BUG-0003: Dynamic :class Binding Generates Invalid JavaScript Syntax
 
 ## Metadata
-- **Status**: 🧪 inTesting
+- **Status**: ✅ done
 - **Priority**: 🔼 `high`
 - **Reported by**: Dev Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
 - **Date moved to testing**: 2026-05-14
+- **Date resolved**: 2026-05-14
+- **QA verified**: 2026-05-14
 - **Severity**: High
 - **Component**: codegen.js (template compilation)
 - **Related files**: 
@@ -75,7 +77,29 @@ Fix the code generation logic for `:class` bindings to ensure:
 ## Additional Context
 Discovered during Phase 3 testing (Props and Events). This prevents developers from using one of the most common Vue/Angular patterns for conditional styling.
 
+## Resolution
+**Status**: ✅ **VERIFIED FIXED** - Bug resolved by previous template expression fixes
+
+**Root Cause**: The issue was automatically resolved when implementing the fix for parameterless functions in templates (Bug #0001). The template expression transformation logic now correctly handles object literals in `:class` bindings.
+
+**Verification**:
+- Created comprehensive test suite: `lib/codegen.class-binding-syntax.test.js` (5 tests) - all passing
+- Created QA test component: `example/src/bug-0003-class-binding-test.wcc`
+- Tested all variations: object syntax, string syntax, array syntax, static + dynamic combinations
+- Generated code produces valid JavaScript with proper classList.add/remove operations
+- QA team verified functionality in browser - all tests passing
+
+**Generated Code Example** (CORRECT):
+```javascript
+const __obj = { active: this._isActive() };
+for (const [__k, __val] of Object.entries(__obj)) {
+  __val ? this.__attr_class_0.classList.add(__k) : this.__attr_class_0.classList.remove(__k);
+}
+```
+
+**Conclusion**: No code changes were needed specifically for this bug. It was resolved as a side effect of the template expression transformation improvements implemented for Bug #0001.
+
 ---
 
 *Created from testing report dated 2026-05-13*
-*Ready for QA verification*
+*QA verified and closed on 2026-05-14*
