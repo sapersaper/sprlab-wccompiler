@@ -7,6 +7,7 @@
 - **Date reported**: 2026-05-13
 - **Date moved to testing**: 2026-05-14
 - **Date resolved**: (pending)
+- **QA verified**: Pending
 - **Severity**: High
 - **Component**: codegen.js (template expression parsing)
 - **Related files**: 
@@ -92,7 +93,44 @@ getValue() ? formatValue(getValue()) : 'default'
 ## Additional Context
 Discovered during Phase 3 testing (Props and Events). Ternary expressions are a fundamental JavaScript feature and their incorrect handling severely limits template expressiveness.
 
+## Resolution
+**Status**: 🛠️ **FIX IMPLEMENTED** - Awaiting QA verification
+
+**Root Cause**: When ternary expressions were combined with the nullish coalescing operator (`?? ''`), JavaScript's operator precedence caused incorrect parsing. For example:
+```javascript
+// BEFORE (incorrect):
+this._active() ? 'Active' : 'Inactive' ?? ''
+// JavaScript interprets this as:
+this._active() ? 'Active' : ('Inactive' ?? '')
+```
+
+**Fix Applied**:
+1. Added `wrapTernaryExpr()` helper function in `lib/codegen.js` to detect ternary expressions
+2. Wrapped all ternary expressions in parentheses before applying `?? ''`
+3. Applied fix to 5 locations in codegen.js where textContent bindings use `?? ''`
+
+**Generated Code (CORRECT NOW)**:
+```javascript
+// Simple ternary
+textContent = (this._active() ? 'Active' : 'Inactive') ?? '';
+
+// Nested ternary
+textContent = (this._status() === 'a' ? 'A' : this._status() === 'b' ? 'B' : 'C') ?? '';
+
+// With functions
+textContent = (this._value() ? this._formatValue(this._value()) : 'default') ?? '';
+```
+
+**Files Modified**:
+- `lib/codegen.js` (lines 67-75: added wrapTernaryExpr function)
+- `lib/codegen.js` (lines 464, 670, 799, 1348, 2036: applied wrapping to textContent assignments)
+- `lib/codegen.ternary-expression.test.js` (created: 4 comprehensive tests)
+
+**Test Results**: All 1001 tests passing ✅
+
+**Pending**: QA verification in browser environment
+
 ---
 
 *Created from testing report dated 2026-05-13*
-*Ready for QA verification*
+*Awaiting QA verification before archiving*
