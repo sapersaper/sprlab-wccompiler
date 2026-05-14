@@ -1,0 +1,101 @@
+<script>
+defineComponent({
+  tag: 'wcc-test-no-collision'
+})
+
+// Test Case 1: Function WITHOUT collision - SHOULD WORK
+const count = signal(0)
+const name = signal('World')
+
+// This function has a unique name (no collision)
+function getGreeting() {
+  return 'Hello World'
+}
+
+function getFullName() {
+  return `Hello ${name()}`
+}
+
+function incrementCount() {
+  count.set(count() + 1)
+}
+
+// Computed for comparison
+const displayCount = computed(() => `Count: ${count()}`)
+</script>
+
+<template>
+  <div class="container">
+    <h1>Bug #1 Test - Functions Without Parameters</h1>
+    
+    <section>
+      <h2>Test 1: Simple function without parameters</h2>
+      <p>Expected: "Hello World"</p>
+      <p class="result">{{ getGreeting() }}</p>
+    </section>
+    
+    <section>
+      <h2>Test 2: Function calling a signal</h2>
+      <p>Expected: "Hello World"</p>
+      <p class="result">{{ getFullName() }}</p>
+    </section>
+    
+    <section>
+      <h2>Test 3: Function with side effects</h2>
+      <p>Current count: {{ count() }}</p>
+      <p>{{ displayCount() }}</p>
+      <button @click="incrementCount">Increment</button>
+    </section>
+    
+    <section>
+      <h2>Test 4: Multiple functions</h2>
+      <p>Greeting: {{ getGreeting() }}</p>
+      <p>Full Name: {{ getFullName() }}</p>
+    </section>
+  </div>
+</template>
+
+<style>
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+section {
+  margin: 2rem 0;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+h1 {
+  color: #333;
+}
+
+h2 {
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.result {
+  font-size: 1.5rem;
+  color: #2196F3;
+  font-weight: bold;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+button:hover {
+  background: #1976D2;
+}
+</style>

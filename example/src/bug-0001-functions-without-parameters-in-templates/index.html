@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bug #1 Test - Functions Without Parameters</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: #f5f5f5;
+    }
+    
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #2196F3;
+      padding-bottom: 0.5rem;
+    }
+    
+    .test-section {
+      background: white;
+      padding: 2rem;
+      margin: 2rem 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-left: 1rem;
+    }
+    
+    .status.pass {
+      background: #c8e6c9;
+      color: #2e7d32;
+    }
+    
+    .status.fail {
+      background: #ffcdd2;
+      color: #c62828;
+    }
+    
+    .status.pending {
+      background: #fff9c4;
+      color: #f57f17;
+    }
+    
+    code {
+      background: #f5f5f5;
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196F3;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🐛 Bug #1: Functions Without Parameters in Templates</h1>
+  
+  <div class="info-box">
+    <h3>Test Objective</h3>
+    <p>Verify that functions without parameters work correctly in template expressions when there's NO name collision with signals/props/computed.</p>
+  </div>
+  
+  <div class="test-section">
+    <h2>
+      Test Case 1: No Collision 
+      <span class="status pending" id="status-no-collision">PENDING</span>
+    </h2>
+    <p><strong>Component:</strong> <code>wcc-test-no-collision.wcc</code></p>
+    <p><strong>Expected:</strong> Component compiles and displays "Hello World"</p>
+    <p><strong>Status:</strong> Waiting for compilation test</p>
+    
+    <h3>What to verify:</h3>
+    <ul>
+      <li>✅ Component compiles without errors</li>
+      <li>✅ <code>{{ getGreeting() }}</code> displays "Hello World"</li>
+      <li>✅ <code>{{ getFullName() }}</code> displays "Hello World"</li>
+      <li>✅ Button click increments counter</li>
+      <li>✅ No console errors</li>
+    </ul>
+    
+    <div class="component-demo">
+      <div class="component-header">Live Demo - No Collision</div>
+      <div class="component-content">
+        <wcc-test-no-collision></wcc-test-no-collision>
+      </div>
+    </div>
+  </div>
+  
+  <div class="test-section">
+    <h2>
+      Test Case 2: With Collision
+      <span class="status fail" id="status-with-collision">EXPECTED TO FAIL</span>
+    </h2>
+    <p><strong>Component:</strong> <code>wcc-test-with-collision.wcc</code></p>
+    <p><strong>Expected:</strong> Compiler should reject this with clear error message</p>
+    <p><strong>Status:</strong> Waiting for compilation test</p>
+    
+    <h3>What to verify:</h3>
+    <ul>
+      <li>❌ Component should NOT compile</li>
+      <li>❌ Compiler should show error about duplicate identifier</li>
+      <li>✅ Error message should be clear and helpful</li>
+      <li>✅ Should suggest using different names or computed</li>
+    </ul>
+  </div>
+  
+  <div class="test-section">
+    <h2>How to Run Tests</h2>
+    <ol>
+      <li>
+        <strong>Test Case 1 (No Collision):</strong>
+        <pre><code>cd example
+yarn dev</code></pre>
+        Then navigate to the component and verify it works.
+      </li>
+      <li>
+        <strong>Test Case 2 (With Collision):</strong>
+        <pre><code>cd example
+npx wcc compile src/bug-0001-functions-without-parameters-in-templates/wcc-test-with-collision.wcc</code></pre>
+        This should fail with a clear error message.
+      </li>
+    </ol>
+  </div>
+  
+  <div class="test-section">
+    <h2>Expected Compiler Enhancement</h2>
+    <p>Add validation in the parser to detect name collisions early:</p>
+    <pre><code>// In lib/parser-extractors.js or lib/parser.js
+function validateNameCollisions(signals, computeds, methods, props) {
+  const allNames = new Set();
+  
+  // Check for collisions between signals and functions
+  for (const signal of signals) {
+    if (methods.some(m => m.name === signal.name)) {
+      throw new Error(
+        `Name collision: '${signal.name}' is defined as both a signal and a function.\\n` +
+        `Solution: Use different names or convert to computed().`
+      );
+    }
+    allNames.add(signal.name);
+  }
+  
+  // Similar checks for computeds, props, etc.
+}</code></pre>
+  </div>
+  
+  <script type="module">
+    // Import the compiled component
+    import '../../dist/bug-0001-functions-without-parameters-in-templates/wcc-test-no-collision.js';
+    
+    // Update status after component loads
+    window.addEventListener('load', () => {
+      const component = document.querySelector('wcc-test-no-collision');
+      if (component) {
+        setTimeout(() => {
+          const statusEl = document.getElementById('status-no-collision');
+          if (statusEl) {
+            statusEl.textContent = 'PASS';
+            statusEl.className = 'status pass';
+          }
+        }, 500);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,490 @@
+﻿
+> @sprlab/wccompiler@0.13.0 test
+> vitest --run
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/projects/sprlab-wccompiler[39m
+
+node.exe : (node:12780) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module 
+type of file:///C:/Users/Saper/AppData/Local/Temp/wcc-cli-standalone-177
+8770543114-oa28ugqskz9/wcc.config.js?t=1778770543819 is not specified 
+and it doesn't parse as CommonJS.
+En línea: 1 Carácter: 1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:12780) [M...se as Co 
+   mmonJS.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Reparsing as ES module because module syntax was detected. This incurs 
+a performance overhead.
+To eliminate this warning, add "type": "module" to 
+C:\Users\Saper\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10756) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file
+:///C:/Users/Saper/AppData/Local/Temp/wcc-cli-sfc-1778770543237-dvcfpwy2
+ji/wcc.config.js?t=1778770543819 is not specified and it doesn't parse 
+as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs 
+a performance overhead.
+To eliminate this warning, add "type": "module" to 
+C:\Users\Saper\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:6856) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:
+///C:/Users/Saper/AppData/Local/Temp/wcc-cli-standalone-1778770543929-ja
+ewi6gf5xc/wcc.config.js?t=1778770544510 is not specified and it doesn't 
+parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs 
+a performance overhead.
+To eliminate this warning, add "type": "module" to 
+C:\Users\Saper\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2252) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:
+///C:/Users/Saper/AppData/Local/Temp/wcc-cli-sfc-1778770543977-769zew6x3
+pn/wcc.config.js?t=1778770544525 is not specified and it doesn't parse 
+as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs 
+a performance overhead.
+To eliminate this warning, add "type": "module" to 
+C:\Users\Saper\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Error compiling 
+C:\projects\sprlab-wccompiler\bin\__tmp_cli_test__\src\bad.wcc: Error 
+en 'bad.wcc': defineComponent() es obligatorio
+(node:14068) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file
+:///C:/Users/Saper/AppData/Local/Temp/wcc-cli-standalone-1778770544595-n
+vkupdbh42/wcc.config.js?t=1778770545169 is not specified and it doesn't 
+parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs 
+a performance overhead.
+To eliminate this warning, add "type": "module" to 
+C:\Users\Saper\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12900) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file
+:///C:/Users/Saper/AppData/Local/Temp/wcc-cli-sfc-1778770544625-fshsnjwh
+x5r/wcc.config.js?t=1778770545185 is not specified and it doesn't parse 
+as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs 
+a performance overhead.
+To eliminate this warning, add "type": "module" to 
+C:\Users\Saper\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Usage: wcc <build|dev>
+ [32mÔ£ô[39m bin/wcc.test.js [2m([22m[2m4 tests[22m[2m)[22m[33m 2628[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m wcc CLI[2m > [22mdiscovers .wcc files, excludes *.test.* files [33m 740[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m wcc CLI[2m > [22mwrites compiled output to the configured output directory [33m 747[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m wcc CLI[2m > [22mexits with non-zero code on compilation error [33m 574[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m wcc CLI[2m > [22mprints usage and exits with non-zero code for unknown command [33m 565[2mms[22m[39m
+(node:1576) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:
+///C:/Users/Saper/AppData/Local/Temp/wcc-cli-sfc-1778770545288-poumkta6u
+59/wcc.config.js?t=1778770545794 is not specified and it doesn't parse 
+as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs 
+a performance overhead.
+To eliminate this warning, add "type": "module" to 
+C:\Users\Saper\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:4448) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:
+///C:/Users/Saper/AppData/Local/Temp/wcc-cli-standalone-1778770545260-s3
+bq70cgfrr/wcc.config.js?t=1778770545794 is not specified and it doesn't 
+parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs 
+a performance overhead.
+To eliminate this warning, add "type": "module" to 
+C:\Users\Saper\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ [32mÔ£ô[39m lib/cli.sfc.test.js [2m([22m[2m4 tests[22m[2m)[22m[33m 2643[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m CLI SFC integration ÔÇö discoverFiles includes .wcc[2m > [22mwcc build discovers and compiles .wcc files in the input directory [33m 741[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m CLI SFC integration ÔÇö discoverFiles includes .wcc[2m > [22mwcc build discovers multiple .wcc files in the input directory [33m 648[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m CLI SFC integration ÔÇö output path replaces .wcc with .js[2m > [22moutput file for a .wcc input has .js extension [33m 663[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m CLI SFC integration ÔÇö output path replaces .wcc with .js[2m > [22moutput path preserves nested directory structure for .wcc files [33m 589[2mms[22m[39m
+(node:11564) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file
+:///C:/Users/Saper/AppData/Local/Temp/wcc-cli-standalone-1778770545869-y
+4q3xyxng3o/wcc.config.js?t=1778770546895 is not specified and it 
+doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs 
+a performance overhead.
+To eliminate this warning, add "type": "module" to 
+C:\Users\Saper\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ [32mÔ£ô[39m lib/cli.standalone.test.js [2m([22m[2m5 tests[22m[2m)[22m[33m 3994[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m CLI standalone ÔÇö Requirement 6.1: standalone false generates shared runtime[2m > [22mwith default config (standalone: false), __wcc-signals.js is generated [33m 817[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m CLI standalone ÔÇö Requirement 6.1: standalone false generates shared runtime[2m > [22mwith explicit standalone: false, __wcc-signals.js is generated [33m 665[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m CLI standalone ÔÇö Requirement 6.2: standalone true without overrides skips shared runtime[2m > [22mwith standalone: true and no component overrides, __wcc-signals.js is NOT generated [33m 666[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m CLI standalone ÔÇö Requirement 6.2: standalone true without overrides skips shared runtime[2m > [22mwith standalone: true and multiple components without overrides, __wcc-signals.js is NOT generated [33m 608[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m CLI standalone ÔÇö Requirement 6.3: component override to false generates shared runtime[2m > [22mwith standalone: true globally but one component has standalone: false, __wcc-signals.js IS generated [33m 1236[2mms[22m[39m
+ [32mÔ£ô[39m vscode-wcc/packages/server/src/languagePlugin.property.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 1017[2mms[22m[39m
+ [32mÔ£ô[39m lib/config.standalone.test.js [2m([22m[2m9 tests[22m[2m)[22m[33m 1192[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m Config Loader ÔÇö Property 2: rejection of non-boolean standalone values[2m > [22mrejects any non-boolean standalone value with INVALID_CONFIG [33m 1119[2mms[22m[39m
+ [32mÔ£ô[39m lib/integrations.react-slots.test.js [2m([22m[2m117 tests[22m[2m)[22m[33m 3503[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m Feature: react-plugin-slots, Property 21: Hook calls not modified[2m > [22mfor any JSX file containing useWccEvent calls alongside custom elements with slot props, the hook calls appear unchanged in the output [33m 385[2mms[22m[39m
+ [32mÔ£ô[39m lib/tree-walker.each.test.js [2m([22m[2m17 tests[22m[2m)[22m[33m 605[2mms[22m[39m
+ [32mÔ£ô[39m lib/tree-walker.model.test.js [2m([22m[2m10 tests[22m[2m)[22m[33m 762[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m Feature: model-directive, Property 1: Model Attribute Detection and ModelBinding Structure[2m > [22mdiscovers every model attribute with correct signal name, sequential varNames, and valid paths [33m 392[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.constructor-compliance.test.js [2m([22m[2m6 tests[22m[2m)[22m[33m 1190[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m Constructor spec compliance ÔÇö Bug Condition[2m > [22mdocument.createElement should produce an element without triggering NotSupportedError [33m 630[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.sfc.test.js [2m([22m[2m4 tests[22m[2m)[22m[33m 549[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m SFC integration ÔÇö end-to-end compilation[2m > [22mcompiles <script lang="ts"> with TypeScript types correctly [33m 415[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.defineModel.test.js [2m([22m[2m9 tests[22m[2m)[22m[33m 1191[2mms[22m[39m
+ [32mÔ£ô[39m lib/tree-walker.test.js [2m([22m[2m18 tests[22m[2m)[22m[33m 1012[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m walkTree ÔÇö property: Interpolation Discovery Completeness[2m > [22mdiscovers every {{varName}} with correct name, valid path, and correct type [33m 524[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m walkTree ÔÇö property: Event Discovery and Cleanup[2m > [22mdiscovers every @event with correct name and handler, and removes all @event attributes [33m 442[2mms[22m[39m
+ [32mÔ£ô[39m lib/sfc-parser.test.js [2m([22m[2m21 tests[22m[2m)[22m[33m 441[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.refs.validation.test.js [2m([22m[2m4 tests[22m[2m)[22m[33m 628[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m Feature: template-refs, Property 5: Ref Not Found Error[2m > [22mthrows REF_NOT_FOUND when templateRef name has no matching ref in template [33m 588[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.test.js [2m([22m[2m29 tests[22m[2m)[22m[33m 489[2mms[22m[39m
+ [32mÔ£ô[39m lib/tree-walker.if.test.js [2m([22m[2m14 tests[22m[2m)[22m[33m 546[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m Feature: if, Property 1: Chain Detection and If_Block Structure[2m > [22mproduces one IfBlock per chain with sequential varNames, valid anchorPath, and correct branch types [33m 300[2mms[22m[39m
+ [32mÔ£ô[39m lib/watch-prop.test.js [2m([22m[2m3 tests[22m[2m)[22m[33m 643[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m watch(() => props.x) ÔÇö framework integration pattern[2m > [22mwatcher fires when attribute is set before connectedCallback [33m 531[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.if.test.js [2m([22m[2m10 tests[22m[2m)[22m[33m 469[2mms[22m[39m
+   [33m[2mÔ£ô[22m[39m Feature: if, Property 3: Codegen Constructor and Effect Structure[2m > [22mgenerates template elements, anchor ref, state init, and effect for each IfBlock [33m 305[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.each.test.js [2m([22m[2m16 tests[22m[2m)[22m[33m 530[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.defineModel.validation.test.js [2m([22m[2m24 tests[22m[2m)[22m[33m 435[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.show.test.js [2m([22m[2m7 tests[22m[2m)[22m[32m 272[2mms[22m[39m
+ [32mÔ£ô[39m lib/tree-walker.attr-bindings.test.js [2m([22m[2m8 tests[22m[2m)[22m[33m 399[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.lifecycle.test.js [2m([22m[2m8 tests[22m[2m)[22m[32m 222[2mms[22m[39m
+ [32mÔ£ô[39m vscode-wcc/packages/server/src/wccParser.property.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 277[2mms[22m[39m
+ [32mÔ£ô[39m lib/import-resolver.property.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 237[2mms[22m[39m
+ [32mÔ£ô[39m lib/tree-walker.refs.test.js [2m([22m[2m7 tests[22m[2m)[22m[32m 250[2mms[22m[39m
+ [32mÔ£ô[39m lib/tree-walker.slots.test.js [2m([22m[2m10 tests[22m[2m)[22m[32m 256[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.attr-bindings.test.js [2m([22m[2m10 tests[22m[2m)[22m[32m 229[2mms[22m[39m
+ [32mÔ£ô[39m lib/tree-walker.show.test.js [2m([22m[2m9 tests[22m[2m)[22m[32m 222[2mms[22m[39m
+ [32mÔ£ô[39m lib/adapters.angular-slots.test.js [2m([22m[2m23 tests[22m[2m)[22m[32m 188[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.model.test.js [2m([22m[2m7 tests[22m[2m)[22m[32m 196[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.defineProps.test.js [2m([22m[2m21 tests[22m[2m)[22m[32m 192[2mms[22m[39m
+[90mstdout[2m | lib/dev-server.test.js[2m > [22m[2mdev-server[2m > [22m[2minjects polling script into HTML responses
+[22m[39mDev server running at http://localhost:0
+
+[90mstdout[2m | lib/dev-server.test.js[2m > [22m[2mdev-server[2m > [22m[2mreturns JSON with timestamp from /__poll endpoint
+[22m[39mDev server running at http://localhost:0
+
+[90mstdout[2m | lib/dev-server.test.js[2m > [22m[2mdev-server[2m > [22m[2mreturns 404 for missing files
+[22m[39mDev server running at http://localhost:0
+
+[90mstdout[2m | lib/dev-server.test.js[2m > [22m[2mdev-server[2m > [22m[2mserves .js files with correct MIME type
+[22m[39mDev server running at http://localhost:0
+
+[90mstdout[2m | lib/dev-server.test.js[2m > [22m[2mdev-server[2m > [22m[2mserves .css files with correct MIME type
+[22m[39mDev server running at http://localhost:0
+
+[90mstdout[2m | lib/dev-server.test.js[2m > [22m[2mdev-server[2m > [22m[2mserves .html files with correct MIME type
+[22m[39mDev server running at http://localhost:0
+
+ [32mÔ£ô[39m lib/dev-server.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 156[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.dynamic-component.property.test.js [2m([22m[2m8 tests[22m[2m)[22m[32m 189[2mms[22m[39m
+ [32mÔ£ô[39m lib/reactive-runtime.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 137[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.slots.test.js [2m([22m[2m15 tests[22m[2m)[22m[32m 119[2mms[22m[39m
+ [32mÔ£ô[39m lib/parser-extractors.defineModel.test.js [2m([22m[2m18 tests[22m[2m)[22m[32m 191[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.typescript.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 150[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.scoped-slot-regex.property.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 210[2mms[22m[39m
+ [32mÔ£ô[39m vscode-wcc/packages/server/src/templateExpressionParser.property.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 120[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.defineEmits.test.js [2m([22m[2m17 tests[22m[2m)[22m[32m 129[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.scoped-slots-escape-syntax.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 77[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.defineEmits.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 111[2mms[22m[39m
+ [32mÔ£ô[39m lib/css-scoper.test.js [2m([22m[2m8 tests[22m[2m)[22m[32m 126[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.guarded-child-registration.property.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+ [32mÔ£ô[39m lib/integrations.react.test.js [2m([22m[2m8 tests[22m[2m)[22m[32m 90[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.defineProps.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 94[2mms[22m[39m
+ [32mÔ£ô[39m lib/tree-walker.dynamic-component.property.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 84[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.defineModel.test.js [2m([22m[2m10 tests[22m[2m)[22m[32m 90[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.nested-directives.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.refs.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 80[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.standalone.test.js [2m([22m[2m15 tests[22m[2m)[22m[32m 102[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.dynamic-component.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 77[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.lifecycle.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+ [32mÔ£ô[39m lib/config.test.js [2m([22m[2m7 tests[22m[2m)[22m[32m 87[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.explicit-imports.integration.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 70[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.scoped-slots-template-attr.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 84[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.if.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.each.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 105[2mms[22m[39m
+[90mstdout[2m | lib/nested-directives-runtime.test.js[2m > [22m[2mBreak Test 1: Nested each (each inside each)[2m > [22m[2mgenerates code that correctly scopes inner loop variable
+[22m[39m
+=== NESTED EACH OUTPUT ===
+
+__for0_nodes = [];
+    this.innerHTML = '';
+    this.appendChild(__root);
+    this.__ac = new AbortController();
+    this.__disposers = [];
+
+    this.__disposers.push(__effect(() => {
+      const __source = this._categories();
+
+      const __iter = typeof __source === 'number'
+        ? Array.from({ length: __source }, (_, i) => i + 1)
+        : (__source || []);
+
+      for (const n of this.__for0_nodes) n.remove();
+      this.__for0_nodes = [];
+
+      __iter.forEach((cat, __idx) => {
+        const clone = this.__for0_tpl.content.cloneNode(true);
+        const node = clone.firstChild;
+          const __for0_tpl = document.createElement('template');
+          __for0_tpl.innerHTML = `<span></span>`;
+          const __for0_anchor = node.childNodes[1];
+          const __for0_source = cat.items;
+          const __for0_iter = typeof __for0_source === 'number'
+            ? Array.from({ length: __for0_source }, (_, i) => i + 1)
+            : (__for0_source || []);
+          __for0_iter.forEach((item, __idx) => {
+            const clone = __for0_tpl.content.cloneNode(true);
+            const innerNode = clone.firstChild;
+            innerNode.textContent = item ?? '';
+            __for0_anchor.parentNode.insertBefore(innerNode, __for0_anchor);
+          });
+        this.__for0_anchor.parentNode.insertBefore(node, this.__for0_anchor);
+        customElements.upgrade(node);
+        this.__for0_nodes.push(node);
+      });
+    }));
+  }
+
+  
+
+[90mstdout[2m | lib/nested-directives-runtime.test.js[2m > [22m[2mBreak Test 2: If/else inside each[2m > [22m[2mgenerates code with correct childNodes path for if anchor
+[22m[39m
+=== IF/ELSE INSIDE EACH OUTPUT ===
+
+__for0_nodes = [];
+    this.innerHTML = '';
+    this.appendChild(__root);
+    this.__ac = new AbortController();
+    this.__disposers = [];
+
+    this.__disposers.push(__effect(() => {
+      const __source = this._items();
+
+      const __iter = typeof __source === 'number'
+        ? Array.from({ length: __source }, (_, i) => i + 1)
+        : (__source || []);
+
+      for (const n of this.__for0_nodes) n.remove();
+      this.__for0_nodes = [];
+
+      __iter.forEach((item, __idx) => {
+        const clone = this.__for0_tpl.content.cloneNode(true);
+        const node = clone.firstChild;
+          const __if0_t0 = document.createElement('template');
+          __if0_t0.innerHTML = `<span>Active: <span></span></span>`;
+          const __if0_t1 = document.createElement('template');
+          __if0_t1.innerHTML = `<span>Inactive: <span></span></span>`;
+          const __if0_anchor = node.childNodes[1];
+          let __if0_branch = null;
+          if (item.active) { __if0_branch = 0; }
+          else { __if0_branch = 1; }
+          if (__if0_branch !== null) {
+            const __if0_tpl = [__if0_t0, __if0_t1][__if0_branch];
+            const __if0_clone = __if0_tpl.content.cloneNode(true);
+            const __if0_node = __if0_clone.firstChild;
+            __if0_anchor.parentNode.insertBefore(__if0_node, __if0_anchor);
+            if (__if0_branch === 0) {
+              __if0_node.childNodes[1].textContent = item.name ?? '';
+            }
+            else if (__if0_branch === 1) {
+              __if0_node.childNodes[1].textContent = item.name ?? '';
+            }
+          }
+        this.__for0_anchor.parentNode.insertBefore(node, this.__for0_anchor);
+        customElements.upgrade(node);
+        this.__for0_nodes.push(node);
+      });
+    }));
+  }
+
+  
+
+Anchor line: const __if0_anchor = node.childNodes[1];
+
+ [32mÔ£ô[39m lib/nested-directives-runtime.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 69[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.defineExpose.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 56[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.scoped-slots-wcc-to-wcc.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.slots.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.model.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.attr-bindings.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.refs.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32mÔ£ô[39m lib/tree-walker.dynamic-component.test.js [2m([22m[2m14 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.show.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.hyphenated-plain-elements.property.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 60[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.nested-directives.test.js [2m([22m[2m14 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32mÔ£ô[39m lib/template-normalizer.unresolved-tag.property.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 77[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 73[2mms[22m[39m
+[90mstdout[2m | lib/watch-prop-repro.test.js[2m > [22m[2mQA reproduction: watch(() => props.value) not compiled[2m > [22m[2mgenerates watcher effect for getter over prop (exact QA source)
+[22m[39m=== FULL OUTPUT ===
+// Generated from: wcc-input-test.wcc (wcCompiler)
+let __currentEffect = null;
+let __batchDepth = 0;
+const __pendingEffects = new Set();
+
+function __signal(initial) {
+  let _value = initial;
+  const _subs = new Set();
+  return (...args) => {
+    if (args.length === 0) {
+      if (__currentEffect) _subs.add(__currentEffect);
+      return _value;
+    }
+    const old = _value;
+    _value = args[0];
+    if (old !== _value) {
+      if (__batchDepth > 0) {
+        for (const fn of _subs) __pendingEffects.add(fn);
+      } else {
+        for (const fn of [..._subs]) fn();
+      }
+    }
+  };
+}
+
+function __effect(fn) {
+  let _cleanup = null;
+  let _active = true;
+  const run = () => {
+    if (!_active) return;
+    try {
+      if (typeof _cleanup === 'function') _cleanup();
+      const prev = __currentEffect;
+      __currentEffect = run;
+      _cleanup = fn();
+      __currentEffect = prev;
+    } catch (e) {
+      console.error('[wcc] Effect error:', e);
+      _active = false;
+    }
+  };
+  run();
+  return () => { _active = false; if (typeof _cleanup === 'function') _cleanup(); };
+}
+
+function __untrack(fn) {
+  const prev = __currentEffect;
+  __currentEffect = null;
+  try { return fn(); }
+  finally { __currentEffect = prev; }
+}
+
+const __t_WccInputTest = document.createElement('template');
+__t_WccInputTest.innerHTML = `
+<div class="input-test">
+  <label>WCC Input:</label>
+  <input type="text" placeholder="Type here...">
+  <p class="preview">Internal value: "<span></span>"</p>
+</div>
+`;
+
+class WccInputTest extends HTMLElement {
+  static get observedAttributes() { return ['value']; }
+
+  static __meta = { tag: 'wcc-input-test', props: [{ name: 'value', default: '' }], events: ['input', 'change'], models: [], slots: [] };
+
+  constructor() {
+    super();
+    this._s_value = __signal('');
+    this._internal = __signal('');
+    this.__prev_watch0 = '';
+    this.__prev_internal = undefined;
+  }
+
+  connectedCallback() {
+    if (this.__connected) return;
+    this.__connected = true;
+    const __root = __t_WccInputTest.content.cloneNode(true);
+    this.__text_internal_0 = __root.childNodes[1].childNodes[5].childNodes[1];
+    this.__model_internal_0 = __root.childNodes[1].childNodes[3];
+    this.innerHTML = '';
+    this.appendChild(__root);
+    this.__ac = new AbortController();
+    this.__disposers = [];
+
+    this.__disposers.push(__effect(() => {
+      this.__text_internal_0.textContent = this._internal() ?? '';
+    }));
+    this.__disposers.push(__effect(() => {
+      const newVal = this._s_value();
+      if (this.__prev_watch0 !== undefined && this.__prev_watch0 !== newVal) {
+        __untrack(() => {
+          this._internal(newVal)
+        });
+      }
+      this.__prev_watch0 = newVal;
+    }));
+    this.__disposers.push(__effect(() => {
+      const newVal = this._internal();
+      if (this.__prev_internal !== undefined && this.__prev_internal !== newVal) {
+        const oldVal = this.__prev_internal;
+        __untrack(() => {
+          this._emit('input', newVal)
+          this._emit('change', newVal)
+        });
+      }
+      this.__prev_internal = newVal;
+    }));
+    this.__disposers.push(__effect(() => {
+      this.__model_internal_0.value = this._internal() ?? '';
+    }));
+    this.__model_internal_0.addEventListener('input', (e) => { this._internal(e.target.value); }, { signal: this.__ac.signal });
+  }
+
+  disconnectedCallback() {
+    this.__connected = false;
+    this.__ac.abort();
+    this.__disposers.forEach(d => d());
+  }
+
+  attributeChangedCallback(name, oldVal, newVal) {
+    if (name === 'value') this._s_value(newVal ?? '');
+  }
+
+  get value() { return this._s_value(); }
+  set value(val) { this._s_value(val); this.setAttribute('value', String(val)); }
+
+  _emit(name, detail) {
+    const evt = { detail, bubbles: true, composed: true };
+    this.dispatchEvent(new CustomEvent(name, evt));
+    const lower = name.replace(/-/g, '').toLowerCase();
+    if (lower !== name) this.dispatchEvent(new CustomEvent(lower, evt));
+  }
+
+}
+
+if (!customElements.get('wcc-input-test')) customElements.define('wcc-input-test', WccInputTest);
+
+export default WccInputTest;
+=== END ===
+__prev_watch occurrences: [33m4[39m
+__prev_internal occurrences: [33m5[39m
+
+ [32mÔ£ô[39m lib/watch-prop-repro.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 90[2mms[22m[39m
+ [32mÔ£ô[39m lib/integrations.vue.test.js [2m([22m[2m35 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.side-effect-imports.property.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32mÔ£ô[39m lib/integrations.decoupling.test.js [2m([22m[2m10 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.static-imports.property.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32mÔ£ô[39m lib/template-normalizer.property.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+ [32mÔ£ô[39m lib/sfc-parser.standalone.test.js [2m([22m[2m9 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32mÔ£ô[39m lib/template-normalizer.self-closing.property.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32mÔ£ô[39m lib/tree-walker.modelProp.test.js [2m([22m[2m11 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+ [32mÔ£ô[39m lib/import-resolver.invalid-forms.property.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.dynamic-component.test.js [2m([22m[2m15 tests[22m[2m)[22m[32m 113[2mms[22m[39m
+ [32mÔ£ô[39m vscode-wcc/packages/server/src/languagePlugin.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32mÔ£ô[39m lib/template-normalizer.dynamic-component.test.js [2m([22m[2m9 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32mÔ£ô[39m lib/import-resolver.test.js [2m([22m[2m15 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32mÔ£ô[39m lib/template-normalizer.dynamic-component.property.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.scoped-slots.test.js [2m([22m[2m23 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.slot-template-attr.test.js [2m([22m[2m13 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32mÔ£ô[39m vscode-wcc/packages/server/src/templateExpressionParser.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32mÔ£ô[39m lib/parser-extractors.validateNameCollisions.test.js [2m([22m[2m15 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32mÔ£ô[39m lib/codegen.scoped-slot-regex.test.js [2m([22m[2m17 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32mÔ£ô[39m lib/template-normalizer.test.js [2m([22m[2m20 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32mÔ£ô[39m vscode-wcc/packages/server/src/wccParser.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32mÔ£ô[39m lib/integrations.angular.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32mÔ£ô[39m types/wcc.test.js [2m([22m[2m7 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32mÔ£ô[39m lib/adapters.defineModel.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 116[2mms[22m[39m
+ [32mÔ£ô[39m lib/compiler-browser.sfc.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m98 passed[39m[22m[90m (98)[39m
+[2m      Tests [22m [1m[32m982 passed[39m[22m[90m (982)[39m
+[2m   Start at [22m 11:55:42
+[2m   Duration [22m 51.78s[2m (transform 2.76s, setup 0ms, collect 38.86s, tests 32.09s, environment 4.03s, prepare 25.25s)[22m
+

@@ -233,7 +233,7 @@ describe('Compatibility - template_expressions_0', () => {
     expect(ids).not.toContain('template_expressions_0');
   });
 
-  it('the script_0 VirtualCode includes usage suffix to suppress unused warnings', () => {
+  it('the script_0 VirtualCode contains only the original script content (no usage suffix)', () => {
     const source = `<script lang="ts">
 const name = signal('World');
 function handleClick() {}
@@ -245,15 +245,14 @@ function handleClick() {}
     const scriptCode = code.embeddedCodes.find((c) => c.id === 'script_0')!;
     const scriptContent = scriptCode.snapshot.getText(0, scriptCode.snapshot.getLength());
 
-    // script_0 should contain the raw script content PLUS usage suffix for template references
+    // script_0 should contain ONLY the raw script content (usage variables are in template_expressions_0)
     expect(scriptContent).toContain(`\nconst name = signal('World');\nfunction handleClick() {}\n`);
-    expect(scriptContent).toContain('name;');
-    expect(scriptContent).toContain('handleClick;');
-
-    // The mapping should only cover the original script content (not the suffix)
+    
+    // The mapping should cover the entire script content
     const mapping = scriptCode.mappings[0];
     const rawScriptContent = `\nconst name = signal('World');\nfunction handleClick() {}\n`;
     expect(mapping.lengths[0]).toBe(rawScriptContent.length);
+    expect(scriptContent.length).toBe(rawScriptContent.length);
   });
 
   it('the template_0 VirtualCode still contains the full template HTML content (unchanged)', () => {
