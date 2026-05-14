@@ -1,16 +1,20 @@
 # BUG-0002: batch Function Not Imported from Runtime
 
 ## Metadata
-- **Status**: open
+- **Status**: 🧪 inTesting
 - **Priority**: ↕️ `medium`
 - **Reported by**: Dev Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
+- **Date moved to testing**: 2026-05-14
 - **Date resolved**: (pending)
 - **Severity**: Medium
 - **Component**: codegen.js (import generation)
 - **Related files**: 
-  - `lib/codegen.js`
-  - `example/src/02-reactivity/wcc-batch.wcc`
+  - `lib/parser-extractors.js` (detectBatchUsage function)
+  - `lib/parser.js` (batch detection integration)
+  - `lib/codegen.js` (batch transformation)
+  - `lib/parser-extractors.batch-detection.test.js` (10 tests)
+  - `example/src/bug-0002-batch-test.wcc` (QA test component)
 
 ## Description
 The WCC compiler does not automatically import the `__batch` function from the runtime when the `batch()` API is used in component scripts. This causes runtime errors unless the import is manually added.
