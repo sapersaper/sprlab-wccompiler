@@ -1,15 +1,17 @@
 # BUG-0004: Ternary Expressions Have Misplaced Parentheses
 
 ## Metadata
-- **Status**: open
+- **Status**: 🧪 inTesting
 - **Priority**: 🔼 `high`
 - **Reported by**: Dev Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
+- **Date moved to testing**: 2026-05-14
 - **Date resolved**: (pending)
 - **Severity**: High
 - **Component**: codegen.js (template expression parsing)
 - **Related files**: 
   - `lib/codegen.js`
+  - `lib/codegen.ternary-expression.test.js` (4 comprehensive tests)
   - `example/src/03-props-events/wcc-defineProps.wcc`
 
 ## Description
@@ -93,3 +95,4 @@ Discovered during Phase 3 testing (Props and Events). Ternary expressions are a 
 ---
 
 *Created from testing report dated 2026-05-13*
+*Ready for QA verification*
