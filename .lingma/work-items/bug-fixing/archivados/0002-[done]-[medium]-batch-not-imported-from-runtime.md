@@ -1,7 +1,7 @@
 # BUG-0002: batch Function Not Imported from Runtime
 
 ## Metadata
-- **Status**: ✅ resolved
+- **Status**: ✅ done
 - **Priority**: ↕️ `medium`
 - **Reported by**: Dev Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
