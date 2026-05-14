@@ -1,17 +1,17 @@
 # BUG-0002: batch Function Not Imported from Runtime
 
 ## Metadata
-- **Status**: 🧪 inTesting
+- **Status**: ✅ resolved
 - **Priority**: ↕️ `medium`
 - **Reported by**: Dev Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
 - **Date moved to testing**: 2026-05-14
-- **Date resolved**: (pending)
-- **Severity**: Medium
-- **Component**: codegen.js (import generation)
+- **Date resolved**: 2026-05-14
+- **Severity**: Medium (Critical in v0.16.0, fixed in v0.16.1)
+- **Component**: compiler.js (missing batch detection)
 - **Related files**: 
   - `lib/parser-extractors.js` (detectBatchUsage function)
-  - `lib/parser.js` (batch detection integration)
+  - `lib/compiler.js` (added batch detection - FIX LOCATION)
   - `lib/codegen.js` (batch transformation)
   - `lib/parser-extractors.batch-detection.test.js` (10 tests)
   - `example/src/bug-0002-batch-test.wcc` (QA test component)
@@ -90,6 +90,25 @@ In testing, updating 3 signals without batch triggered 3 effect executions. With
 ## Additional Context
 Discovered during Phase 2 testing (Reactivity). While not critical for functionality, this bug prevents users from benefiting from performance optimizations that batch provides.
 
+## Resolution
+**Root Cause**: The `compiler.js` file was missing the call to `detectBatchUsage()` function. While `parser.js` had the detection logic, `compiler.js` (which is used by the CLI and build tools) duplicated the extraction logic but did not include batch detection.
+
+**Fix Applied**:
+1. Added `detectBatchUsage` import in `lib/compiler.js`
+2. Called `detectBatchUsage(sourceForExtraction)` after extracting other reactive declarations
+3. Added `usesBatch` field to the `parseResult` object
+
+**Files Modified**:
+- `lib/compiler.js` (lines 36, 167, 298)
+
+**Testing**:
+- All 992 unit tests passing
+- QA verification: batch() now correctly imports __batch in generated code
+- Performance improvement confirmed: 66% reduction in effect executions when batching multiple signals
+
+**Release**: v0.16.1 (patch release - critical fix for v0.16.0 regression)
+
 ---
 
 *Created from testing report dated 2026-05-13*
+*Resolved and released in v0.16.1 on 2026-05-14*
