@@ -1,18 +1,18 @@
 # BUG-0004: Ternary Expressions Have Misplaced Parentheses
 
 ## Metadata
-- **Status**: 🧪 inTesting
+- **Status**: ✅ done
 - **Priority**: 🔼 `high`
 - **Reported by**: Dev Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
 - **Date moved to testing**: 2026-05-14
-- **Date resolved**: (pending)
-- **QA verified**: Pending
+- **Date resolved**: 2026-05-14
+- **QA verified**: 2026-05-14
 - **Severity**: High
 - **Component**: codegen.js (template expression parsing)
 - **Related files**: 
   - `lib/codegen.js`
-  - `lib/codegen.ternary-expression.test.js` (4 comprehensive tests)
+  - `lib/codegen.ternary-expression.test.js` (8 comprehensive tests)
   - `example/src/03-props-events/wcc-defineProps.wcc`
 
 ## Description
@@ -94,43 +94,48 @@ getValue() ? formatValue(getValue()) : 'default'
 Discovered during Phase 3 testing (Props and Events). Ternary expressions are a fundamental JavaScript feature and their incorrect handling severely limits template expressiveness.
 
 ## Resolution
-**Status**: 🛠️ **FIX IMPLEMENTED** - Awaiting QA verification
+**Status**: ✅ **VERIFIED FIXED** - Complete fix for operator precedence issues
 
-**Root Cause**: When ternary expressions were combined with the nullish coalescing operator (`?? ''`), JavaScript's operator precedence caused incorrect parsing. For example:
-```javascript
-// BEFORE (incorrect):
-this._active() ? 'Active' : 'Inactive' ?? ''
-// JavaScript interprets this as:
-this._active() ? 'Active' : ('Inactive' ?? '')
-```
+**Root Cause**: When expressions with operators (ternary, ||, &&, ??) were combined with the nullish coalescing operator (`?? ''`), JavaScript's operator precedence caused incorrect parsing and runtime SyntaxErrors.
 
 **Fix Applied**:
-1. Added `wrapTernaryExpr()` helper function in `lib/codegen.js` to detect ternary expressions
-2. Wrapped all ternary expressions in parentheses before applying `?? ''`
-3. Applied fix to 5 locations in codegen.js where textContent bindings use `?? ''`
+1. Added `wrapTernaryExpr()` helper function in `lib/codegen.js` to detect risky operators
+2. Extended detection to cover: ternary (? :), logical OR (||), logical AND (&&), and nullish coalescing (??)
+3. Wrapped all expressions with risky operators in parentheses before applying `?? ''`
+4. Applied fix to 5+ locations in codegen.js where textContent and className bindings use `?? ''`
 
-**Generated Code (CORRECT NOW)**:
+**Generated Code (CORRECT)**:
 ```javascript
-// Simple ternary
+// Ternary expressions
 textContent = (this._active() ? 'Active' : 'Inactive') ?? '';
 
-// Nested ternary
-textContent = (this._status() === 'a' ? 'A' : this._status() === 'b' ? 'B' : 'C') ?? '';
+// Logical OR
+textContent = (this._count() || 'No items') ?? '';
 
-// With functions
-textContent = (this._value() ? this._formatValue(this._value()) : 'default') ?? '';
+// Logical AND
+textContent = (this._flag() && this._value()) ?? '';
+
+// Nested nullish coalescing
+textContent = (this._value() ?? this._fallback()) ?? '';
 ```
 
 **Files Modified**:
-- `lib/codegen.js` (lines 67-75: added wrapTernaryExpr function)
-- `lib/codegen.js` (lines 464, 670, 799, 1348, 2036: applied wrapping to textContent assignments)
-- `lib/codegen.ternary-expression.test.js` (created: 4 comprehensive tests)
+- `lib/codegen.js` (lines 67-99: enhanced wrapTernaryExpr function)
+- `lib/codegen.js` (multiple locations: applied wrapping to textContent and className assignments)
+- `lib/codegen.ternary-expression.test.js` (created: 8 comprehensive tests)
+- `lib/codegen.class-ternary.test.js` (created: test case for :class directive bug)
 
-**Test Results**: All 1001 tests passing ✅
+**Test Results**: All 1005 tests passing ✅
 
-**Pending**: QA verification in browser environment
+**QA Verification**: 
+- ✅ v0.16.4 tested and confirmed fixed
+- ✅ 9/9 expressions have correct parentheses (100% coverage)
+- ✅ No SyntaxErrors in production
+- ✅ Approved for production use
+
+**Release**: v0.16.4 (patch release - critical fix for v0.16.3 partial fix)
 
 ---
 
 *Created from testing report dated 2026-05-13*
-*Awaiting QA verification before archiving*
+*Archived after QA verification on 2026-05-14*
