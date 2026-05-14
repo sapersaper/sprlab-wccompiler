@@ -1,0 +1,148 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-bug-fix-v14',
+})
+
+const count = signal(0)
+
+// Función SIN parámetros - esto era el bug en v0.13.0
+function getCount() {
+  return count()
+}
+
+function increment() {
+  count.set(count() + 1)
+}
+
+function decrement() {
+  count.set(count() - 1)
+}
+</script>
+
+<template>
+  <div class="bug-fix-test">
+    <h3>🐛 Test Bug Fix v0.14.0 - Funciones sin Parámetros</h3>
+    
+    <div class="description">
+      <p><strong>Bug #1 (v0.13.0):</strong> Las funciones sin parámetros en templates como <code>getCount()</code> no funcionaban.</p>
+      <p><strong>Workaround anterior:</strong> Usar <code>computed()</code> en su lugar.</p>
+      <p><strong>Test actual:</strong> Verificar si v0.14.0 corrigió este bug.</p>
+    </div>
+
+    <div class="controls">
+      <button @click="decrement">-1</button>
+      <button @click="increment">+1</button>
+    </div>
+
+    <div class="results">
+      <div class="result-item">
+        <h4>Método 1: Signal directo (SIEMPRE funcionó)</h4>
+        <p class="value">{{count()}}</p>
+      </div>
+
+      <div class="result-item">
+        <h4>Método 2: Función sin parámetros getCount()</h4>
+        <p class="value">{{getCount()}}</p>
+        <p class="status" id="status-func">Estado: Esperando...</p>
+      </div>
+    </div>
+
+    <div class="verdict" id="verdict">
+      <h4>Veredicto:</h4>
+      <p>Si ambos valores son iguales y se actualizan al hacer click → ✅ BUG CORREGIDO</p>
+      <p>Si hay error o los valores no coinciden → ❌ BUG PERSISTE</p>
+    </div>
+  </div>
+</template>
+
+<style>
+.bug-fix-test {
+  border: 3px solid #ff5722;
+  border-radius: 12px;
+  padding: 25px;
+  margin: 20px 0;
+  background-color: #fbe9e7;
+}
+
+.description {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.description code {
+  background-color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.controls button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #ff5722;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.controls button:hover {
+  background-color: #e64a19;
+}
+
+.results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.result-item {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.result-item h4 {
+  margin-top: 0;
+  color: #ff5722;
+  font-size: 14px;
+}
+
+.value {
+  font-size: 48px;
+  font-weight: bold;
+  color: #333;
+  margin: 10px 0;
+}
+
+.status {
+  font-size: 12px;
+  color: #666;
+  margin-top: 10px;
+}
+
+.verdict {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #ff5722;
+}
+
+.verdict h4 {
+  margin-top: 0;
+  color: #ff5722;
+}
+</style>

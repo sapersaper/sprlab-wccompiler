@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Bug Fix v0.14.0 - Funciones sin Parámetros</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #ff5722;
+      padding-bottom: 10px;
+    }
+    
+    .info {
+      background-color: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    
+    .success {
+      background-color: #e8f5e9;
+      border-left: 4px solid #4caf50;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Test Bug Fix v0.14.0</h1>
+  
+  <div class="info">
+    <h3>📋 Información del Test</h3>
+    <p><strong>Versión:</strong> @sprlab/wccompiler v0.14.0</p>
+    <p><strong>Bug testeado:</strong> #1 - Funciones sin parámetros en templates</p>
+    <p><strong>Estado esperado:</strong> ✅ FUNCIONANDO (bug corregido)</p>
+  </div>
+  
+  <!-- Componente de test -->
+  <test-bug-fix-v14></test-bug-fix-v14>
+  
+  <div class="success">
+    <h3>✅ Resultado Esperado</h3>
+    <p>Si el componente se renderiza correctamente y ambos valores (signal directo y función) muestran el mismo número y se actualizan al hacer click en los botones, entonces <strong>el Bug #1 ha sido corregido exitosamente en v0.14.0</strong>.</p>
+  </div>
+  
+  <script type="module">
+    import './dist/test-bug-fix-v14.js';
+  </script>
+</body>
+</html>
