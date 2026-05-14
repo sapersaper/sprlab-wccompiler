@@ -1,0 +1,185 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-class-binding',
+})
+
+const isActive = signal(false)
+const theme = signal('light')
+const size = signal('medium')
+const hasError = signal(false)
+const customClass = signal('my-custom-class')
+
+function toggleActive() {
+  isActive.set(!isActive())
+}
+
+function toggleTheme() {
+  theme.set(theme() === 'light' ? 'dark' : 'light')
+}
+
+function toggleSize() {
+  const sizes = ['small', 'medium', 'large']
+  const currentIndex = sizes.indexOf(size())
+  size.set(sizes[(currentIndex + 1) % sizes.length])
+}
+
+function toggleError() {
+  hasError.set(!hasError())
+}
+
+function getComputedClass() {
+  return isActive() ? 'computed-active' : 'computed-inactive'
+}
+</script>
+
+<template>
+  <div class="class-binding-test">
+    <h3>🎨 Test Feature: Dynamic Class Binding (:class)</h3>
+    
+    <!-- Test 1: Boolean Conditional Class -->
+    <section>
+      <h4>Test 1: Boolean Conditional</h4>
+      <button 
+        class="btn" 
+        :class="{ active: isActive() }"
+        @click="toggleActive"
+      >
+        Toggle Active (currently: {{ isActive() ? 'ON' : 'OFF' }})
+      </button>
+      <p>Expected: When active, button should have class "active"</p>
+    </section>
+
+    <!-- Test 2: Dynamic String Value -->
+    <section>
+      <h4>Test 2: Dynamic String from Signal</h4>
+      <div 
+        class="theme-box" 
+        :class="theme()"
+        @click="toggleTheme"
+      >
+        Theme: {{ theme() }} (click to toggle)
+      </div>
+      <p>Expected: Div should have class "light" or "dark" based on signal</p>
+    </section>
+
+    <!-- Test 3: Object Syntax with Multiple Conditions -->
+    <section>
+      <h4>Test 3: Object Syntax (Multiple Classes)</h4>
+      <div 
+        class="status-box"
+        :class="{
+          error: hasError(),
+          warning: !hasError() && size() === 'large',
+          success: !hasError() && size() !== 'large'
+        }"
+      >
+        Status Box (size: {{ size() }}, error: {{ hasError() ? 'YES' : 'NO' }})
+      </div>
+      <button @click="toggleError">Toggle Error</button>
+      <button @click="toggleSize">Change Size</button>
+      <p>Expected: Should apply error/warning/success class based on conditions</p>
+    </section>
+
+    <!-- Test 4: Array Syntax -->
+    <section>
+      <h4>Test 4: Array Syntax</h4>
+      <div 
+        class="base"
+        :class="[customClass(), size()]"
+      >
+        Array classes: {{ customClass() }}, {{ size() }}
+      </div>
+      <p>Expected: Should have both "my-custom-class" and size class (small/medium/large)</p>
+    </section>
+
+    <!-- Test 5: Static + Dynamic Combination -->
+    <section>
+      <h4>Test 5: Static + Dynamic Classes</h4>
+      <button 
+        class="static-btn primary"
+        :class="{ disabled: !isActive() }"
+      >
+        Static + Dynamic (active: {{ isActive() ? 'YES' : 'NO' }})
+      </button>
+      <p>Expected: Should always have "static-btn primary", plus "disabled" when inactive</p>
+    </section>
+
+    <!-- Test 6: Function Return Value -->
+    <section>
+      <h4>Test 6: Function Return Value</h4>
+      <div :class="getComputedClass()">
+        Computed class from function
+      </div>
+      <p>Expected: Should apply class returned by function</p>
+    </section>
+  </div>
+</template>
+
+<style>
+.class-binding-test {
+  border: 3px solid #9c27b0;
+  padding: 25px;
+  margin: 20px 0;
+  background-color: #f3e5f5;
+}
+
+.class-binding-test section {
+  margin-bottom: 30px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+}
+
+.class-binding-test .active {
+  background-color: #4caf50;
+  color: white;
+}
+
+.class-binding-test .light {
+  background-color: #ffffff;
+  border: 2px solid #ccc;
+}
+
+.class-binding-test .dark {
+  background-color: #333;
+  color: white;
+}
+
+.class-binding-test .error {
+  border: 3px solid #f44336;
+  background-color: #ffebee;
+}
+
+.class-binding-test .warning {
+  border: 3px solid #ff9800;
+  background-color: #fff3e0;
+}
+
+.class-binding-test .success {
+  border: 3px solid #4caf50;
+  background-color: #e8f5e9;
+}
+
+.class-binding-test .small { font-size: 12px; }
+.class-binding-test .medium { font-size: 16px; }
+.class-binding-test .large { font-size: 20px; }
+
+.class-binding-test .static-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.class-binding-test .primary {
+  background-color: #2196f3;
+  color: white;
+}
+
+.class-binding-test .disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+</style>
