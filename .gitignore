@@ -29,3 +29,6 @@ framework-testing/
 
 # npm lockfile (project uses yarn)
 package-lock.json
+
+# Debug screenshots and test artifacts
+.debug-screenshots/

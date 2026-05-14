@@ -265,35 +265,6 @@ export class WccCode implements VirtualCode {
     if (parsed.script) {
       const block = parsed.script;
 
-      // Append template usage references to suppress "declared but never read" warnings
-      let usageSuffix = '';
-      if (parsed.template) {
-        const expressions = extractTemplateExpressions(parsed.template.content);
-        const usages = new Set<string>();
-        for (const expr of expressions) {
-          // Extract top-level identifiers from each expression
-          const identRe = /\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g;
-          let identMatch: RegExpExecArray | null;
-          while ((identMatch = identRe.exec(expr.content)) !== null) {
-            const name = identMatch[1];
-            if (!jsKeywords.has(name)) {
-              usages.add(name);
-            }
-          }
-        }
-
-        // Extract PascalCase tag names from template (component imports used as tags)
-        const pascalTagRe = /<([A-Z][a-zA-Z0-9]*)/g;
-        let tagMatch: RegExpExecArray | null;
-        while ((tagMatch = pascalTagRe.exec(parsed.template.content)) !== null) {
-          usages.add(tagMatch[1]);
-        }
-
-        if (usages.size > 0) {
-          usageSuffix = '\n' + [...usages].map(u => `${u};`).join('\n') + '\n';
-        }
-      }
-
       // Generate exported type from defineExpose for cross-file templateRef<T> inference
       let exposeSuffix = '';
       const exposeMatch = block.content.match(/defineExpose\(\s*\{([^}]*)\}\s*\)/);
@@ -316,15 +287,17 @@ export class WccCode implements VirtualCode {
         }
       }
 
+      const fullScriptContent = block.content + exposeSuffix;
+
       codes.push({
         id: 'script_0',
         languageId: getScriptLanguageId(block.attrs),
-        snapshot: createSnapshot(block.content + usageSuffix + exposeSuffix),
+        snapshot: createSnapshot(fullScriptContent),
         mappings: [
           {
             sourceOffsets: [block.startOffset],
             generatedOffsets: [0],
-            lengths: [block.content.length],
+            lengths: [fullScriptContent.length],
             data: fullCapabilities,
           },
         ],

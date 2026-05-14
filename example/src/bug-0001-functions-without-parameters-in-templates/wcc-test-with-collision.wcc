@@ -1,0 +1,79 @@
+<script>
+defineComponent({
+  tag: 'wcc-test-with-collision'
+})
+
+// Test Case 2: Function WITH collision - SHOULD FAIL AT COMPILE TIME
+const greeting = signal('Hello')
+
+// This function has the SAME name as the signal - JAVASCRIPT ERROR!
+// This should cause a compilation error or at least a clear warning
+function greeting() {
+  return 'Hi from function'
+}
+
+// Another collision example
+const count = signal(0)
+function count() {
+  return 42
+}
+</script>
+
+<template>
+  <div class="container">
+    <h1>Bug #1 Test - Function/Signal Name Collision</h1>
+    
+    <section class="error-section">
+      <h2>⚠️ This component should NOT compile</h2>
+      <p>If you see this, there's a bug in the compiler's validation.</p>
+      <p>The code above has duplicate identifiers which is invalid JavaScript.</p>
+    </section>
+    
+    <section>
+      <h2>Test: Which one wins?</h2>
+      <p>Trying to call: {{ greeting() }}</p>
+      <p>Is this the signal value or the function result?</p>
+    </section>
+  </div>
+</template>
+
+<style>
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+.error-section {
+  background: #ffebee;
+  border: 2px solid #f44336;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+}
+
+.error-section h2 {
+  color: #f44336;
+  margin-top: 0;
+}
+
+section {
+  margin: 2rem 0;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+h1 {
+  color: #333;
+}
+
+h2 {
+  color: #666;
+  font-size: 1.2rem;
+}
+</style>
+
+
+

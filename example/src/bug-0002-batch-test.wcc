@@ -1,0 +1,130 @@
+<script>
+import { defineComponent, signal, effect, batch } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-batch',
+})
+
+// Signals
+const firstName = signal('')
+const lastName = signal('')
+const age = signal(0)
+
+// Contador de ejecuciones del effect
+let effectRunCount = 0
+const effectCount = signal(0)
+
+// Este effect debería ejecutarse UNA SOLA VEZ cuando usamos batch
+effect(() => {
+  const fullName = `${firstName()} ${lastName()}`
+  effectRunCount++
+  effectCount.set(effectRunCount)
+})
+
+// Sin batch - actualiza signals individualmente
+function updateWithoutBatch() {
+  firstName.set('John')
+  lastName.set('Doe')
+  age.set(30)
+}
+
+// Con batch - actualiza todos juntos
+function updateWithBatch() {
+  // Reset count first
+  effectRunCount = 0
+  effectCount.set(0)
+  
+  batch(() => {
+    firstName.set('Jane')
+    lastName.set('Smith')
+    age.set(25)
+  })
+}
+
+function reset() {
+  firstName.set('')
+  lastName.set('')
+  age.set(0)
+  effectRunCount = 0
+  effectCount.set(0)
+}
+</script>
+
+<template>
+  <div class="batch-test">
+    <h3>Test de Batch</h3>
+    <p><strong>Objetivo:</strong> Verificar que batch() agrupa actualizaciones</p>
+    
+    <div class="data-display">
+      <p>Nombre: {{ firstName() }}</p>
+      <p>Apellido: {{ lastName() }}</p>
+      <p>Edad: {{ age() }}</p>
+      <p class="highlight">Effect ejecutado: {{ effectCount() }} vez(es)</p>
+    </div>
+
+    <div class="buttons">
+      <button @click="updateWithoutBatch">Sin Batch (3 signals)</button>
+      <button @click="updateWithBatch">Con Batch (3 signals)</button>
+      <button @click="reset">Reset</button>
+    </div>
+
+    <div class="explanation">
+      <p><strong>Esperado:</strong></p>
+      <ul>
+        <li><strong>Sin Batch:</strong> El effect debería ejecutarse 3 veces (una por cada signal)</li>
+        <li><strong>Con Batch:</strong> El effect debería ejecutarse 1 sola vez (todas las señales juntas)</li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<style>
+.batch-test {
+  border: 1px solid #2196f3;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #e3f2fd;
+}
+.batch-test h3 {
+  color: #1565c0;
+  margin-top: 0;
+}
+.data-display {
+  background: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+.highlight {
+  font-weight: bold;
+  color: #1565c0;
+  font-size: 1.1em;
+}
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+button {
+  padding: 8px 16px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #1976d2;
+}
+.explanation {
+  background: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+.explanation ul {
+  margin: 5px 0;
+  padding-left: 20px;
+}
+</style>
