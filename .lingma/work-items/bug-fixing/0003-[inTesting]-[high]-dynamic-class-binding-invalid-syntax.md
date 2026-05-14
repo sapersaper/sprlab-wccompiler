@@ -1,11 +1,11 @@
 # BUG-0003: Dynamic :class Binding Generates Invalid JavaScript Syntax
 
 ## Metadata
-- **Status**: 🔄 inProgress
+- **Status**: 🧪 inTesting
 - **Priority**: 🔼 `high`
 - **Reported by**: Dev Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
-- **Date moved to inProgress**: 2026-05-14
+- **Date moved to testing**: 2026-05-14
 - **Severity**: High
 - **Component**: codegen.js (template compilation)
 - **Related files**: 
@@ -78,4 +78,4 @@ Discovered during Phase 3 testing (Props and Events). This prevents developers f
 ---
 
 *Created from testing report dated 2026-05-13*
-*Moved back to inProgress on 2026-05-14 for further investigation*
+*Ready for QA verification*
