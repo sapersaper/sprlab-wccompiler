@@ -1,10 +1,18 @@
 # BUG-0011: :class Directive Transforms String Literals in Ternary Expressions
 
 ## Metadata
-- **Status**: 🔄 open
+- **Status**: ✅ done
 - **Priority**: 🔼 `high`
 - **Reported by**: QA Team
 - **Date reported**: 2026-05-14
+- **Date moved to research**: 2026-05-15
+- **Date moved to inProgress**: 2026-05-15
+- **Date moved to inTesting**: 2026-05-15
+- **Date moved back to inProgress**: 2026-05-15 (QA reported partial fix - template literal issue)
+- **Date moved to inTesting (v2)**: 2026-05-15 (complete fix with template literal support)
+- **Version fixed**: v0.16.15
+- **Date resolved**: 2026-05-15
+- **QA confirmed**: 2026-05-15
 - **Severity**: High
 - **Component**: codegen.js (transformExpr function)
 - **Related files**: 
@@ -171,6 +179,45 @@ Marked as **high priority** because:
 - Ternary expressions in :class are a standard pattern
 - The bug silently corrupts class names without errors
 - Affects user-facing UI/styling
+
+---
+
+## Resolution
+
+**Status**: ✅ FIXED in v0.16.15, confirmed by QA
+
+**Root Cause**:
+The `transformExpr()` function was transforming signal names inside string literals, corrupting class names in :class directives. Initial fix (v0.16.14) protected simple strings but broke template literals by protecting entire backtick strings including expressions.
+
+**Solution Implemented (v2)**:
+- Sophisticated string literal protection with separate handling for template literals
+- Simple strings (single/double quotes): Full protection with placeholders
+- Template literals: Split by `${...}` expressions, protect only static parts between interpolations
+- Allow method calls within `${...}` to transform correctly with `this._` prefix
+- Restore all protected parts after transformations complete
+
+**Testing Results (QA Confirmed)**:
+- ✅ 8/8 interactive tests passing (100% success rate)
+- ✅ Boolean class binding - Perfect toggle
+- ✅ Dynamic string class - Theme switches correctly
+- ✅ Array syntax - Space-separated classes work
+- ✅ Static + Dynamic mixing - Static persists, dynamic toggles
+- ✅ Complex conditionals - Multiple object keys work
+- ✅ Ternary expressions - Bidirectional toggle works
+- ✅ **Computed class strings (template literals) - NOW WORKING** ✅
+- ✅ Logical AND conditions - Logic evaluates correctly
+- ✅ Total test suite: 1043/1043 passing (100% pass rate)
+
+**Files Modified**:
+- `lib/codegen.js` - Enhanced transformExpr() with template literal support
+- `lib/codegen.class-ternary.test.js` - Added 6 comprehensive tests including template literal case
+- `package.json` - Version bumped to 0.16.15
+
+**Version History**:
+- v0.16.14: ⚠️ Partial fix (7/8 tests passed, template literals broken)
+- v0.16.15: ✅ Complete fix (8/8 tests passed, all scenarios working)
+
+**QA Sign-off**: APPROVED FOR PRODUCTION - BUG-0011 completely resolved
 
 ---
 
