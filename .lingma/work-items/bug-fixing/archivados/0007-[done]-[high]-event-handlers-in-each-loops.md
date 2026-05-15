@@ -1,16 +1,21 @@
 # BUG-0007: Event Handlers in each Loops Don't Resolve Method References
 
 ## Metadata
-- **Status**: open
-- **Priority**: 🔼 `high`
-- **Reported by**: Dev Team / Lingma AI Testing
+- **Status**: ✅ RESOLVED
+- **Priority**: 🔴 `high`
+- **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
-- **Date resolved**: (pending)
-- **Severity**: High
-- **Component**: codegen.js (each loop compilation)
+- **Date moved to research**: 2026-05-15
+- **Date moved to inProgress**: 2026-05-15
+- **Date moved to inTesting**: 2026-05-15
+- **Date resolved**: 2026-05-15
+- **Fixed in version**: v0.16.7
+- **Severity**: High - Event handlers inside loops cause ReferenceError at runtime
+- **Component**: codegen.js (each loop event handler compilation)
 - **Related files**: 
-  - `lib/codegen.js`
-  - `example/src/04-directives/wcc-each.wcc`
+  - `lib/codegen.js` (event handler generation in each loops)
+  - `example/src/04-directives/test-list-rendering.wcc`
+  - `dist/04-directives/test-list-rendering.js` (line 187)
 
 ## Description
 Event handlers inside `each` loops fail to resolve method references correctly. When using arrow functions or method calls with parameters inside loops, the generated code doesn't properly prefix methods with `this._`, causing runtime errors.
@@ -114,6 +119,41 @@ Use inline state manipulation instead of calling methods:
 ## Additional Context
 Discovered during Phase 4 testing (Directives). This is a critical bug for any list-based UI with interactive elements like todo lists, data tables, or product catalogs.
 
+## Resolution
+**Status**: ✅ **RESOLVED & QA VERIFIED** - Production Ready
+
+**Root Cause**: The compiler generated event handler code inside each loops without the `this._` prefix for method references, causing ReferenceError at runtime.
+
+**Fix Applied**:
+1. Added `methodNames` parameter to `transformForExpr` function
+2. Added `methodNames` parameter to `generateForEventHandler` function
+3. Transform method calls in arrow functions: `toggleActive(item.id)` → `this._toggleActive(item.id)`
+4. Transform bare method references: `methodName` → `this._methodName`
+5. Updated all nested loop and if/else branch handlers to pass methodNames
+6. Created comprehensive test suite (6 tests) covering all scenarios
+
+**Files Modified**:
+- `lib/codegen.js` (+268 lines, -30 lines)
+- `lib/codegen.each-loop-events.test.js` (NEW, 251 lines)
+
+**QA Verification Results** (v0.16.7):
+- ✅ All event handlers execute without ReferenceError
+- ✅ Method references correctly use `this._` prefix
+- ✅ Arrow functions work correctly: `() => this._toggleActive(item.id)`
+- ✅ Loop variables preserved and passed as arguments
+- ✅ Zero console errors during testing
+- ✅ 6/6 unit tests passing
+- ✅ Browser Agent confirmed: No ReferenceErrors in runtime
+
+**Version**: v0.16.7 (published to npm)
+
+**Related Issues**:
+- **Discovered during fix verification**: BUG-0012 (Missing Reactivity in Each Loops)
+- Note: BUG-0007 fix exposed a separate reactivity issue tracked in BUG-0012
+- BUG-0007 fixed event handler code generation (compile-time)
+- BUG-0012 addresses missing UI updates when signals change (runtime reactivity)
+
 ---
 
 *Created from testing report dated 2026-05-13*
+*Resolved and verified by QA on 2026-05-15*
