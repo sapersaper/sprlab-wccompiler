@@ -1,14 +1,15 @@
 # BUG-0011: :class Directive Transforms String Literals in Ternary Expressions
 
 ## Metadata
-- **Status**: 🧪 inTesting
+- **Status**: 🔄 inProgress
 - **Priority**: 🔼 `high`
 - **Reported by**: QA Team
 - **Date reported**: 2026-05-14
 - **Date moved to research**: 2026-05-15
 - **Date moved to inProgress**: 2026-05-15
 - **Date moved to inTesting**: 2026-05-15
-- **Version fixed**: v0.16.14
+- **Date moved back to inProgress**: 2026-05-15 (QA reported partial fix - template literal issue)
+- **Version fixed**: v0.16.15
 - **Severity**: High
 - **Component**: codegen.js (transformExpr function)
 - **Related files**: 
