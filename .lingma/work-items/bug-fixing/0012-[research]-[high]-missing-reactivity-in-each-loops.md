@@ -1,14 +1,13 @@
 # BUG-0012: Missing Reactivity in Each Loops - UI Not Updating on Signal Changes
 
 ## Metadata
-- **Status**: 🧪 inTesting
+- **Status**: 🔄 inProgress
 - **Priority**: 🔴 `high`
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-15
 - **Date moved to research**: 2026-05-15
 - **Date moved to inProgress**: 2026-05-15
-- **Date moved to inTesting**: 2026-05-15
-- **Version fixed**: v0.16.16
+- **Version fixed**: v0.16.17 (pending)
 - **Date resolved**: (pending)
 - **Severity**: High - Blocks interactive list functionality, UI doesn't reflect data changes
 - **Component**: codegen.js (each loop node reuse logic)
