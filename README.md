@@ -359,6 +359,32 @@ The source expression calls the signal (`items()`) to read the current array. Su
 <li each="item in items()" :key="item.id">{{item.name}}</li>
 ```
 
+**Keyed Reconciliation with Full Reactivity:**
+
+When using `:key`, the compiler optimizes rendering by reusing DOM nodes instead of destroying and recreating them. All dynamic bindings (text content, attributes, event handlers) are automatically updated when signals change, ensuring the UI always reflects the current data state.
+
+```html
+<!-- UI updates immediately when item.active changes -->
+<li each="item in items()" :key="item.id">
+  <span>{{ item.name }}</span>
+  <span>{{ item.active ? '✓ Active' : '✗ Inactive' }}</span>
+  <button @click="() => toggleActive(item.id)">Toggle</button>
+</li>
+```
+
+**Keyed Reconciliation with Full Reactivity:**
+
+When using `:key`, the compiler optimizes rendering by reusing DOM nodes instead of destroying and recreating them. All dynamic bindings (text content, attributes, event handlers) are automatically updated when signals change, ensuring the UI always reflects the current data state.
+
+```html
+<!-- UI updates immediately when item.active changes -->
+<li each="item in items()" :key="item.id">
+  <span>{{ item.name }}</span>
+  <span>{{ item.active ? '✓ Active' : '✗ Inactive' }}</span>
+  <button @click="() => toggleActive(item.id)">Toggle</button>
+</li>
+```
+
 Numeric ranges are also supported:
 
 ```html
@@ -405,6 +431,81 @@ Directives work inside `each` blocks — including conditionals and nested loops
 <div :class="{ active: isActive(), error: hasError() }">...</div>
 <div :style="{ color: textColor() }">...</div>
 ```
+
+#### Class Directive (`:class`)
+
+Supports multiple syntaxes for dynamic class binding:
+
+**Object Syntax:**
+```html
+<div :class="{ active: isActive(), 'text-large': isLarge() }">Content</div>
+```
+
+**Ternary Expressions:**
+```html
+<div :class="theme() === 'light' ? 'light-theme' : 'dark-theme'">Content</div>
+```
+
+**Template Literals:**
+```html
+<div :class="`${theme()}-theme ${size()}-size`">Content</div>
+```
+
+**Mixed Static and Dynamic:**
+```html
+<div class="base-class" :class="isActive() ? 'active' : ''">Content</div>
+```
+
+All string literals are preserved correctly - signal names inside strings are NOT transformed.
+
+#### Class Directive (`:class`)
+
+Supports multiple syntaxes for dynamic class binding:
+
+**Object Syntax:**
+```html
+<div :class="{ active: isActive(), 'text-large': isLarge() }">Content</div>
+```
+
+**Ternary Expressions:**
+```html
+<div :class="theme() === 'light' ? 'light-theme' : 'dark-theme'">Content</div>
+```
+
+**Template Literals:**
+```html
+<div :class="`${theme()}-theme ${size()}-size`">Content</div>
+```
+
+**Mixed Static and Dynamic:**
+```html
+<div class="base-class" :class="isActive() ? 'active' : ''">Content</div>
+```
+
+All string literals are preserved correctly - signal names inside strings are NOT transformed.
+
+#### Style Directive (`:style`)
+
+Supports single and multiple CSS properties:
+
+**Single Property:**
+```html
+<div :style="{ color: textColor() }">Text</div>
+```
+
+**Multiple Properties:**
+```html
+<div :style="{ color: textColor(), fontSize: fontSize() + 'px', backgroundColor: bgColor() }">
+  Styled Text
+</div>
+```
+
+**Kebab-case Properties:**
+```html
+<div :style="{ 'font-size': size() + 'px', 'background-color': bgColor() }">Text</div>
+```
+
+Object literal keys are preserved correctly - only values are transformed to reactive calls.
 
 ### Template Refs
 
