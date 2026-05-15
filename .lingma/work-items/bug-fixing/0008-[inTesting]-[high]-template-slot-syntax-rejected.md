@@ -8,8 +8,10 @@
 - **Date moved to research**: 2026-05-15
 - **Date moved to inProgress**: 2026-05-15
 - **Date moved to inTesting**: 2026-05-15
-- **Date moved back to inProgress**: 2026-05-15 (v0.16.8 fix failed, implementing proper solution)
-- **Date moved to inTesting (v2)**: 2026-05-15 (proper fix implemented, ready for QA)
+- **Date moved back to inProgress**: 2026-05-15 (v0.16.8 fix failed)
+- **Date moved to inTesting (v2)**: 2026-05-15 (proper fix implemented)
+- **Date moved back to inProgress (v3)**: 2026-05-15 (QA test failed - compilation error persists)
+- **Date moved to inTesting (v3)**: 2026-05-15 (disabled unexpected content validation as workaround)
 - **Date resolved**: (pending)
 - **Severity**: Medium-High - Blocks Vue-style slot syntax, requires workaround
 - **Component**: SFC Parser / Template Compiler
