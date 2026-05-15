@@ -1,0 +1,1041 @@
+﻿
+> @sprlab/wccompiler@0.16.5 test
+> vitest --run codegen.defineModel-event-names
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/projects/sprlab-wccompiler[39m
+
+ [31mÔØ»[39m lib/codegen.defineModel-event-names.test.js [2m([22m[2m6 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[32m 99[2mms[22m[39m
+[31m   [31m├ù[31m BUG-0006: defineModel event naming - kebab-case convention[2m > [22mshould emit events in kebab-case format for single model[39m[32m 48[2mms[22m[39m
+[31m     ÔåÆ expected '// Generated from: component.wcc (wcCÔÇª' to contain 'dispatchEvent(new CustomEvent(\'usernÔÇª'[39m
+[31m   [31m├ù[31m BUG-0006: defineModel event naming - kebab-case convention[2m > [22mshould emit kebab-case events for multiple models with different types[39m[32m 18[2mms[22m[39m
+[31m     ÔåÆ expected '// Generated from: component.wcc (wcCÔÇª' to contain 'dispatchEvent(new CustomEvent(\'usernÔÇª'[39m
+[31m   [31m├ù[31m BUG-0006: defineModel event naming - kebab-case convention[2m > [22mshould convert camelCase model names to kebab-case events[39m[32m 8[2mms[22m[39m
+[31m     ÔåÆ expected '// Generated from: component.wcc (wcCÔÇª' to contain 'dispatchEvent(new CustomEvent(\'user-ÔÇª'[39m
+[31m   [31m├ù[31m BUG-0006: defineModel event naming - kebab-case convention[2m > [22mshould still emit generic wcc:model event[39m[32m 9[2mms[22m[39m
+[31m     ÔåÆ expected '// Generated from: component.wcc (wcCÔÇª' to contain 'dispatchEvent(new CustomEvent(\'valueÔÇª'[39m
+[31m   [31m├ù[31m BUG-0006: defineModel event naming - kebab-case convention[2m > [22mshould handle single-letter capitalization correctly[39m[32m 7[2mms[22m[39m
+[31m     ÔåÆ expected '// Generated from: component.wcc (wcCÔÇª' to contain 'dispatchEvent(new CustomEvent(\'a-valÔÇª'[39m
+[31m   [31m├ù[31m BUG-0006: defineModel event naming - kebab-case convention[2m > [22mevent dispatching should include correct detail and bubbles properties[39m[32m 7[2mms[22m[39m
+[31m     ÔåÆ expected '// Generated from: component.wcc (wcCÔÇª' to match /dispatchEvent\(new CustomEvent\('counÔÇª/[39m
+node.exe : 
+En línea: 1 Carácter: 1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m[1m[41m Failed Tests 6 
+[49m[22m[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+
+[41m[1m FAIL [22m[49m lib/codegen.defineModel-event-names.test.js[2m > 
+[22mBUG-0006: defineModel event naming - kebab-case convention[2m > [22mshould 
+emit events in kebab-case format for single model
+[31m[1mAssertionError[22m: expected '// Generated from: component.wcc (wcCÔÇª' 
+to contain 'dispatchEvent(new CustomEvent(\'usernÔÇª'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- dispatchEvent(new CustomEvent('username-changed'[39m
+[31m+ // Generated from: component.wcc (wcCompiler)[39m
+[31m+ let __currentEffect = null;[39m
+[31m+ let __batchDepth = 0;[39m
+[31m+ const __pendingEffects = new Set();[39m
+[31m+[39m
+[31m+ function __signal(initial) {[39m
+[31m+   let _value = initial;[39m
+[31m+   const _subs = new Set();[39m
+[31m+   return (...args) => {[39m
+[31m+     if (args.length === 0) {[39m
+[31m+       if (__currentEffect) _subs.add(__currentEffect);[39m
+[31m+       return _value;[39m
+[31m+     }[39m
+[31m+     const old = _value;[39m
+[31m+     _value = args[0];[39m
+[31m+     if (old !== _value) {[39m
+[31m+       if (__batchDepth > 0) {[39m
+[31m+         for (const fn of _subs) __pendingEffects.add(fn);[39m
+[31m+       } else {[39m
+[31m+         for (const fn of [..._subs]) fn();[39m
+[31m+       }[39m
+[31m+     }[39m
+[31m+   };[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ function __effect(fn) {[39m
+[31m+   let _cleanup = null;[39m
+[31m+   let _active = true;[39m
+[31m+   const run = () => {[39m
+[31m+     if (!_active) return;[39m
+[31m+     try {[39m
+[31m+       if (typeof _cleanup === 'function') _cleanup();[39m
+[31m+       const prev = __currentEffect;[39m
+[31m+       __currentEffect = run;[39m
+[31m+       _cleanup = fn();[39m
+[31m+       __currentEffect = prev;[39m
+[31m+     } catch (e) {[39m
+[31m+       console.error('[wcc] Effect error:', e);[39m
+[31m+       _active = false;[39m
+[31m+     }[39m
+[31m+   };[39m
+[31m+   run();[39m
+[31m+   return () => { _active = false; if (typeof _cleanup === 'function') 
+_cleanup(); };[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ const __t_TestEventNaming = document.createElement('template');[39m
+[31m+ __t_TestEventNaming.innerHTML = `[39m
+[31m+ <input>[39m
+[31m+ `;[39m
+[31m+[39m
+[31m+ class TestEventNaming extends HTMLElement {[39m
+[31m+   static get observedAttributes() { return ['username']; }[39m
+[31m+[39m
+[31m+   static __meta = { tag: 'test-event-naming', props: [], events: [], 
+models: ['username'], slots: [] };[39m
+[31m+[39m
+[31m+   constructor() {[39m
+[31m+     super();[39m
+[31m+     this._m_username = __signal('');[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   connectedCallback() {[39m
+[31m+     if (this.__connected) return;[39m
+[31m+     this.__connected = true;[39m
+[31m+     const __root = __t_TestEventNaming.content.cloneNode(true);[39m
+[31m+     this.__model_username_0 = __root.childNodes[1];[39m
+[31m+     this.innerHTML = '';[39m
+[31m+     this.appendChild(__root);[39m
+[31m+     this.__ac = new AbortController();[39m
+[31m+     this.__disposers = [];[39m
+[31m+[39m
+[31m+     this.__disposers.push(__effect(() => {[39m
+[31m+       this.__model_username_0.value = this._username() ?? '';[39m
+[31m+     }));[39m
+[31m+     this.__model_username_0.addEventListener('input', (e) => { 
+this._username(e.target.value); }, { signal: this.__ac.signal });[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   disconnectedCallback() {[39m
+[31m+     this.__connected = false;[39m
+[31m+     this.__ac.abort();[39m
+[31m+     this.__disposers.forEach(d => d());[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   attributeChangedCallback(name, oldVal, newVal) {[39m
+[31m+     if (name === 'username') this._m_username(newVal ?? '');[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   get username() { return this._m_username(); }[39m
+[31m+   set username(val) { this._m_username(val); this.setAttribute('username', 
+String(val)); }[39m
+[31m+[39m
+[31m+   _modelSet_username(newVal) {[39m
+[31m+     const oldVal = this._m_username();[39m
+[31m+     this._m_username(newVal);[39m
+[31m+     this.dispatchEvent(new CustomEvent('wcc:model', {[39m
+[31m+       detail: { prop: 'username', value: newVal, oldValue: oldVal },[39m
+[31m+       bubbles: true,[39m
+[31m+       composed: true[39m
+[31m+     }));[39m
+[31m+     this.dispatchEvent(new CustomEvent('usernameChange', { detail: newVal, 
+bubbles: true }));[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   // --- Model wrapper methods ---[39m
+[31m+   _username(val) {[39m
+[31m+     if (arguments.length === 0) {[39m
+[31m+       return this._m_username();[39m
+[31m+     } else {[39m
+[31m+       this._modelSet_username(val);[39m
+[31m+     }[39m
+[31m+   }[39m
+[31m+[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ if (!customElements.get('test-event-naming')) 
+customElements.define('test-event-naming', TestEventNaming);[39m
+[31m+[39m
+[31m+ export default TestEventNaming;[39m
+
+[36m [2mÔØ»[22m lib/codegen.defineModel-event-names.test.js:[2m36:20[22m[39m
+    [90m 34| [39m
+    [90m 35| [39m      [90m// Should emit kebab-case event 
+(username-changed)[39m
+    [90m 36| [39m      expect(code).toContain("dispatchEvent(new 
+CustomEvent('username-ÔÇª
+    [90m   | [39m                   [31m^[39m
+    [90m 37| [39m      
+    [90m 38| [39m      [90m// Should NOT emit camelCase event 
+(usernameChange)[39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1
+/6]ÔÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m lib/codegen.defineModel-event-names.test.js[2m > 
+[22mBUG-0006: defineModel event naming - kebab-case convention[2m > [22mshould 
+emit kebab-case events for multiple models with different types
+[31m[1mAssertionError[22m: expected '// Generated from: component.wcc (wcCÔÇª' 
+to contain 'dispatchEvent(new CustomEvent(\'usernÔÇª'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- dispatchEvent(new CustomEvent('username-changed'[39m
+[31m+ // Generated from: component.wcc (wcCompiler)[39m
+[31m+ let __currentEffect = null;[39m
+[31m+ let __batchDepth = 0;[39m
+[31m+ const __pendingEffects = new Set();[39m
+[31m+[39m
+[31m+ function __signal(initial) {[39m
+[31m+   let _value = initial;[39m
+[31m+   const _subs = new Set();[39m
+[31m+   return (...args) => {[39m
+[31m+     if (args.length === 0) {[39m
+[31m+       if (__currentEffect) _subs.add(__currentEffect);[39m
+[31m+       return _value;[39m
+[31m+     }[39m
+[31m+     const old = _value;[39m
+[31m+     _value = args[0];[39m
+[31m+     if (old !== _value) {[39m
+[31m+       if (__batchDepth > 0) {[39m
+[31m+         for (const fn of _subs) __pendingEffects.add(fn);[39m
+[31m+       } else {[39m
+[31m+         for (const fn of [..._subs]) fn();[39m
+[31m+       }[39m
+[31m+     }[39m
+[31m+   };[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ function __effect(fn) {[39m
+[31m+   let _cleanup = null;[39m
+[31m+   let _active = true;[39m
+[31m+   const run = () => {[39m
+[31m+     if (!_active) return;[39m
+[31m+     try {[39m
+[31m+       if (typeof _cleanup === 'function') _cleanup();[39m
+[31m+       const prev = __currentEffect;[39m
+[31m+       __currentEffect = run;[39m
+[31m+       _cleanup = fn();[39m
+[31m+       __currentEffect = prev;[39m
+[31m+     } catch (e) {[39m
+[31m+       console.error('[wcc] Effect error:', e);[39m
+[31m+       _active = false;[39m
+[31m+     }[39m
+[31m+   };[39m
+[31m+   run();[39m
+[31m+   return () => { _active = false; if (typeof _cleanup === 'function') 
+_cleanup(); };[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ const __t_TestMultiModel = document.createElement('template');[39m
+[31m+ __t_TestMultiModel.innerHTML = `[39m
+[31m+ <input>[39m
+[31m+ <input type="number">[39m
+[31m+ <input type="checkbox">[39m
+[31m+ `;[39m
+[31m+[39m
+[31m+ class TestMultiModel extends HTMLElement {[39m
+[31m+   static get observedAttributes() { return ['username', 'age', 'agree']; 
+}[39m
+[31m+[39m
+[31m+   static __meta = { tag: 'test-multi-model', props: [], events: [], models: 
+['username', 'age', 'agree'], slots: [] };[39m
+[31m+[39m
+[31m+   constructor() {[39m
+[31m+     super();[39m
+[31m+     this._m_username = __signal('');[39m
+[31m+     this._m_age = __signal(0);[39m
+[31m+     this._m_agree = __signal(false);[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   connectedCallback() {[39m
+[31m+     if (this.__connected) return;[39m
+[31m+     this.__connected = true;[39m
+[31m+     const __root = __t_TestMultiModel.content.cloneNode(true);[39m
+[31m+     this.__model_username_0 = __root.childNodes[1];[39m
+[31m+     this.__model_age_1 = __root.childNodes[3];[39m
+[31m+     this.__model_agree_2 = __root.childNodes[5];[39m
+[31m+     this.innerHTML = '';[39m
+[31m+     this.appendChild(__root);[39m
+[31m+     this.__ac = new AbortController();[39m
+[31m+     this.__disposers = [];[39m
+[31m+[39m
+[31m+     this.__disposers.push(__effect(() => {[39m
+[31m+       this.__model_username_0.value = this._username() ?? '';[39m
+[31m+     }));[39m
+[31m+     this.__disposers.push(__effect(() => {[39m
+[31m+       this.__model_age_1.value = this._age() ?? '';[39m
+[31m+     }));[39m
+[31m+     this.__disposers.push(__effect(() => {[39m
+[31m+       this.__model_agree_2.checked = !!this._agree();[39m
+[31m+     }));[39m
+[31m+     this.__model_username_0.addEventListener('input', (e) => { 
+this._username(e.target.value); }, { signal: this.__ac.signal });[39m
+[31m+     this.__model_age_1.addEventListener('input', (e) => { 
+this._age(Number(e.target.value)); }, { signal: this.__ac.signal });[39m
+[31m+     this.__model_agree_2.addEventListener('change', (e) => { 
+this._agree(e.target.checked); }, { signal: this.__ac.signal });[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   disconnectedCallback() {[39m
+[31m+     this.__connected = false;[39m
+[31m+     this.__ac.abort();[39m
+[31m+     this.__disposers.forEach(d => d());[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   attributeChangedCallback(name, oldVal, newVal) {[39m
+[31m+     if (name === 'username') this._m_username(newVal ?? '');[39m
+[31m+     if (name === 'age') this._m_age(newVal != null ? Number(newVal) : 
+0);[39m
+[31m+     if (name === 'agree') this._m_agree(newVal != null);[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   get username() { return this._m_username(); }[39m
+[31m+   set username(val) { this._m_username(val); this.setAttribute('username', 
+String(val)); }[39m
+[31m+[39m
+[31m+   get age() { return this._m_age(); }[39m
+[31m+   set age(val) { this._m_age(val); this.setAttribute('age', String(val)); 
+}[39m
+[31m+[39m
+[31m+   get agree() { return this._m_agree(); }[39m
+[31m+   set agree(val) { this._m_agree(val); this.setAttribute('agree', 
+String(val)); }[39m
+[31m+[39m
+[31m+   _modelSet_username(newVal) {[39m
+[31m+     const oldVal = this._m_username();[39m
+[31m+     this._m_username(newVal);[39m
+[31m+     this.dispatchEvent(new CustomEvent('wcc:model', {[39m
+[31m+       detail: { prop: 'username', value: newVal, oldValue: oldVal },[39m
+[31m+       bubbles: true,[39m
+[31m+       composed: true[39m
+[31m+     }));[39m
+[31m+     this.dispatchEvent(new CustomEvent('usernameChange', { detail: newVal, 
+bubbles: true }));[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   _modelSet_age(newVal) {[39m
+[31m+     const oldVal = this._m_age();[39m
+[31m+     this._m_age(newVal);[39m
+[31m+     this.dispatchEvent(new CustomEvent('wcc:model', {[39m
+[31m+       detail: { prop: 'age', value: newVal, oldValue: oldVal },[39m
+[31m+       bubbles: true,[39m
+[31m+       composed: true[39m
+[31m+     }));[39m
+[31m+     this.dispatchEvent(new CustomEvent('ageChange', { detail: newVal, 
+bubbles: true }));[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   _modelSet_agree(newVal) {[39m
+[31m+     const oldVal = this._m_agree();[39m
+[31m+     this._m_agree(newVal);[39m
+[31m+     this.dispatchEvent(new CustomEvent('wcc:model', {[39m
+[31m+       detail: { prop: 'agree', value: newVal, oldValue: oldVal },[39m
+[31m+       bubbles: true,[39m
+[31m+       composed: true[39m
+[31m+     }));[39m
+[31m+     this.dispatchEvent(new CustomEvent('agreeChange', { detail: newVal, 
+bubbles: true }));[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   // --- Model wrapper methods ---[39m
+[31m+   _username(val) {[39m
+[31m+     if (arguments.length === 0) {[39m
+[31m+       return this._m_username();[39m
+[31m+     } else {[39m
+[31m+       this._modelSet_username(val);[39m
+[31m+     }[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   _age(val) {[39m
+[31m+     if (arguments.length === 0) {[39m
+[31m+       return this._m_age();[39m
+[31m+     } else {[39m
+[31m+       this._modelSet_age(val);[39m
+[31m+     }[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   _agree(val) {[39m
+[31m+     if (arguments.length === 0) {[39m
+[31m+       return this._m_agree();[39m
+[31m+     } else {[39m
+[31m+       this._modelSet_agree(val);[39m
+[31m+     }[39m
+[31m+   }[39m
+[31m+[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ if (!customElements.get('test-multi-model')) 
+customElements.define('test-multi-model', TestMultiModel);[39m
+[31m+[39m
+[31m+ export default TestMultiModel;[39m
+
+[36m [2mÔØ»[22m lib/codegen.defineModel-event-names.test.js:[2m71:20[22m[39m
+    [90m 69| [39m
+    [90m 70| [39m      [90m// All events should use kebab-case[39m
+    [90m 71| [39m      expect(code).toContain("dispatchEvent(new 
+CustomEvent('username-ÔÇª
+    [90m   | [39m                   [31m^[39m
+    [90m 72| [39m      expect(code).toContain("dispatchEvent(new 
+CustomEvent('age-changÔÇª
+    [90m 73| [39m      expect(code).toContain("dispatchEvent(new 
+CustomEvent('agree-chaÔÇª
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[2
+/6]ÔÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m lib/codegen.defineModel-event-names.test.js[2m > 
+[22mBUG-0006: defineModel event naming - kebab-case convention[2m > [22mshould 
+convert camelCase model names to kebab-case events
+[31m[1mAssertionError[22m: expected '// Generated from: component.wcc (wcCÔÇª' 
+to contain 'dispatchEvent(new CustomEvent(\'user-ÔÇª'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- dispatchEvent(new CustomEvent('user-name-changed'[39m
+[31m+ // Generated from: component.wcc (wcCompiler)[39m
+[31m+ let __currentEffect = null;[39m
+[31m+ let __batchDepth = 0;[39m
+[31m+ const __pendingEffects = new Set();[39m
+[31m+[39m
+[31m+ function __signal(initial) {[39m
+[31m+   let _value = initial;[39m
+[31m+   const _subs = new Set();[39m
+[31m+   return (...args) => {[39m
+[31m+     if (args.length === 0) {[39m
+[31m+       if (__currentEffect) _subs.add(__currentEffect);[39m
+[31m+       return _value;[39m
+[31m+     }[39m
+[31m+     const old = _value;[39m
+[31m+     _value = args[0];[39m
+[31m+     if (old !== _value) {[39m
+[31m+       if (__batchDepth > 0) {[39m
+[31m+         for (const fn of _subs) __pendingEffects.add(fn);[39m
+[31m+       } else {[39m
+[31m+         for (const fn of [..._subs]) fn();[39m
+[31m+       }[39m
+[31m+     }[39m
+[31m+   };[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ function __effect(fn) {[39m
+[31m+   let _cleanup = null;[39m
+[31m+   let _active = true;[39m
+[31m+   const run = () => {[39m
+[31m+     if (!_active) return;[39m
+[31m+     try {[39m
+[31m+       if (typeof _cleanup === 'function') _cleanup();[39m
+[31m+       const prev = __currentEffect;[39m
+[31m+       __currentEffect = run;[39m
+[31m+       _cleanup = fn();[39m
+[31m+       __currentEffect = prev;[39m
+[31m+     } catch (e) {[39m
+[31m+       console.error('[wcc] Effect error:', e);[39m
+[31m+       _active = false;[39m
+[31m+     }[39m
+[31m+   };[39m
+[31m+   run();[39m
+[31m+   return () => { _active = false; if (typeof _cleanup === 'function') 
+_cleanup(); };[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ const __t_TestCamelcase = document.createElement('template');[39m
+[31m+ __t_TestCamelcase.innerHTML = `[39m
+[31m+ <input>[39m
+[31m+ <input>[39m
+[31m+ `;[39m
+[31m+[39m
+[31m+ class TestCamelcase extends HTMLElement {[39m
+[31m+   static get observedAttributes() { return ['user-name', 'userName', 
+'first-name', 'firstName']; }[39m
+[31m+[39m
+[31m+   static __meta = { tag: 'test-camelcase', props: [], events: [], models: 
+['userName', 'firstName'], slots: [] };[39m
+[31m+[39m
+[31m+   constructor() {[39m
+[31m+     super();[39m
+[31m+     this._m_userName = __signal('');[39m
+[31m+     this._m_firstName = __signal('');[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   connectedCallback() {[39m
+[31m+     if (this.__connected) return;[39m
+[31m+     this.__connected = true;[39m
+[31m+     const __root = __t_TestCamelcase.content.cloneNode(true);[39m
+[31m+     this.__model_userName_0 = __root.childNodes[1];[39m
+[31m+     this.__model_firstName_1 = __root.childNodes[3];[39m
+[31m+     this.innerHTML = '';[39m
+[31m+     this.appendChild(__root);[39m
+[31m+     this.__ac = new AbortController();[39m
+[31m+     this.__disposers = [];[39m
+[31m+[39m
+[31m+     this.__disposers.push(__effect(() => {[39m
+[31m+       this.__model_userName_0.value = this._userName() ?? '';[39m
+[31m+     }));[39m
+[31m+     this.__disposers.push(__effect(() => {[39m
+[31m+       this.__model_firstName_1.value = this._firstName() ?? '';[39m
+[31m+     }));[39m
+[31m+     this.__model_userName_0.addEventListener('input', (e) => { 
+this._userName(e.target.value); }, { signal: this.__ac.signal });[39m
+[31m+     this.__model_firstName_1.addEventListener('input', (e) => { 
+this._firstName(e.target.value); }, { signal: this.__ac.signal });[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   disconnectedCallback() {[39m
+[31m+     this.__connected = false;[39m
+[31m+     this.__ac.abort();[39m
+[31m+     this.__disposers.forEach(d => d());[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   attributeChangedCallback(name, oldVal, newVal) {[39m
+[31m+     if (name === 'user-name' || name === 'userName') 
+this._m_userName(newVal ?? '');[39m
+[31m+     if (name === 'first-name' || name === 'firstName') 
+this._m_firstName(newVal ?? '');[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   get userName() { return this._m_userName(); }[39m
+[31m+   set userName(val) { this._m_userName(val); this.setAttribute('user-name', 
+String(val)); }[39m
+[31m+[39m
+[31m+   get firstName() { return this._m_firstName(); }[39m
+[31m+   set firstName(val) { this._m_firstName(val); 
+this.setAttribute('first-name', String(val)); }[39m
+[31m+[39m
+[31m+   _modelSet_userName(newVal) {[39m
+[31m+     const oldVal = this._m_userName();[39m
+[31m+     this._m_userName(newVal);[39m
+[31m+     this.dispatchEvent(new CustomEvent('wcc:model', {[39m
+[31m+       detail: { prop: 'userName', value: newVal, oldValue: oldVal },[39m
+[31m+       bubbles: true,[39m
+[31m+       composed: true[39m
+[31m+     }));[39m
+[31m+     this.dispatchEvent(new CustomEvent('userNameChange', { detail: newVal, 
+bubbles: true }));[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   _modelSet_firstName(newVal) {[39m
+[31m+     const oldVal = this._m_firstName();[39m
+[31m+     this._m_firstName(newVal);[39m
+[31m+     this.dispatchEvent(new CustomEvent('wcc:model', {[39m
+[31m+       detail: { prop: 'firstName', value: newVal, oldValue: oldVal },[39m
+[31m+       bubbles: true,[39m
+[31m+       composed: true[39m
+[31m+     }));[39m
+[31m+     this.dispatchEvent(new CustomEvent('firstNameChange', { detail: newVal, 
+bubbles: true }));[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   // --- Model wrapper methods ---[39m
+[31m+   _userName(val) {[39m
+[31m+     if (arguments.length === 0) {[39m
+[31m+       return this._m_userName();[39m
+[31m+     } else {[39m
+[31m+       this._modelSet_userName(val);[39m
+[31m+     }[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   _firstName(val) {[39m
+[31m+     if (arguments.length === 0) {[39m
+[31m+       return this._m_firstName();[39m
+[31m+     } else {[39m
+[31m+       this._modelSet_firstName(val);[39m
+[31m+     }[39m
+[31m+   }[39m
+[31m+[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ if (!customElements.get('test-camelcase')) 
+customElements.define('test-camelcase', TestCamelcase);[39m
+[31m+[39m
+[31m+ export default TestCamelcase;[39m
+
+[36m [2mÔØ»[22m lib/codegen.defineModel-event-names.test.js:[2m110:20[22m[39m
+    [90m108| [39m      [90m// userName ÔåÆ user-name-changed[39m
+    [90m109| [39m      [90m// firstName ÔåÆ first-name-changed[39m
+    [90m110| [39m      expect(code).toContain("dispatchEvent(new 
+CustomEvent('user-nameÔÇª
+    [90m   | [39m                   [31m^[39m
+    [90m111| [39m      expect(code).toContain("dispatchEvent(new 
+CustomEvent('first-namÔÇª
+    [90m112| [39m      
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[3
+/6]ÔÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m lib/codegen.defineModel-event-names.test.js[2m > 
+[22mBUG-0006: defineModel event naming - kebab-case convention[2m > [22mshould 
+still emit generic wcc:model event
+[31m[1mAssertionError[22m: expected '// Generated from: component.wcc (wcCÔÇª' 
+to contain 'dispatchEvent(new CustomEvent(\'valueÔÇª'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- dispatchEvent(new CustomEvent('value-changed'[39m
+[31m+ // Generated from: component.wcc (wcCompiler)[39m
+[31m+ let __currentEffect = null;[39m
+[31m+ let __batchDepth = 0;[39m
+[31m+ const __pendingEffects = new Set();[39m
+[31m+[39m
+[31m+ function __signal(initial) {[39m
+[31m+   let _value = initial;[39m
+[31m+   const _subs = new Set();[39m
+[31m+   return (...args) => {[39m
+[31m+     if (args.length === 0) {[39m
+[31m+       if (__currentEffect) _subs.add(__currentEffect);[39m
+[31m+       return _value;[39m
+[31m+     }[39m
+[31m+     const old = _value;[39m
+[31m+     _value = args[0];[39m
+[31m+     if (old !== _value) {[39m
+[31m+       if (__batchDepth > 0) {[39m
+[31m+         for (const fn of _subs) __pendingEffects.add(fn);[39m
+[31m+       } else {[39m
+[31m+         for (const fn of [..._subs]) fn();[39m
+[31m+       }[39m
+[31m+     }[39m
+[31m+   };[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ function __effect(fn) {[39m
+[31m+   let _cleanup = null;[39m
+[31m+   let _active = true;[39m
+[31m+   const run = () => {[39m
+[31m+     if (!_active) return;[39m
+[31m+     try {[39m
+[31m+       if (typeof _cleanup === 'function') _cleanup();[39m
+[31m+       const prev = __currentEffect;[39m
+[31m+       __currentEffect = run;[39m
+[31m+       _cleanup = fn();[39m
+[31m+       __currentEffect = prev;[39m
+[31m+     } catch (e) {[39m
+[31m+       console.error('[wcc] Effect error:', e);[39m
+[31m+       _active = false;[39m
+[31m+     }[39m
+[31m+   };[39m
+[31m+   run();[39m
+[31m+   return () => { _active = false; if (typeof _cleanup === 'function') 
+_cleanup(); };[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ const __t_TestGenericEvent = document.createElement('template');[39m
+[31m+ __t_TestGenericEvent.innerHTML = `[39m
+[31m+ <input>[39m
+[31m+ `;[39m
+[31m+[39m
+[31m+ class TestGenericEvent extends HTMLElement {[39m
+[31m+   static get observedAttributes() { return ['value']; }[39m
+[31m+[39m
+[31m+   static __meta = { tag: 'test-generic-event', props: [], events: [], 
+models: ['value'], slots: [] };[39m
+[31m+[39m
+[31m+   constructor() {[39m
+[31m+     super();[39m
+[31m+     this._m_value = __signal('');[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   connectedCallback() {[39m
+[31m+     if (this.__connected) return;[39m
+[31m+     this.__connected = true;[39m
+[31m+     const __root = __t_TestGenericEvent.content.cloneNode(true);[39m
+[31m+     this.__model_value_0 = __root.childNodes[1];[39m
+[31m+     this.innerHTML = '';[39m
+[31m+     this.appendChild(__root);[39m
+[31m+     this.__ac = new AbortController();[39m
+[31m+     this.__disposers = [];[39m
+[31m+[39m
+[31m+     this.__disposers.push(__effect(() => {[39m
+[31m+       this.__model_value_0.value = this._value() ?? '';[39m
+[31m+     }));[39m
+[31m+     this.__model_value_0.addEventListener('input', (e) => { 
+this._value(e.target.value); }, { signal: this.__ac.signal });[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   disconnectedCallback() {[39m
+[31m+     this.__connected = false;[39m
+[31m+     this.__ac.abort();[39m
+[31m+     this.__disposers.forEach(d => d());[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   attributeChangedCallback(name, oldVal, newVal) {[39m
+[31m+     if (name === 'value') this._m_value(newVal ?? '');[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   get value() { return this._m_value(); }[39m
+[31m+   set value(val) { this._m_value(val); this.setAttribute('value', 
+String(val)); }[39m
+[31m+[39m
+[31m+   _modelSet_value(newVal) {[39m
+[31m+     const oldVal = this._m_value();[39m
+[31m+     this._m_value(newVal);[39m
+[31m+     this.dispatchEvent(new CustomEvent('wcc:model', {[39m
+[31m+       detail: { prop: 'value', value: newVal, oldValue: oldVal },[39m
+[31m+       bubbles: true,[39m
+[31m+       composed: true[39m
+[31m+     }));[39m
+[31m+     this.dispatchEvent(new CustomEvent('valueChange', { detail: newVal, 
+bubbles: true }));[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   // --- Model wrapper methods ---[39m
+[31m+   _value(val) {[39m
+[31m+     if (arguments.length === 0) {[39m
+[31m+       return this._m_value();[39m
+[31m+     } else {[39m
+[31m+       this._modelSet_value(val);[39m
+[31m+     }[39m
+[31m+   }[39m
+[31m+[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ if (!customElements.get('test-generic-event')) 
+customElements.define('test-generic-event', TestGenericEvent);[39m
+[31m+[39m
+[31m+ export default TestGenericEvent;[39m
+
+[36m [2mÔØ»[22m lib/codegen.defineModel-event-names.test.js:[2m146:20[22m[39m
+    [90m144| [39m      
+    [90m145| [39m      [90m// And specific kebab-case event should also be 
+present[39m
+    [90m146| [39m      expect(code).toContain("dispatchEvent(new 
+CustomEvent('value-chaÔÇª
+    [90m   | [39m                   [31m^[39m
+    [90m147| [39m      
+    [90m148| [39m    } [35mfinally[39m {
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[4
+/6]ÔÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m lib/codegen.defineModel-event-names.test.js[2m > 
+[22mBUG-0006: defineModel event naming - kebab-case convention[2m > [22mshould 
+handle single-letter capitalization correctly
+[31m[1mAssertionError[22m: expected '// Generated from: component.wcc (wcCÔÇª' 
+to contain 'dispatchEvent(new CustomEvent(\'a-valÔÇª'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- dispatchEvent(new CustomEvent('a-value-changed'[39m
+[31m+ // Generated from: component.wcc (wcCompiler)[39m
+[31m+ let __currentEffect = null;[39m
+[31m+ let __batchDepth = 0;[39m
+[31m+ const __pendingEffects = new Set();[39m
+[31m+[39m
+[31m+ function __signal(initial) {[39m
+[31m+   let _value = initial;[39m
+[31m+   const _subs = new Set();[39m
+[31m+   return (...args) => {[39m
+[31m+     if (args.length === 0) {[39m
+[31m+       if (__currentEffect) _subs.add(__currentEffect);[39m
+[31m+       return _value;[39m
+[31m+     }[39m
+[31m+     const old = _value;[39m
+[31m+     _value = args[0];[39m
+[31m+     if (old !== _value) {[39m
+[31m+       if (__batchDepth > 0) {[39m
+[31m+         for (const fn of _subs) __pendingEffects.add(fn);[39m
+[31m+       } else {[39m
+[31m+         for (const fn of [..._subs]) fn();[39m
+[31m+       }[39m
+[31m+     }[39m
+[31m+   };[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ function __effect(fn) {[39m
+[31m+   let _cleanup = null;[39m
+[31m+   let _active = true;[39m
+[31m+   const run = () => {[39m
+[31m+     if (!_active) return;[39m
+[31m+     try {[39m
+[31m+       if (typeof _cleanup === 'function') _cleanup();[39m
+[31m+       const prev = __currentEffect;[39m
+[31m+       __currentEffect = run;[39m
+[31m+       _cleanup = fn();[39m
+[31m+       __currentEffect = prev;[39m
+[31m+     } catch (e) {[39m
+[31m+       console.error('[wcc] Effect error:', e);[39m
+[31m+       _active = false;[39m
+[31m+     }[39m
+[31m+   };[39m
+[31m+   run();[39m
+[31m+   return () => { _active = false; if (typeof _cleanup === 'function') 
+_cleanup(); };[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ const __t_TestSingleLetter = document.createElement('template');[39m
+[31m+ __t_TestSingleLetter.innerHTML = `[39m
+[31m+ <input>[39m
+[31m+ <input type="number">[39m
+[31m+ `;[39m
+[31m+[39m
+[31m+ class TestSingleLetter extends HTMLElement {[39m
+[31m+   static get observedAttributes() { return ['a-value', 'aValue', 'x-coord', 
+'xCoord']; }[39m
+[31m+[39m
+[31m+   static __meta = { tag: 'test-single-letter', props: [], events: [], 
+models: ['aValue', 'xCoord'], slots: [] };[39m
+[31m+[39m
+[31m+   constructor() {[39m
+[31m+     super();[39m
+[31m+     this._m_aValue = __signal('');[39m
+[31m+     this._m_xCoord = __signal(0);[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   connectedCallback() {[39m
+[31m+     if (this.__connected) return;[39m
+[31m+     this.__connected = true;[39m
+[31m+     const __root = __t_TestSingleLetter.content.cloneNode(true);[39m
+[31m+     this.__model_aValue_0 = __root.childNodes[1];[39m
+[31m+     this.__model_xCoord_1 = __root.childNodes[3];[39m
+[31m+     this.innerHTML = '';[39m
+[31m+     this.appendChild(__root);[39m
+[31m+     this.__ac = new AbortController();[39m
+[31m+     this.__disposers = [];[39m
+[31m+[39m
+[31m+     this.__disposers.push(__effect(() => {[39m
+[31m+       this.__model_aValue_0.value = this._aValue() ?? '';[39m
+[31m+     }));[39m
+[31m+     this.__disposers.push(__effect(() => {[39m
+[31m+       this.__model_xCoord_1.value = this._xCoord() ?? '';[39m
+[31m+     }));[39m
+[31m+     this.__model_aValue_0.addEventListener('input', (e) => { 
+this._aValue(e.target.value); }, { signal: this.__ac.signal });[39m
+[31m+     this.__model_xCoord_1.addEventListener('input', (e) => { 
+this._xCoord(Number(e.target.value)); }, { signal: this.__ac.signal });[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   disconnectedCallback() {[39m
+[31m+     this.__connected = false;[39m
+[31m+     this.__ac.abort();[39m
+[31m+     this.__disposers.forEach(d => d());[39m
+[31m+   }[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m6 failed[39m[22m[90m (6)[39m
+[2m   Start at [22m 10:49:29
+[2m   Duration [22m 1.44s[2m (transform 195ms, setup 30ms, collect 538ms, tests 99ms, environment 0ms, prepare 205ms)[22m
+
+[31m+[39m
+[31m+   attributeChangedCallback(name, oldVal, newVal) {[39m
+[31m+     if (name === 'a-value' || name === 'aValue') this._m_aValue(newVal ?? 
+'');[39m
+[31m+     if (name === 'x-coord' || name === 'xCoord') this._m_xCoord(newVal != 
+null ? Number(newVal) : 0);[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   get aValue() { return this._m_aValue(); }[39m
+[31m+   set aValue(val) { this._m_aValue(val); this.setAttribute('a-value', 
+String(val)); }[39m
+[31m+[39m
+[31m+   get xCoord() { return this._m_xCoord(); }[39m
+[31m+   set xCoord(val) { this._m_xCoord(val); this.setAttribute('x-coord', 
+String(val)); }[39m
+[31m+[39m
+[31m+   _modelSet_aValue(newVal) {[39m
+[31m+     const oldVal = this._m_aValue();[39m
+[31m+     this._m_aValue(newVal);[39m
+[31m+     this.dispatchEvent(new CustomEvent('wcc:model', {[39m
+[31m+       detail: { prop: 'aValue', value: newVal, oldValue: oldVal },[39m
+[31m+       bubbles: true,[39m
+[31m+       composed: true[39m
+[31m+     }));[39m
+[31m+     this.dispatchEvent(new CustomEvent('aValueChange', { detail: newVal, 
+bubbles: true }));[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   _modelSet_xCoord(newVal) {[39m
+[31m+     const oldVal = this._m_xCoord();[39m
+[31m+     this._m_xCoord(newVal);[39m
+[31m+     this.dispatchEvent(new CustomEvent('wcc:model', {[39m
+[31m+       detail: { prop: 'xCoord', value: newVal, oldValue: oldVal },[39m
+[31m+       bubbles: true,[39m
+[31m+       composed: true[39m
+[31m+     }));[39m
+[31m+     this.dispatchEvent(new CustomEvent('xCoordChange', { detail: newVal, 
+bubbles: true }));[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   // --- Model wrapper methods ---[39m
+[31m+   _aValue(val) {[39m
+[31m+     if (arguments.length === 0) {[39m
+[31m+       return this._m_aValue();[39m
+[31m+     } else {[39m
+[31m+       this._modelSet_aValue(val);[39m
+[31m+     }[39m
+[31m+   }[39m
+[31m+[39m
+[31m+   _xCoord(val) {[39m
+[31m+     if (arguments.length === 0) {[39m
+[31m+       return this._m_xCoord();[39m
+[31m+     } else {[39m
+[31m+       this._modelSet_xCoord(val);[39m
+[31m+     }[39m
+[31m+   }[39m
+[31m+[39m
+[31m+ }[39m
+[31m+[39m
+[31m+ if (!customElements.get('test-single-letter')) 
+customElements.define('test-single-letter', TestSingleLetter);[39m
+[31m+[39m
+[31m+ export default TestSingleLetter;[39m
+
+[36m [2mÔØ»[22m lib/codegen.defineModel-event-names.test.js:[2m178:20[22m[39m
+    [90m176| [39m      [90m// aValue ÔåÆ a-value-changed[39m
+    [90m177| [39m      [90m// xCoord ÔåÆ x-coord-changed[39m
+    [90m178| [39m      expect(code).toContain("dispatchEvent(new 
+CustomEvent('a-value-cÔÇª
+    [90m   | [39m                   [31m^[39m
+    [90m179| [39m      expect(code).toContain("dispatchEvent(new 
+CustomEvent('x-coord-cÔÇª
+    [90m180| [39m      
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[5
+/6]ÔÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m lib/codegen.defineModel-event-names.test.js[2m > 
+[22mBUG-0006: defineModel event naming - kebab-case convention[2m > [22mevent 
+dispatching should include correct detail and bubbles properties
+[31m[1mAssertionError[22m: expected '// Generated from: component.wcc (wcCÔÇª' 
+to match /dispatchEvent\(new CustomEvent\('counÔÇª/[39m
+
+[32m- Expected:[39m 
+/dispatchEvent\(new 
+CustomEvent\('count-changed',\s*\{\s*detail:\s*newVal,\s*bubbles:\s*true\s*\}\)/
+
+[31m+ Received:[39m 
+"// Generated from: component.wcc (wcCompiler)
+let __currentEffect = null;
+let __batchDepth = 0;
+const __pendingEffects = new Set();
+
+function __signal(initial) {
+  let _value = initial;
+  const _subs = new Set();
+  return (...args) => {
+    if (args.length === 0) {
+      if (__currentEffect) _subs.add(__currentEffect);
+      return _value;
+    }
+    const old = _value;
+    _value = args[0];
+    if (old !== _value) {
+      if (__batchDepth > 0) {
+        for (const fn of _subs) __pendingEffects.add(fn);
+      } else {
+        for (const fn of [..._subs]) fn();
+      }
+    }
+  };
+}
+
+function __effect(fn) {
+  let _cleanup = null;
+  let _active = true;
+  const run = () => {
+    if (!_active) return;
+    try {
+      if (typeof _cleanup === 'function') _cleanup();
+      const prev = __currentEffect;
+      __currentEffect = run;
+      _cleanup = fn();
+      __currentEffect = prev;
+    } catch (e) {
+      console.error('[wcc] Effect error:', e);
+      _active = false;
+    }
+  };
+  run();
+  return () => { _active = false; if (typeof _cleanup === 'function') _cleanup(); 
+};
+}
+
+const __t_TestEventStructure = document.createElement('template');
+__t_TestEventStructure.innerHTML = `
+<input type=\"number\">
+`;
+
+class TestEventStructure extends HTMLElement {
+  static get observedAttributes() { return ['count']; }
+
+  static __meta = { tag: 'test-event-structure', props: [], events: [], models: 
+['count'], slots: [] };
+
+  constructor() {
+    super();
+    this._m_count = __signal(0);
+  }
+
+  connectedCallback() {
+    if (this.__connected) return;
+    this.__connected = true;
+    const __root = __t_TestEventStructure.content.cloneNode(true);
+    this.__model_count_0 = __root.childNodes[1];
+    this.innerHTML = '';
+    this.appendChild(__root);
+    this.__ac = new AbortController();
+    this.__disposers = [];
+
+    this.__disposers.push(__effect(() => {
+      this.__model_count_0.value = this._count() ?? '';
+    }));
+    this.__model_count_0.addEventListener('input', (e) => { 
+this._count(Number(e.target.value)); }, { signal: this.__ac.signal });
+  }
+
+  disconnectedCallback() {
+    this.__connected = false;
+    this.__ac.abort();
+    this.__disposers.forEach(d => d());
+  }
+
+  attributeChangedCallback(name, oldVal, newVal) {
+    if (name === 'count') this._m_count(newVal != null ? Number(newVal) : 0);
+  }
+
+  get count() { return this._m_count(); }
+  set count(val) { this._m_count(val); this.setAttribute('count', String(val)); }
+
+  _modelSet_count(newVal) {
+    const oldVal = this._m_count();
+    this._m_count(newVal);
+    this.dispatchEvent(new CustomEvent('wcc:model', {
+      detail: { prop: 'count', value: newVal, oldValue: oldVal },
+      bubbles: true,
+      composed: true
+    }));
+    this.dispatchEvent(new CustomEvent('countChange', { detail: newVal, bubbles: 
+true }));
+  }
+
+  // --- Model wrapper methods ---
+  _count(val) {
+    if (arguments.length === 0) {
+      return this._m_count();
+    } else {
+      this._modelSet_count(val);
+    }
+  }
+
+}
+
+if (!customElements.get('test-event-structure')) 
+customElements.define('test-event-structure', TestEventStructure);
+
+export default TestEventStructure;"
+
+[36m [2mÔØ»[22m lib/codegen.defineModel-event-names.test.js:[2m207:20[22m[39m
+    [90m205| [39m
+    [90m206| [39m      [90m// Verify event structure is correct[39m
+    [90m207| [39m      expect(code).toMatch(/dispatchEvent\(new 
+CustomEvent\('count-chaÔÇª
+    [90m   | [39m                   [31m^[39m
+    [90m208| [39m      
+    [90m209| [39m    } [35mfinally[39m {
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[6
+/6]ÔÄ»[22m[39m
+

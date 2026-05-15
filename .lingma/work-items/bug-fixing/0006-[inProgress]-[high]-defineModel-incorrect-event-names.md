@@ -1,17 +1,20 @@
 # BUG-0006: defineModel Incorrect Event Names
 
 ## Metadata
-- **Status**: open
-- **Priority**: ↕️ `medium`
-- **Reported by**: Dev Team / Lingma AI Testing
+- **Status**: 🚀 inProgress
+- **Priority**: 🔴 `high`
+- **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
+- **Date moved to research**: 2026-05-15
+- **Date moved to inProgress**: 2026-05-15
 - **Date resolved**: (pending)
-- **Severity**: Medium
+- **Severity**: High - Blocks two-way data binding functionality
 - **Component**: codegen.js (defineModel event emission)
 - **Related files**: 
-  - `lib/codegen.js`
+  - `lib/codegen.js` (event name generation in _modelSet_* methods)
   - `lib/codegen.defineModel.test.js`
-  - `example/src/03-props-events/wcc-defineModel.wcc`
+  - `example/src/03-props-events/test-model-child.wcc`
+  - `example/src/03-props-events/test-model-parent.wcc`
 
 ## Description
 The WCC compiler's `defineModel` implementation generates incorrect event names for two-way binding. The emitted events don't follow the expected naming convention, causing parent components to not receive updates properly.
