@@ -1,12 +1,13 @@
 # BUG-0006: defineModel Incorrect Event Names
 
 ## Metadata
-- **Status**: 🚀 inProgress
+- **Status**: 🧪 inTesting
 - **Priority**: 🔴 `high`
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
 - **Date moved to research**: 2026-05-15
 - **Date moved to inProgress**: 2026-05-15
+- **Date moved to inTesting**: 2026-05-15
 - **Date resolved**: (pending)
 - **Severity**: High - Blocks two-way data binding functionality
 - **Component**: codegen.js (defineModel event emission)
