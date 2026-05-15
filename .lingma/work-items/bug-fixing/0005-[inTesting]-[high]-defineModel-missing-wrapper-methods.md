@@ -274,8 +274,10 @@ _username(val) {
 
 **Files Modified**:
 - `lib/codegen.js` - Added wrapper method generation (18 lines)
-- `lib/codegen.defineModel-wrapper.test.js` - NEW: 7 comprehensive tests
+- `lib/codegen.defineModel-wrapper.test.js` - NEW: 12 comprehensive tests
 - `example/src/test-wrapper-bug.wcc` - Test component for verification
+
+**Release**: v0.16.5 (patch release - critical fix for defineModel two-way binding)
 
 ---
 
