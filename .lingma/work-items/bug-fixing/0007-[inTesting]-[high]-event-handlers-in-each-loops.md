@@ -1,16 +1,20 @@
 # BUG-0007: Event Handlers in each Loops Don't Resolve Method References
 
 ## Metadata
-- **Status**: open
-- **Priority**: 🔼 `high`
-- **Reported by**: Dev Team / Lingma AI Testing
+- **Status**: 🧪 inTesting
+- **Priority**: 🔴 `high`
+- **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
+- **Date moved to research**: 2026-05-15
+- **Date moved to inProgress**: 2026-05-15
+- **Date moved to inTesting**: 2026-05-15
 - **Date resolved**: (pending)
-- **Severity**: High
-- **Component**: codegen.js (each loop compilation)
+- **Severity**: High - Event handlers inside loops cause ReferenceError at runtime
+- **Component**: codegen.js (each loop event handler compilation)
 - **Related files**: 
-  - `lib/codegen.js`
-  - `example/src/04-directives/wcc-each.wcc`
+  - `lib/codegen.js` (event handler generation in each loops)
+  - `example/src/04-directives/test-list-rendering.wcc`
+  - `dist/04-directives/test-list-rendering.js` (line 187)
 
 ## Description
 Event handlers inside `each` loops fail to resolve method references correctly. When using arrow functions or method calls with parameters inside loops, the generated code doesn't properly prefix methods with `this._`, causing runtime errors.
