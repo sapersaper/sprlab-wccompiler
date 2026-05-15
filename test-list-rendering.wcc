@@ -1,0 +1,153 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-list-rendering',
+})
+
+// Array de items
+const items = signal([
+  { id: 1, name: 'Item 1', active: true },
+  { id: 2, name: 'Item 2', active: false },
+  { id: 3, name: 'Item 3', active: true }
+])
+
+// Contador para agregar items
+const nextId = signal(4)
+
+function addItem() {
+  const newItem = {
+    id: nextId(),
+    name: `Item ${nextId()}`,
+    active: false
+  }
+  items.set([...items(), newItem])
+  nextId.set(nextId() + 1)
+}
+
+function removeLastItem() {
+  const currentItems = items()
+  if (currentItems.length > 0) {
+    items.set(currentItems.slice(0, -1))
+  }
+}
+
+function toggleActive(id) {
+  const updated = items().map(item => 
+    item.id === id ? { ...item, active: !item.active } : item
+  )
+  items.set(updated)
+}
+</script>
+
+<template>
+  <div class="list-test">
+    <h3>Test de List Rendering (each)</h3>
+    
+    <div class="controls">
+      <button @click="addItem">Agregar Item</button>
+      <button @click="removeLastItem">Eliminar Último</button>
+    </div>
+
+    <!-- Test 1: each con array de objetos -->
+    <div class="array-section">
+      <h4>Array de Objetos (con :key):</h4>
+      <ul>
+        <li each="item in items()" :key="item.id" class="list-item">
+          <span>{{ item.name }}</span>
+          <span class="status">{{ item.active ? '✓ Activo' : '✗ Inactivo' }}</span>
+          <button @click="() => toggleActive(item.id)">Toggle</button>
+        </li>
+      </ul>
+      <p>Total items: {{ items().length }}</p>
+    </div>
+
+    <!-- Test 2: each con rango numérico -->
+    <div class="range-section">
+      <h4>Rango Numérico (1 to 5):</h4>
+      <ol>
+        <li each="n in 5">Número {{ n }}</li>
+      </ol>
+    </div>
+
+    <!-- Test 3: each con index -->
+    <div class="index-section">
+      <h4>Each con Index:</h4>
+      <ul>
+        <li each="(item, index) in items()">
+          [{{ index }}] {{ item.name }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<style>
+.list-test {
+  border: 2px solid #673ab7;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #ede7f6;
+}
+.list-test h3 {
+  color: #512da8;
+  margin-top: 0;
+}
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.controls button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #673ab7;
+  color: white;
+  cursor: pointer;
+}
+.controls button:hover {
+  background-color: #512da8;
+}
+.array-section, .range-section, .index-section {
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+.array-section h4, .range-section h4, .index-section h4 {
+  margin-top: 0;
+  color: #512da8;
+}
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin: 5px 0;
+  background: #f5f5f5;
+  border-radius: 4px;
+  list-style: none;
+}
+.status {
+  font-weight: bold;
+}
+.status.active {
+  color: #4caf50;
+}
+.status:not(.active) {
+  color: #f44336;
+}
+.list-item button {
+  padding: 5px 10px;
+  background-color: #673ab7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+ol li, ul li {
+  padding: 5px;
+  margin: 3px 0;
+}
+</style>
