@@ -1,0 +1,24 @@
+<script>
+import { defineComponent, defineModel } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-wrapper-methods',
+})
+
+const username = defineModel({ name: 'username', default: '' })
+const age = defineModel({ name: 'age', default: 0 })
+const agree = defineModel({ name: 'agree', default: false })
+</script>
+
+<template>
+<div>
+  <input model="username" />
+  <p>{{ username() }}</p>
+  
+  <input model="age" type="number" />
+  <p>{{ age() }}</p>
+  
+  <input model="agree" type="checkbox" />
+  <p>{{ agree() }}</p>
+</div>
+</template>
