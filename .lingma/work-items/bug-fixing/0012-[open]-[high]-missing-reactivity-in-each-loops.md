@@ -224,6 +224,12 @@ If you need more information:
 - Test component behavior in browser with v0.16.7
 - Compare with working non-loop scenarios
 
+## Related Issues
+- **Discovered while verifying**: BUG-0007 (Event Handlers in each Loops - RESOLVED)
+- Note: BUG-0007 fixed event handler generation, but revealed missing reactivity in loop rendering
+- BUG-0007: Compile-time issue (codegen) - FIXED in v0.16.7
+- BUG-0012: Runtime reactivity issue - PENDING fix
+
 ---
 
 **Report Generated**: 2026-05-15  
