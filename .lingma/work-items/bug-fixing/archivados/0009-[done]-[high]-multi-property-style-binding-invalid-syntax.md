@@ -1,11 +1,16 @@
 # BUG-0009: Multi-Property :style Binding Generates Invalid Object Syntax
 
 ## Metadata
-- **Status**: open
+- **Status**: ✅ done
 - **Priority**: 🔼 `high`
 - **Reported by**: Dev Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
-- **Date resolved**: (pending)
+- **Date moved to research**: 2026-05-15
+- **Date moved to inProgress**: 2026-05-15
+- **Date moved to inTesting**: 2026-05-15
+- **Version fixed**: v0.16.13
+- **Date resolved**: 2026-05-15
+- **QA confirmed**: 2026-05-15
 - **Severity**: High
 - **Component**: codegen.js (attribute binding compilation)
 - **Related files**: 
@@ -110,6 +115,44 @@ Or patch the compiled JavaScript to fix the object syntax.
 
 ## Additional Context
 Discovered during Phase 4 testing (Directives). This bug prevents developers from using dynamic inline styles, which are common for theming, animations, and responsive design.
+
+## Resolution
+
+**Status**: ✅ FIXED in v0.16.13, confirmed by QA
+
+**Root Cause**:
+The `transformExpr()` function in `lib/codegen.js` was transforming ALL occurrences of signal/computed names, including those in object literal keys. This generated invalid JavaScript syntax like `{ this._fontSize(): this._fontSize() }`.
+
+**Solution Implemented**:
+- Added key protection mechanism in `transformExpr()` using placeholder replacement strategy
+- Before transformations: Extract all object literal keys and replace with placeholders
+- Apply all signal/computed transformations to values only
+- After transformations: Restore original keys from placeholders
+- Fixed RegExp escaping issue in template literals that caused syntax errors
+
+**Testing Results (QA Confirmed)**:
+- ✅ Compilation: Success (7,523 bytes, HTTP 200 OK)
+- ✅ Rendering: Full component renders correctly
+- ✅ Generated Code: Valid JavaScript with proper object literal keys
+- ✅ Interactivity: All 6 test scenarios work correctly
+  - Single property binding
+  - Multiple properties
+  - Conditional properties (ternary)
+  - Computed styles (template literals)
+  - Mixed static + dynamic
+  - Units handling (px, em, rem)
+- ✅ Console Errors: ZERO syntax or runtime errors
+
+**Files Modified**:
+- `lib/codegen.js` - Added key protection in transformExpr()
+- `lib/compiler.style-binding-syntax.test.js` - 5 comprehensive tests
+
+**Version History**:
+- v0.16.11: ❌ Critical blocker - Invalid syntax generation
+- v0.16.12: ❌ Still broken - Same issue persisted
+- v0.16.13: ✅ **FIXED** - Proper key protection implemented
+
+**QA Sign-off**: APPROVED FOR PRODUCTION
 
 ---
 
