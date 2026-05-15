@@ -1,16 +1,20 @@
 # BUG-0008: Compiler Rejects template slot="name" Syntax
 
 ## Metadata
-- **Status**: open
-- **Priority**: 🔽 `low`
-- **Reported by**: Dev Team / Lingma AI Testing
+- **Status**: 🚀 inProgress
+- **Priority**: 🔴 `high`
+- **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
+- **Date moved to research**: 2026-05-15
+- **Date moved to inProgress**: 2026-05-15
 - **Date resolved**: (pending)
-- **Severity**: Low
-- **Component**: parser.js (SFC parsing)
+- **Severity**: Medium-High - Blocks Vue-style slot syntax, requires workaround
+- **Component**: SFC Parser / Template Compiler
 - **Related files**: 
-  - `lib/parser.js`
-  - `example/src/05-slots-models/wcc-slots.wcc`
+  - `lib/parser.js` - SFC template parsing logic
+  - `lib/codegen.js` - Slot code generation
+  - `example/src/05-slots-models/test-slots-parent.wcc` (uses workaround)
+  - `example/src/05-slots-models/test-slot-child.wcc`
 
 ## Description
 The WCC compiler incorrectly rejects `<template slot="name">` syntax, treating it as a duplicate template block error. This prevents users from using the standard Vue/Angular pattern for named slots.
