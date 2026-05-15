@@ -1,16 +1,28 @@
 # BUG-0008: Compiler Rejects template slot="name" Syntax
 
 ## Metadata
-- **Status**: open
-- **Priority**: 🔽 `low`
-- **Reported by**: Dev Team / Lingma AI Testing
+- **Status**: 🧪 inTesting
+- **Priority**: 🔴 `high`
+- **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
+- **Date moved to research**: 2026-05-15
+- **Date moved to inProgress**: 2026-05-15
+- **Date moved to inTesting**: 2026-05-15
+- **Date moved back to inProgress**: 2026-05-15 (v0.16.8 fix failed)
+- **Date moved to inTesting (v2)**: 2026-05-15 (proper fix implemented)
+- **Date moved back to inProgress (v3)**: 2026-05-15 (QA test failed - compilation error persists)
+- **Date moved to inTesting (v3)**: 2026-05-15 (disabled unexpected content validation as workaround)
+- **Date moved back to inProgress (v4)**: 2026-05-15 (QA reported critical runtime failures - silent compilation errors)
+- **Date moved to inTesting (v4)**: 2026-05-15 (proper fix implemented with backward compatibility)
+- **Version fixed**: v0.16.11
 - **Date resolved**: (pending)
-- **Severity**: Low
-- **Component**: parser.js (SFC parsing)
+- **Severity**: Medium-High - Blocks Vue-style slot syntax, requires workaround
+- **Component**: SFC Parser / Template Compiler
 - **Related files**: 
-  - `lib/parser.js`
-  - `example/src/05-slots-models/wcc-slots.wcc`
+  - `lib/parser.js` - SFC template parsing logic
+  - `lib/codegen.js` - Slot code generation
+  - `example/src/05-slots-models/test-slots-parent.wcc` (uses workaround)
+  - `example/src/05-slots-models/test-slot-child.wcc`
 
 ## Description
 The WCC compiler incorrectly rejects `<template slot="name">` syntax, treating it as a duplicate template block error. This prevents users from using the standard Vue/Angular pattern for named slots.
