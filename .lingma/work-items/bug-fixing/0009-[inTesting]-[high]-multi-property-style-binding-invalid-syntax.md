@@ -1,12 +1,14 @@
 # BUG-0009: Multi-Property :style Binding Generates Invalid Object Syntax
 
 ## Metadata
-- **Status**: 🔄 inProgress
+- **Status**: 🧪 inTesting
 - **Priority**: 🔼 `high`
 - **Reported by**: Dev Team / Lingma AI Testing
 - **Date reported**: 2026-05-13
 - **Date moved to research**: 2026-05-15
 - **Date moved to inProgress**: 2026-05-15
+- **Date moved to inTesting**: 2026-05-15
+- **Version fixed**: v0.16.13
 - **Date resolved**: (pending)
 - **Severity**: High
 - **Component**: codegen.js (attribute binding compilation)
