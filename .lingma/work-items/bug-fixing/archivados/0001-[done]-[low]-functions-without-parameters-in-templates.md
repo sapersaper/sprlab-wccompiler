@@ -268,3 +268,4 @@ The original issue was **NOT a bug** - functions without parameters work correct
 ---
 
 *Created from testing report dated 2026-05-13*
+*Archived on 2026-05-14 after QA verification*
