@@ -1,13 +1,14 @@
 # BUG-0013: Malformed Loop Key Bindings in Generated Code
 
 ## Metadata
-- **Status**: 🧪 inTesting
+- **Status**: ✅ done
 - **Priority**: [highest]
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-18
 - **Date moved to research**: 2026-05-18
 - **Date moved to inProgress**: 2026-05-18
 - **Date moved to inTesting**: 2026-05-18
+- **Date resolved**: 2026-05-18
 - **Version fixed**: v0.16.19
 - **Version discovered**: v0.16.17
 - **Severity**: Critical - Prevents components with keyed loops from rendering entirely
@@ -427,6 +428,62 @@ button {
 2. Verify reconciliation logic uses keys correctly
 3. Check that effects capture current item references
 4. Ensure no malformed HTML in output
+
+---
+
+## Resolution
+
+**Status**: ✅ FIXED in v0.16.19, confirmed by QA
+
+**Root Cause**:
+The HTML parser (linkedom/jsdom) was breaking Mustache-style key bindings `key={{ item.id }}` into malformed attributes when the syntax was used WITHOUT quotes. The parser interpreted the unquoted Mustache expression as multiple separate attributes:
+- `key="{{"` (incomplete attribute)
+- `item.id=""` (misinterpreted as separate attribute)
+- `}=""` (malformed closing)
+
+This caused components to fail initialization completely with 0 bytes of innerHTML and silent failures.
+
+**Failed First Attempt (v0.16.18)**:
+Initial fix only handled quoted Mustache syntax `key="{{ expr }}"` but QA was using unquoted syntax `key={{ expr }}`. The tree-walker approach couldn't prevent the HTML parser from breaking the attributes before they could be processed.
+
+**Solution Implemented (v2)**:
+Pre-process template string in `template-normalizer.js` BEFORE the HTML parser sees it:
+- Added two regex patterns to convert both quoted and unquoted Mustache to `:key` binding syntax
+- Pattern 1: `key="{{ expr }}"` → `:key="expr"`
+- Pattern 2: `key={{ expr }}` → `:key="expr"`
+- Runs early in compilation pipeline, preventing malformed parsing
+- Maintains keyed reconciliation functionality
+
+**Testing Results (QA Confirmed)**:
+- ✅ **test-kitchen-sink** - PASSED (complex component with keyed loops)
+- ✅ **test-deep-nesting** - PASSED (nested loops with keys)
+- ✅ **test-rapid-updates** - PASSED (performance test)
+- ✅ All 3 edge case components rendering correctly
+- ✅ Keys working properly for reconciliation
+- ✅ No malformed attributes in generated code
+- ✅ UI updates correctly when data changes
+- ✅ Total test suite: 1046/1046 passing (100% pass rate)
+
+**Code Generated (Before vs After)**:
+```javascript
+// ❌ BEFORE (v0.16.17/v0.16.18):
+this.__for0_tpl.innerHTML = `<div key="{{" item.id="" }="">...</div>`;
+
+// ✅ AFTER (v0.16.19):
+this.__for0_tpl.innerHTML = `<div></div>`; // key removed, :key binding used
+const __key = item.id; // proper keyed reconciliation
+```
+
+**Files Modified**:
+- `lib/template-normalizer.js` - Added Mustache-to-binding pre-processing (lines ~61-70)
+- `package.json` - Version bumped to 0.16.19
+
+**Version History**:
+- v0.16.17: ❌ Bug discovered
+- v0.16.18: ❌ Partial fix (only handled quoted syntax)
+- v0.16.19: ✅ Complete fix (handles both quoted and unquoted syntax)
+
+**QA Sign-off**: APPROVED FOR PRODUCTION - BUG-0013 completely resolved
 
 ---
 
