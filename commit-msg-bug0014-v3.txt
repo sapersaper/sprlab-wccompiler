@@ -1,0 +1,25 @@
+fix(template-normalizer): handle ALL Mustache attribute bindings (BUG-0014 v3)
+
+ROOT CAUSE:
+Previous fix only handled if/else-if directives, but QA reported that event handlers (@click={{ }}) and dynamic component bindings (:is={{ }}) were still generating raw {{ in JavaScript code.
+
+SOLUTION:
+Expanded template normalization to handle ALL attributes with Mustache syntax using generic regex patterns instead of specific directive names.
+
+CHANGES:
+- Replaced 4 specific patterns (if, else-if quoted/unquoted) with 2 generic patterns
+- Pattern 1: attr="{{ expr }}" → attr="expr" (quoted)
+- Pattern 2: attr={{ expr }} → attr="expr" (unquoted)
+- Handles: if, else-if, @click, :is, :key, and ANY other attribute
+
+TDD WORKFLOW:
+- Added 2 new unit tests for event handlers and dynamic components
+- All 7 BUG-0014 tests passing
+- Full test suite: 1053/1053 passing (100%)
+- No regressions detected
+
+VERIFICATION:
+- Event handlers: this._increment(); ✓ (no raw {{)
+- Dynamic components: const __tag = this._selectedComponent(); ✓
+- Conditionals: if ( this._items().length > 0 ) ✓
+- Complex expressions: if ( _count() > _min() && _count() < _max() ) ✓
