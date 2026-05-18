@@ -8,7 +8,7 @@
 - **Date moved to research**: 2026-05-18
 - **Date moved to inProgress**: 2026-05-18
 - **Date moved to inTesting**: 2026-05-18
-- **Version fixed**: v0.16.20
+- **Version fixed**: v0.16.21
 - **Version discovered**: v0.16.17
 - **Severity**: Critical - Prevents components with complex conditionals from rendering
 - **Component**: SFC Parser / Template Compiler (conditional expression parsing)
