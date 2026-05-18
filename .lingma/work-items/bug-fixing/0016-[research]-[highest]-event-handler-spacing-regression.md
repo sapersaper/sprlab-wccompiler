@@ -1,13 +1,15 @@
 # BUG-0016: Event Handler Method Names Generated with Invalid Spacing
 
 ## Metadata
-- **Status**: 💻 inProgress
+- **Status**: 🧪 inTesting
 - **Priority**: [highest]
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-18
 - **Date moved to research**: 2026-05-18
 - **Date moved to inProgress**: 2026-05-18
+- **Date moved to inTesting**: 2026-05-18
 - **Version discovered**: v0.16.23
+- **Version fixed**: v0.16.24
 - **Regression from**: v0.16.22 (worked correctly)
 - **Severity**: Critical - Blocks all interactive functionality
 - **Component**: Template Normalizer (Mustache expression trimming)
