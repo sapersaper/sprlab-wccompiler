@@ -1,14 +1,13 @@
 # BUG-0013: Malformed Loop Key Bindings in Generated Code
 
 ## Metadata
-- **Status**: 🧪 inTesting
+- **Status**: 🔄 inProgress
 - **Priority**: [highest]
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-18
 - **Date moved to research**: 2026-05-18
 - **Date moved to inProgress**: 2026-05-18
-- **Date moved to inTesting**: 2026-05-18
-- **Version fixed**: v0.16.18
+- **Version fixed**: v0.16.19 (pending)
 - **Version discovered**: v0.16.17
 - **Severity**: Critical - Prevents components with keyed loops from rendering entirely
 - **Component**: SFC Parser / Template Compiler (attribute parsing logic)
