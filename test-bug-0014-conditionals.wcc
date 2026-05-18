@@ -1,0 +1,176 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-bug-0014-conditionals',
+})
+
+const items = signal([])
+const count = signal(0)
+const status = signal('inactive')
+
+function addItem() {
+  items.set([...items(), `Item ${items().length + 1}`])
+  count.set(items().length)
+}
+
+function removeItem() {
+  if (items().length > 0) {
+    items.set(items().slice(0, -1))
+    count.set(items().length)
+  }
+}
+
+function toggleStatus() {
+  status.set(status() === 'active' ? 'inactive' : 'active')
+}
+</script>
+
+<style>
+.test-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.status-box {
+  padding: 15px;
+  border-radius: 8px;
+  margin: 10px 0;
+  text-align: center;
+  font-weight: bold;
+}
+
+.status-active {
+  background: #c6f6d5;
+  color: #22543d;
+  border: 2px solid #48bb78;
+}
+
+.status-inactive {
+  background: #fed7d7;
+  color: #742a2a;
+  border: 2px solid #f56565;
+}
+
+.empty-state {
+  background: #fefcbf;
+  color: #744210;
+  border: 2px solid #ecc94b;
+  padding: 20px;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.item-list {
+  list-style: none;
+  padding: 0;
+}
+
+.item-card {
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px 0;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-add { background: #48bb78; color: white; }
+.btn-remove { background: #f56565; color: white; }
+.btn-toggle { background: #667eea; color: white; }
+</style>
+
+<template>
+<div class="test-container">
+  <h2>BUG-0014 Test: Conditional Rendering with Comparisons</h2>
+  <p>This component tests various conditional expressions.</p>
+  
+  <div style="margin-bottom: 15px;">
+    <button class="btn-add" @click="addItem()">Add Item</button>
+    <button class="btn-remove" @click="removeItem()">Remove Item</button>
+    <button class="btn-toggle" @click="toggleStatus()">Toggle Status</button>
+  </div>
+  
+  <p>Current count: {{ count() }}</p>
+  <p>Current status: {{ status() }}</p>
+  
+  <!-- Test 1: Array length comparison -->
+  <div if="{{ items().length > 0 }}">
+    <h3>✅ Test 1: Has Items</h3>
+    <ul class="item-list">
+      <li each="item in items()" class="item-card">
+        {{ item }}
+      </li>
+    </ul>
+  </div>
+  
+  <div else-if="{{ items().length === 0 }}">
+    <div class="empty-state">
+      <h3>⚠️ Test 1: Empty State</h3>
+      <p>No items yet. Click "Add Item" to create some.</p>
+    </div>
+  </div>
+  
+  <!-- Test 2: Count threshold -->
+  <div if="{{ count() >= 5 }}">
+    <div style="background: #c6f6d5; padding: 10px; border-radius: 4px; margin: 10px 0;">
+      <strong>🎉 Test 2: High Count</strong>
+      <p>You have {{ count() }} items (5 or more)!</p>
+    </div>
+  </div>
+  
+  <div else-if="{{ count() > 0 }}">
+    <div style="background: #fefcbf; padding: 10px; border-radius: 4px; margin: 10px 0;">
+      <strong>ℹ️ Test 2: Medium Count</strong>
+      <p>You have {{ count() }} items (less than 5).</p>
+    </div>
+  </div>
+  
+  <div else>
+    <div style="background: #fed7d7; padding: 10px; border-radius: 4px; margin: 10px 0;">
+      <strong>❌ Test 2: Zero Count</strong>
+      <p>No items yet.</p>
+    </div>
+  </div>
+  
+  <!-- Test 3: String equality -->
+  <div if="{{ status() === 'active' }}">
+    <div class="status-box status-active">
+      <h3>✓ Test 3: Active Status</h3>
+      <p>The system is currently ACTIVE</p>
+    </div>
+  </div>
+  
+  <div else>
+    <div class="status-box status-inactive">
+      <h3>✗ Test 3: Inactive Status</h3>
+      <p>The system is currently INACTIVE</p>
+    </div>
+  </div>
+  
+  <!-- Test 4: Multiple conditions -->
+  <div if="{{ count() > 0 && status() === 'active' }}">
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+      <h3>🌟 Test 4: Combined Conditions</h3>
+      <p>Both conditions met: Has items AND status is active!</p>
+    </div>
+  </div>
+  
+  <div else-if="{{ count() === 0 || status() === 'inactive' }}">
+    <div style="background: #e2e8f0; padding: 15px; border-radius: 8px; margin: 10px 0;">
+      <h3>⚪ Test 4: Not Ready</h3>
+      <p>Either no items OR status is inactive.</p>
+    </div>
+  </div>
+</div>
+</template>

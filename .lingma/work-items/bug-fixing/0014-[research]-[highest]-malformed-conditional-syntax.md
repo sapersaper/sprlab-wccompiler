@@ -1,10 +1,14 @@
 # BUG-0014: Malformed Conditional Rendering Syntax in Generated Code
 
 ## Metadata
-- **Status**: [readyToDev]
+- **Status**: 🧪 inTesting
 - **Priority**: [highest]
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-18
+- **Date moved to research**: 2026-05-18
+- **Date moved to inProgress**: 2026-05-18
+- **Date moved to inTesting**: 2026-05-18
+- **Version fixed**: v0.16.22
 - **Version discovered**: v0.16.17
 - **Severity**: Critical - Prevents components with complex conditionals from rendering
 - **Component**: SFC Parser / Template Compiler (conditional expression parsing)
