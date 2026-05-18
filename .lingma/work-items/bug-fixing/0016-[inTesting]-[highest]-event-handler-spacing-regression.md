@@ -1,13 +1,14 @@
 # BUG-0016: Event Handler Method Names Generated with Invalid Spacing
 
 ## Metadata
-- **Status**: 🧪 inTesting
+- **Status**: ✅ done
 - **Priority**: [highest]
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-18
 - **Date moved to research**: 2026-05-18
 - **Date moved to inProgress**: 2026-05-18
 - **Date moved to inTesting**: 2026-05-18
+- **Date moved to done**: 2026-05-18
 - **Version discovered**: v0.16.23
 - **Version fixed**: v0.16.24
 - **Regression from**: v0.16.22 (worked correctly)
@@ -159,3 +160,75 @@ The bug suggests a systemic problem in the compiler's code generation logic that
   - `src/12-edge-cases/test-error-recovery.wcc`
   - `src/12-edge-cases/test-nested-loops.wcc`
   - `src/12-edge-cases/test-large-dataset.wcc`
+
+---
+
+## Resolution
+
+**Status**: ✅ RESOLVED in v0.16.24  
+**Resolved by**: Template Normalizer Enhancement (Mustache expression trimming)  
+**QA Verified**: YES - Confirmed fixed by QA Team on 2026-05-18  
+
+### Solution Summary:
+
+BUG-0016 was a critical regression bug introduced in v0.16.23 that caused the compiler to generate invalid JavaScript syntax for event handlers. The template normalizer was capturing whitespace around Mustache expressions, resulting in malformed code like `this._ handleClick .bind(this)` instead of `this._handleClick.bind(this)`.
+
+### Root Cause:
+
+The regex patterns in `lib/template-normalizer.js` were extracting Mustache expressions without trimming whitespace:
+```javascript
+// BEFORE (broken):
+html = html.replace(/\b([\w:-]+)\s*=\s*"\{\{([^}]+)\}\}"/g, '$1="$2"');
+// Captures " handleClick " with spaces
+```
+
+### Fix Implemented:
+
+Added `.trim()` to both Mustache expression extraction patterns:
+```javascript
+// AFTER (fixed):
+html = html.replace(/\b([\w:-]+)\s*=\s*"\{\{([^}]+)\}\}"/g, (match, attrName, expr) => {
+  return `${attrName}="${expr.trim()}"`;
+});
+```
+
+This ensures all whitespace is removed from extracted expressions before HTML parsing.
+
+### Test Coverage:
+
+**TDD Tests Added** (lib/codegen.event-handler-spacing.test.js):
+- ✅ Simple event handler method names (no spaces)
+- ✅ Event handlers with function calls
+- ✅ Event handlers in loops
+- ✅ Multiple event types (@input, @click)
+- ✅ Arrow function event handlers
+
+**Total Tests**: 5 new tests, all passing  
+**Full Test Suite**: 113/113 files passing (no regressions)
+
+### Verification Results:
+
+✅ No spaces in generated event handler method names  
+✅ Valid JavaScript syntax: `this._handleClick.bind(this)`  
+✅ All interactive functionality restored  
+✅ Components register correctly as custom elements  
+✅ DOM content renders properly  
+✅ Console shows no syntax errors  
+
+### Files Modified:
+
+- `lib/template-normalizer.js` - Added .trim() to Mustache expression extraction (2 patterns)
+- `lib/codegen.event-handler-spacing.test.js` - Added 5 comprehensive TDD tests
+- `package.json` - Version bumped to 0.16.24
+
+### Impact:
+
+This fix resolves a critical blocker that prevented ALL components with event handlers from functioning. The regression affected any component using `@click`, `@input`, `@change`, or other event directives.
+
+---
+
+**Report Generated**: 2026-05-18  
+**Discovered By**: Lingma AI QA Team  
+**Ready for Dev**: ✅ YES  
+**Resolved**: 2026-05-18 in v0.16.24  
+**QA Verified**: 2026-05-18 - Confirmed fixed
