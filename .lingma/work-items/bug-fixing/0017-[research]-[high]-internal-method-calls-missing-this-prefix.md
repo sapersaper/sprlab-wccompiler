@@ -1,12 +1,15 @@
 # BUG-0017: Internal Method Calls Not Getting `this._` Prefix
 
 ## Metadata
-- **Status**: 🔬 research
+- **Status**: 🧪 inTesting
 - **Priority**: [high]
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-18
 - **Date moved to research**: 2026-05-18
+- **Date moved to inProgress**: 2026-05-18
+- **Date moved to inTesting**: 2026-05-18
 - **Version discovered**: v0.16.24
+- **Version fixed**: v0.16.25
 - **Severity**: High - Prevents method reuse within components
 - **Component**: Code Generator (method call transformation)
 - **Related files**: 
