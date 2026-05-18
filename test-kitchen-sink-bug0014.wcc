@@ -1,0 +1,35 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({ tag: 'test-kitchen-sink' })
+
+const items = signal([])
+const count = signal(0)
+const status = signal('active')
+</script>
+
+<template>
+<div>
+  <h1>Kitchen Sink Test - BUG-0014</h1>
+  
+  <!-- Test 1: Greater-than operator -->
+  <div if={{ items().length > 0 }}>
+    <p>Has {{ items().length }} items</p>
+  </div>
+  
+  <!-- Test 2: Equality operator -->
+  <div else-if={{ status() === 'active' }}>
+    <p>Status is active</p>
+  </div>
+  
+  <!-- Test 3: Less-than operator -->
+  <div if={{ count() < 10 }}>
+    <p>Count is less than 10: {{ count() }}</p>
+  </div>
+  
+  <!-- Test 4: Complex expression with && -->
+  <div if={{ count() > 0 && status() === 'active' }}>
+    <p>Complex condition met</p>
+  </div>
+</div>
+</template>
