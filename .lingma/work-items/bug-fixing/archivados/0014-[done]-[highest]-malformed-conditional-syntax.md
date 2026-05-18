@@ -1,13 +1,14 @@
 # BUG-0014: Malformed Conditional Rendering Syntax in Generated Code
 
 ## Metadata
-- **Status**: 🧪 inTesting
+- **Status**: ✅ done
 - **Priority**: [highest]
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-18
 - **Date moved to research**: 2026-05-18
 - **Date moved to inProgress**: 2026-05-18
 - **Date moved to inTesting**: 2026-05-18
+- **Date moved to done**: 2026-05-18
 - **Version fixed**: v0.16.22
 - **Version discovered**: v0.16.17
 - **Severity**: Critical - Prevents components with complex conditionals from rendering
@@ -520,8 +521,52 @@ button {
 
 ---
 
+## Resolution
+
+**Status**: ✅ RESOLVED in v0.16.22  
+**Resolved by**: Template Normalizer Enhancement  
+**QA Verified**: YES - Confirmed fixed by QA Team  
+
+### Solution Summary:
+
+The bug was fixed by enhancing the template normalizer (`lib/template-normalizer.js`) to pre-process ALL Mustache-style attribute bindings before the HTML parser sees them.
+
+**Key Changes:**
+1. Replaced specific patterns for `if`/`else-if` with generic patterns that handle ANY attribute
+2. Pattern 1: `attr="{{ expr }}"` → `attr="expr"` (quoted syntax)
+3. Pattern 2: `attr={{ expr }}` → `attr="expr"` (unquoted syntax)
+4. Handles: `if`, `else-if`, `@click`, `:is`, `:key`, and any future attributes
+
+**Files Modified:**
+- `lib/template-normalizer.js` - Added generic Mustache attribute normalization
+- `lib/codegen.conditional-syntax.test.js` - Added 12 comprehensive unit tests
+- `lib/codegen.key-bindings.test.js` - Added 3 additional tests for complex scenarios
+
+**Test Coverage:**
+- 12 tests for conditional syntax (all comparison operators, else-if chains, event handlers, dynamic components)
+- 6 tests for key bindings (including complex combinations)
+- All 1061 tests passing (100% pass rate, no regressions)
+
+**Verification:**
+- ✅ Comparison operators work: `>`, `<`, `>=`, `<=`, `===`, `!==`
+- ✅ Logical operators work: `&&`, `||`
+- ✅ Event handlers work: `@click={{ handler() }}`
+- ✅ Dynamic components work: `:is={{ component() }}`
+- ✅ No raw `{{` in generated JavaScript code
+- ✅ No HTML entities (`&gt;`, `&lt;`) in generated code
+- ✅ Valid JavaScript syntax in all generated conditionals
+
+### QA Sign-off:
+
+**QA Report**: BUG-0014 confirmed FIXED in v0.16.22  
+**Testing Method**: Browser Agent E2E testing with test-kitchen-sink.wcc and test-bug-0014-conditionals.wcc  
+**Result**: All components render correctly with complex conditionals  
+
+---
+
 **Report Generated**: 2026-05-18  
 **Discovered By**: Lingma AI QA Team  
 **Ready for Dev**: ✅ YES - Component code included above for testing  
+**Resolved**: 2026-05-18 in v0.16.22
 
-This bug prevents components with comparison-based conditionals from rendering and requires immediate attention.
+This bug prevented components with comparison-based conditionals from rendering and has been completely resolved.
