@@ -1,17 +1,19 @@
 # BUG-0016: Event Handler Method Names Generated with Invalid Spacing
 
 ## Metadata
-- **Status**: 🔬 research
+- **Status**: 💻 inProgress
 - **Priority**: [highest]
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-18
 - **Date moved to research**: 2026-05-18
+- **Date moved to inProgress**: 2026-05-18
 - **Version discovered**: v0.16.23
 - **Regression from**: v0.16.22 (worked correctly)
 - **Severity**: Critical - Blocks all interactive functionality
-- **Component**: Code Generator (event handler compilation)
+- **Component**: Template Normalizer (Mustache expression trimming)
 - **Related files**: 
-  - `lib/codegen.js` (event handler code generation)
+  - `lib/template-normalizer.js` (Mustache attribute normalization with trim)
+  - `lib/codegen.event-handler-spacing.test.js` (TDD tests for BUG-0016)
   - All compiled components with event directives
 - **Discovered during**: Testing of new edge case components (test-error-recovery, test-nested-loops, test-large-dataset)
 
