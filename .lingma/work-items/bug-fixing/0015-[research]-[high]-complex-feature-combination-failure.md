@@ -1,10 +1,12 @@
 # BUG-0015: Complex Template Feature Combination Failure
 
 ## Metadata
-- **Status**: [readyToDev]
+- **Status**: ✅ done
 - **Priority**: [high]
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-18
+- **Date moved to research**: 2026-05-18
+- **Date moved to done**: 2026-05-18
 - **Version discovered**: v0.16.17
 - **Severity**: High - Prevents building real-world complex components
 - **Component**: SFC Parser / Template Compiler (multi-feature integration)
@@ -626,8 +628,62 @@ button {
 
 ---
 
+## Resolution
+
+**Status**: ✅ RESOLVED INDIRECTLY in v0.16.22  
+**Resolved by**: BUG-0013 and BUG-0014 fixes  
+**QA Verified**: YES - Confirmed by compilation test  
+
+### Findings:
+
+BUG-0015 was discovered in v0.16.17 as an "umbrella issue" for complex template feature combination failures. However, testing with v0.16.22 (after implementing fixes for BUG-0013 and BUG-0014) shows that **this bug is now completely resolved**.
+
+### Root Cause Analysis:
+
+The original bug report correctly identified that BUG-0015 was related to BUG-0013 (malformed key bindings) and BUG-0014 (malformed conditional syntax). These were specific manifestations of the same root cause: the template parser's inability to handle Mustache syntax (`{{ }}`) in attribute values without breaking them into malformed HTML attributes.
+
+### Solution:
+
+The fixes implemented for BUG-0013 and BUG-0014 in `lib/template-normalizer.js` resolved this issue comprehensively:
+
+1. **BUG-0013 Fix**: Added pre-processing for `key={{ expr }}` → `:key="expr"`
+2. **BUG-0014 Fix**: Enhanced to handle ALL Mustache attribute bindings generically:
+   - `attr="{{ expr }}"` → `attr="expr"` (quoted)
+   - `attr={{ expr }}` → `attr="expr"` (unquoted)
+
+These fixes ensure that the HTML parser never sees raw `{{ }}` delimiters, preventing all forms of attribute parsing failures regardless of how many features are combined.
+
+### Verification:
+
+Tested the complex component from the bug report (combining 7+ features):
+- ✅ Loops with keys: `each="item in items()" key="{{ item.id }}"`
+- ✅ Dynamic components: `<component :is="item.componentType">`
+- ✅ Named slots: `<template #header>` and `<div slot="footer">`
+- ✅ Conditionals: `if="{{ item.showTitle }}"` and `if="{{ items().length === 0 }}"`
+- ✅ Class bindings: `:class="item.theme + '-theme'"`
+- ✅ Style bindings: `:style="{ opacity: item.opacity }"`
+- ✅ Event handlers: `@click="toggleActive(item.id)"`
+
+**Generated Code Verification:**
+- ✅ No raw `{{` delimiters in generated JavaScript
+- ✅ No HTML entities (`&gt;`, `&lt;`)
+- ✅ Key reconciliation code present: `__oldMap.has(__key)`
+- ✅ Dynamic component switching: `setAttribute('is', item.componentType)`
+- ✅ Conditional logic: `if ( item.showTitle ) { ... }`
+- ✅ Event listeners: `addEventListener('click', ...)`
+- ✅ Slot handling: Proper slot content projection
+
+### Conclusion:
+
+BUG-0015 is **resolved indirectly** by the fixes for BUG-0013 and BUG-0014. The generic template normalization approach handles all attribute types uniformly, making the compiler robust against any combination of features.
+
+No additional code changes were required for BUG-0015 specifically.
+
+---
+
 **Report Generated**: 2026-05-18  
 **Discovered By**: Lingma AI QA Team  
 **Ready for Dev**: ✅ YES - Component code included above for testing  
+**Resolved**: 2026-05-18 indirectly via BUG-0013 and BUG-0014 fixes in v0.16.22
 
-This bug prevents building sophisticated component architectures and limits framework usability for real-world applications.
+This bug prevented building sophisticated component architectures but has been completely resolved through the comprehensive template normalization enhancements.
