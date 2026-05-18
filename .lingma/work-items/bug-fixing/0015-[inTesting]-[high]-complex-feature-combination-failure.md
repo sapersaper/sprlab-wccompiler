@@ -1,12 +1,12 @@
 # BUG-0015: Complex Template Feature Combination Failure
 
 ## Metadata
-- **Status**: ✅ done
+- **Status**: 🧪 inTesting
 - **Priority**: [high]
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-18
 - **Date moved to research**: 2026-05-18
-- **Date moved to done**: 2026-05-18
+- **Date moved to inTesting**: 2026-05-18
 - **Version discovered**: v0.16.17
 - **Severity**: High - Prevents building real-world complex components
 - **Component**: SFC Parser / Template Compiler (multi-feature integration)
