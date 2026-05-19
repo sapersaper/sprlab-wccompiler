@@ -1,7 +1,7 @@
 # BUG-0019: Incorrect Nested Loop Structure Generation with Conditionals
 
 ## Metadata
-- **Status**: 🧪 inTesting
+- **Status**: 🔬 inProgress
 - **Date Started**: 2026-05-14
 - **Date Fixed**: 2026-05-14
 - **Priority**: [highest]
@@ -301,6 +301,94 @@ Order of execution:
 3. Multiple levels of nesting (loop > conditional > loop > conditional)
 4. No variable shadowing between nested loops
 5. Syntactically valid generated code
+
+## Fix Implementation (v0.16.28)
+
+### Root Cause Analysis
+
+The initial fix attempt in v0.16.27 only reordered code generation but didn't address the **execution scope** problem:
+
+**Problem:** Inner loop executed UNCONDITIONALLY, even when `category.expanded = false`
+```javascript
+// v0.16.27 (BROKEN):
+if (category.expanded) { __if0_branch = 0; }
+if (__if0_branch !== null) {
+  // Insert conditional wrapper
+}
+// ❌ Inner loop executes OUTSIDE conditional block
+const __for0_anchor = node.childNodes[3].childNodes[1]; // undefined!
+category.items.forEach(item => { /* ... */ });
+```
+
+When conditional is false:
+- `__if0_branch` stays `null`
+- Conditional wrapper NEVER inserted
+- Inner loop STILL tries to execute
+- Tries to access `node.childNodes[3].childNodes[1]` where `childNodes[3]` is a comment node with no children
+- Result: `Cannot read properties of undefined`
+
+### Solution Implemented
+
+**Key Insight:** Inner loops must be scoped INSIDE the conditional block, not just generated after it.
+
+**Implementation in `lib/codegen.js`:**
+
+1. **Track processed forBlocks**: Use a Set to avoid duplicate generation
+   ```javascript
+   const processedForBlocks = new Set();
+   ```
+
+2. **Generate forBlocks INSIDE ifBlock**: When processing ifBlocks, also generate nested forBlocks within the conditional scope
+   ```javascript
+   if (__if0_branch !== null) {
+     // Insert conditional wrapper
+     const __if0_node = cloneAndInsert();
+     
+     // Generate nested forBlocks HERE (inside conditional)
+     for (const innerFor of forBlock.forBlocks) {
+       processedForBlocks.add(innerFor.varName);
+       // ... generate inner loop code using __if0_node as parent
+     }
+   }
+   ```
+
+3. **Skip already-processed forBlocks**: In the outer forBlocks loop, skip those already generated inside ifBlocks
+   ```javascript
+   for (const innerFor of forBlock.forBlocks) {
+     if (processedForBlocks.has(innerFor.varName)) continue;
+     // ... generate normally for non-conditional cases
+   }
+   ```
+
+### Generated Code Structure (v0.16.28 - FIXED)
+
+```javascript
+if (category.expanded) { __if0_branch = 0; }
+if (__if0_branch !== null) {
+  // ✅ Insert conditional wrapper FIRST
+  const __if0_node = cloneAndInsert();
+  
+  // ✅ Inner loop executes INSIDE conditional block
+  const __for0_anchor = __if0_node.childNodes[3].childNodes[1];
+  category.items.forEach(item => {
+    // Create and insert items
+  });
+}
+// If conditional is false, inner loop NEVER executes ✅
+```
+
+### Verification
+
+**Test Results:**
+- All 5 BUG-0019 TDD tests passing ✅
+- Full test suite: 1091/1092 passing (1 unrelated Angular test)
+- No regressions detected
+
+**Code Generation Verified:**
+- Inner loop properly scoped inside conditional block
+- Anchor resolution uses conditional wrapper node
+- No execution when conditional is false
+- No "Cannot read properties of undefined" errors
 
 ## Testing Requirements
 
