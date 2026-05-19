@@ -1,7 +1,7 @@
 # BUG-0019: Incorrect Nested Loop Structure Generation with Conditionals
 
 ## Metadata
-- **Status**: ✅ done
+- **Status**: 🧪 inTesting
 - **Date Started**: 2026-05-14
 - **Date Fixed (Code Generation)**: 2026-05-14 (v0.16.28)
 - **Date Fixed (Runtime)**: 2026-05-19 (v0.16.29)
