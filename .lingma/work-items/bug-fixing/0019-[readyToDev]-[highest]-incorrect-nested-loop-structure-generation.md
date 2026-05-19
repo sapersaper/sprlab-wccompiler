@@ -302,15 +302,18 @@ Cannot reproduce the exact error without access to `test-nested-loops.wcc` compo
 
 ### Next Steps Required
 
-To complete BUG-0019 fix, need to:
+**QA has prepared comprehensive debugging materials:**
+- See `BUG-0019-QA-MATERIALS-FOR-DEV-TEAM.md` for complete investigation package
+- Includes: source code, generated code analysis, test results, error logs, hypotheses, minimal reproduction case
+- QA ready to provide additional browser console details and DOM inspection data
 
-1. **Access test-nested-loops.wcc**: Get the actual component file from QA to reproduce the error
-2. **Browser Debugging**: Use Browser Agent to step through effect execution and identify exact failure point
-3. **Runtime Logging**: Add console.log statements to track:
-   - When effects are created vs executed
-   - DOM state at effect execution time
-   - Signal dependency tracking in nested contexts
-4. **Simplify Test Case**: Create minimal reproduction with just outer loop + conditional + inner loop (no events, no complex bindings)
+To complete BUG-0019 fix, dev team needs to:
+
+1. **Review QA Materials**: Read `BUG-0019-QA-MATERIALS-FOR-DEV-TEAM.md`
+2. **Request Additional Info if Needed**: Full stack traces, screenshots, DOM state logs
+3. **Implement Debugging Approach**: Add logging or modify reactive-runtime.js
+4. **Provide Debug Build**: Give QA a version with instrumentation enabled
+5. **Iterate Until Fixed**: Repeat testing until root cause identified
 
 **Complexity Assessment**: HIGH
 - Requires deep understanding of signals/effects system
