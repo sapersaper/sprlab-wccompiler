@@ -1,11 +1,15 @@
 # BUG-0018: Incorrect Ternary Expression Handling in Nested Loops
 
 ## Metadata
-- **Status**: 🔬 research
+- **Status**: 🧪 inTesting
 - **Priority**: [high]
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-19
+- **Date moved to research**: 2026-05-19
+- **Date moved to inProgress**: 2026-05-19
+- **Date moved to inTesting**: 2026-05-19
 - **Version discovered**: v0.16.25
+- **Version fixed**: v0.16.26
 - **Severity**: High - Breaks nested loop rendering
 - **Component**: Code Generator (ternary expression handling in loops)
 - **Related files**: 
