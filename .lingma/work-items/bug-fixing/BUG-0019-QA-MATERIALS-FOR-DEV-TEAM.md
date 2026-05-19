@@ -416,6 +416,128 @@ If issue persists, problem may be in:
 
 ---
 
+## ⚠️ CRITICAL: Information Still Needed from QA
+
+To complete the investigation and fix BUG-0019 runtime issues, **dev team needs the following from QA**:
+
+### 1. Complete Source File: `test-nested-loops.wcc` ❗ REQUIRED
+
+**Current Status:** Document only has partial structure/template
+**Needed:** The COMPLETE file with all imports, signals, methods, and template
+
+**Why:** Dev team cannot reproduce the exact error without compiling the actual component.
+
+**Action for QA:** Please provide the full content of `c:\projects\wcc-test\src\12-edge-cases\test-nested-loops.wcc`
+
+---
+
+### 2. Full Stack Traces from Browser Console ❗ REQUIRED
+
+**Current Status:** Only error messages captured, no stack traces
+**Needed:** Complete error output with file names, line numbers, and call stacks
+
+**Example format needed:**
+```
+Cannot read properties of undefined (reading 'bind')
+    at <function_name> (test-nested-loops.js:123:45)
+    at Effect.run (reactive-runtime.js:67:12)
+    at Signal.notify (signals.js:89:8)
+    ...
+```
+
+**Why:** Stack trace will show exactly WHERE the `.bind()` call is happening and what's undefined.
+
+**Action for QA:** 
+1. Open browser console
+2. Clear console
+3. Reload page
+4. Click on a category to trigger error
+5. Copy FULL error message including stack trace
+6. Paste here or attach as text file
+
+---
+
+### 3. Browser Console Screenshots ❗ HIGHLY RECOMMENDED
+
+**Current Status:** Screenshots mentioned but not included in this document
+**Needed:** Visual evidence of:
+- All "[wcc] Effect error" messages with timestamps
+- DOM state before/after clicking category
+- Any other errors or warnings visible
+
+**Action for QA:** Please share screenshots from `c:\projects\wcc-test\screenshot_bug_0019_v016_28_*.png`
+
+---
+
+### 4. Debug Logging Output (if attempted) ❗ HELPFUL
+
+**Current Status:** Unknown if QA tried the suggested debug logging
+**Needed:** Console output from adding logging statements to generated code
+
+**Suggested logging to add:**
+```javascript
+// In generated code around line 380-426:
+console.log('Creating outer loop effect for category:', category.id);
+this.__disposers.push(__effect(() => {
+  console.log('Outer effect executing, category:', category.id);
+  console.log('__if0_branch:', __if0_branch);
+  console.log('__if0_anchor exists?', !!__if0_anchor);
+  
+  if (__if0_branch !== null) {
+    console.log('Conditional true, inserting wrapper');
+    const __if0_node = __if0_clone.firstChild;
+    console.log('__if0_node exists?', !!__if0_node);
+    
+    const __for0_anchor = __if0_node.childNodes[7]?.childNodes[1];
+    console.log('__for0_anchor exists?', !!__for0_anchor);
+    
+    if (!__for0_anchor) {
+      console.error('ANCHOR NOT FOUND!');
+      console.log('__if0_node.childNodes.length:', __if0_node.childNodes.length);
+      for (let i = 0; i < __if0_node.childNodes.length; i++) {
+        console.log(`child[${i}]:`, __if0_node.childNodes[i].nodeType, __if0_node.childNodes[i].nodeName);
+      }
+      return;
+    }
+    
+    // Continue with inner loop...
+  }
+}));
+```
+
+**Why:** This will show exactly where execution fails and what the DOM state looks like.
+
+**Action for QA:** If possible, temporarily modify generated JS file to add these logs, then re-test and share console output.
+
+---
+
+### 5. DOM Inspection Details ❗ HELPFUL
+
+**Current Status:** Not captured
+**Needed:** DOM structure analysis before and after clicking
+
+**Check these specific things:**
+- Does the category node still exist after click?
+- Are there orphaned nodes in the DOM?
+- Is the comment anchor (`<!-- if -->`) still present?
+- What does `node.childNodes[7]` contain after click?
+
+**Action for QA:** Use browser DevTools → Elements tab to inspect DOM before/after click and report findings.
+
+---
+
+## 🎯 Priority Order for QA Response:
+
+1. **IMMEDIATE (Blocks Investigation):** Complete `test-nested-loops.wcc` file
+2. **IMMEDIATE (Blocks Investigation):** Full stack traces with line numbers
+3. **HIGH PRIORITY:** Browser console screenshots
+4. **MEDIUM PRIORITY:** Debug logging output (if feasible)
+5. **LOW PRIORITY:** DOM inspection details
+
+**Without items 1 and 2, dev team CANNOT proceed with fixing the runtime issue.**
+
+---
+
 ## ✅ Next Steps
 
 1. **Dev team reviews this document**
