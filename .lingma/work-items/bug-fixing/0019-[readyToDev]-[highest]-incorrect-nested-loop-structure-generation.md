@@ -1,7 +1,8 @@
 # BUG-0019: Incorrect Nested Loop Structure Generation with Conditionals
 
 ## Metadata
-- **Status**: 🔬 research
+- **Status**: 🔬 inProgress
+- **Date Started**: 2026-05-14
 - **Priority**: [highest]
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-19
@@ -235,6 +236,70 @@ The compiler needs to properly understand and maintain the hierarchical relation
 - Other directives
 
 Current implementation treats them as flat sequence rather than nested structure.
+
+## Investigation Results
+
+### Root Cause Identified
+
+In `lib/codegen.js`, function `generateItemSetup()` processes nested directives in the WRONG ORDER:
+
+**Previous Order (INCORRECT):**
+1. Lines 693-755: Generate nested forBlocks (inner loops)
+2. Lines 757-887: Generate ifBlocks (conditionals)
+
+This causes inner loops to execute BEFORE conditionals are evaluated, resulting in items being inserted into the DOM outside their conditional wrapper.
+
+### Fix Implemented
+
+**Solution:** Reorder directive generation to process ifBlocks BEFORE forBlocks.
+
+**Code Change in `lib/codegen.js`:**
+```javascript
+// BEFORE (v0.16.26):
+// Nested each directives (forBlocks) - lines 693-755
+for (const innerFor of (forBlock.forBlocks || [])) {
+  // ... generate inner loop code
+}
+
+// Nested if/else-if/else chains (ifBlocks) - lines 757-887
+for (const ifBlock of (forBlock.ifBlocks || [])) {
+  // ... generate conditional code
+}
+
+// AFTER (v0.16.27):
+// Nested if/else-if/else chains (ifBlocks) - MUST come FIRST
+for (const ifBlock of (forBlock.ifBlocks || [])) {
+  // ... generate conditional code
+}
+
+// Nested each directives (forBlocks) - AFTER ifBlocks
+for (const innerFor of (forBlock.forBlocks || [])) {
+  // ... generate inner loop code
+}
+```
+
+### Verification
+
+**Debug Script Results:**
+```
+Order of execution:
+1. Outer loop: position 549
+2. Conditional: position 1428      ✅ BEFORE inner loop
+3. Container template: position 1281 ✅ BEFORE inner loop
+4. Inner loop: position 1985       ✅ AFTER conditional
+```
+
+**TDD Tests Created:**
+- Created `lib/codegen.nested-loop-structure.test.js` with 5 comprehensive tests
+- All 5 tests passing ✅
+- Full test suite: 1091/1092 passing (1 unrelated Angular test failure)
+
+**Test Coverage:**
+1. Correct structure for nested loops with conditionals
+2. Proper nesting of inner loop inside conditional wrapper
+3. Multiple levels of nesting (loop > conditional > loop > conditional)
+4. No variable shadowing between nested loops
+5. Syntactically valid generated code
 
 ## Testing Requirements
 
