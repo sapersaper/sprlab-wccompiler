@@ -1,7 +1,7 @@
 # BUG-0019: Incorrect Nested Loop Structure Generation with Conditionals
 
 ## Metadata
-- **Status**: 🧪 inTesting
+- **Status**: 🔬 research
 - **Date Started**: 2026-05-14
 - **Date Fixed**: 2026-05-14 (v0.16.28)
 - **Priority**: [highest]
@@ -238,7 +238,84 @@ The compiler needs to properly understand and maintain the hierarchical relation
 
 Current implementation treats them as flat sequence rather than nested structure.
 
-## Investigation Results
+## Investigation Results (v0.16.28)
+
+### Code Generation: FIXED ✅
+
+The scoping fix in v0.16.28 correctly generates nested forBlocks inside conditional blocks:
+
+```javascript
+if (__if0_branch !== null) {
+  // Insert conditional wrapper
+  const __if0_node = cloneAndInsert();
+  
+  // Inner loop executes INSIDE conditional block
+  const __for0_anchor = __if0_node.childNodes[3].childNodes[1];
+  category.items.forEach(item => {
+    // Create and insert items
+  });
+}
+```
+
+**Verified:**
+- ✅ Inner loops properly scoped inside conditionals
+- ✅ No duplicate generation of forBlocks
+- ✅ All 5 TDD tests passing
+- ✅ Full test suite: 1091/1092 passing
+
+### Runtime Execution: STILL BROKEN ❌
+
+QA reports that while code generation is correct, runtime execution fails with:
+- 8+ "[wcc] Effect error" messages
+- "Cannot read properties of undefined (reading 'bind')"
+- Items never render
+- Clicking causes categories to disappear instead of expanding
+
+**Root Cause Analysis:**
+
+The problem has shifted from **code generation** to **runtime effect execution**. Potential causes:
+
+1. **Nested Effect Execution Order**: Effects created inside forEach loops may execute before DOM is fully constructed
+2. **DOM Anchor Resolution Timing**: `__if0_node.childNodes[X]` may not exist when effect runs
+3. **Signal Reactivity in Nested Contexts**: Signals may not propagate correctly through nested scopes
+4. **Effect Disposal Issues**: Old effects may conflict with new ones on re-render
+
+**Investigation Findings:**
+
+Generated event handlers are correct:
+```javascript
+node.childNodes[1].addEventListener('click', () => { this._toggleCategory(category.id); });
+```
+
+Methods are properly defined in class:
+```javascript
+_toggleCategory(id) { ... }
+```
+
+No `.bind()` calls in generated code for simple test cases.
+
+**Missing Information:**
+
+Cannot reproduce the exact error without access to `test-nested-loops.wcc` component used by QA. The error "Cannot read properties of undefined (reading 'bind')" suggests:
+- Either a different event handler pattern in the actual test component
+- Or an issue in the reactive runtime itself when handling nested effects
+
+### Next Steps Required
+
+To complete BUG-0019 fix, need to:
+
+1. **Access test-nested-loops.wcc**: Get the actual component file from QA to reproduce the error
+2. **Browser Debugging**: Use Browser Agent to step through effect execution and identify exact failure point
+3. **Runtime Logging**: Add console.log statements to track:
+   - When effects are created vs executed
+   - DOM state at effect execution time
+   - Signal dependency tracking in nested contexts
+4. **Simplify Test Case**: Create minimal reproduction with just outer loop + conditional + inner loop (no events, no complex bindings)
+
+**Complexity Assessment**: HIGH
+- Requires deep understanding of signals/effects system
+- May need modifications to reactive-runtime.js, not just codegen.js
+- Multiple layers of complexity: codegen + runtime + DOM timing
 
 ### Root Cause Identified
 
