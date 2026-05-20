@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-19  
 **Version Tested:** v0.16.30  
-**Status:** 🧪 inTesting - Fix implemented, awaiting QA verification  
+**Status:** 🧪 inTesting - Fix v2 implemented (inline null checks), awaiting QA verification  
 **Priority:** [highest]  
 **Component:** lib/codegen.js (event handler variable generation)  
 **Discovered during:** Testing BUG-0019 fix in v0.16.30  
@@ -300,34 +300,141 @@ Browser Agent captured these screenshots showing the failure:
 
 ## 🚀 Next Steps
 
-1. ✅ Dev team identified event handler generation code in `lib/codegen.js`
-2. ✅ Implemented Option A (unique variable names with counters)
-3. ✅ Added TDD tests to verify unique naming pattern
-4. ⏳ Publish as v0.16.31
-5. ⏳ QA re-tests with clean reinstall
+1. Dev team identifies event handler generation code in `lib/codegen.js`
+2. Implements one of the three fix options above
+3. Adds TDD test to catch duplicate variable declarations
+4. Publishes as v0.16.31
+5. QA re-tests with clean reinstall
 
 **Priority:** URGENT - This blocks all components with multiple event handlers in loops.
 
 ---
 
-## ✅ Resolution
+## QA Testing Results - v0.16.31
 
-**Fixed in:** v0.16.31  
-**Fix Approach:** Option A - Unique variable names with counters  
+**Testing Date:** 2026-05-19  
+**Version Tested:** v0.16.31  
+**Tester:** Lingma AI + Browser Agent  
+**Result:** ❌ NOT FIXED - Partial fix applied but duplicates persist
+
+### What Dev Team Did:
+- Changed variable naming from `__evt_target__` to indexed names: `__evt_target_0__`, `__evt_target_1__`, etc.
+- Published as v0.16.31
+
+### What We Found:
+The fix was **INCOMPLETE**. While variable names are now indexed, they're still duplicated across if/else branches.
+
+#### Generated Code Analysis (v0.16.31):
+
+**Lines 368-373 (if block):**
+```javascript
+const __evt_target_0__ = node.childNodes[3];
+if (__evt_target_0__) __evt_target_0__.addEventListener('click', () => { this._toggleCategory(category.id); });
+const __evt_target_1__ = node.childNodes[3].childNodes[3].childNodes[3];
+if (__evt_target_1__) __evt_target_1__.addEventListener('click', () => { this._selectAllInCategory(category.id); });
+const __evt_target_2__ = node.childNodes[3].childNodes[3].childNodes[5];
+if (__evt_target_2__) __evt_target_2__.addEventListener('click', () => { this._removeCategory(category.id); });
+```
+
+**Lines 438-443 (else block) - SAME INDICES!**
+```javascript
+const __evt_target_0__ = node.childNodes[3];  // ❌ DUPLICATE - Same index!
+if (__evt_target_0__) __evt_target_0__.addEventListener('click', () => { this._toggleCategory(category.id); });
+const __evt_target_1__ = node.childNodes[3].childNodes[3].childNodes[3];  // ❌ DUPLICATE
+if (__evt_target_1__) __evt_target_1__.addEventListener('click', () => { this._selectAllInCategory(category.id); });
+const __evt_target_2__ = node.childNodes[3].childNodes[3].childNodes[5];  // ❌ DUPLICATE
+if (__evt_target_2__) __evt_target_2__.addEventListener('click', () => { this._removeCategory(category.id); });
+```
+
+**Problem:** Both branches use the same indices (0, 1, 2), creating duplicate declarations in the same scope (forEach callback).
+
+#### Runtime Behavior:
+
+✅ **Partial Improvement:**
+- Component loads without SyntaxError (browser may be handling gracefully)
+- Categories render initially
+- Better than v0.16.30 where nothing rendered
+
+❌ **Still Broken:**
+- Duplicate const declarations violate JavaScript scoping rules
+- Console shows 12 "[wcc] Effect error" messages
+- Error: "Cannot read properties of undefined (reading 'bind')"
+- Categories disappear when clicked (BUG-0019 persists)
+- Cannot expand/collapse categories
+- Select/Remove buttons not visible (conditional elements not generated)
+
+### Root Cause:
+The compiler generates unique indices PER BRANCH, not globally. The counter resets for each code path, causing collisions.
+
+### Required Fix:
+Use a **GLOBAL counter** that persists across all code generation paths within the same scope, OR use **block scoping** with curly braces to isolate each branch.
+
+**Option A: Global Counter**
+```javascript
+// Track counter at function/component level
+let evtCounter = 0;
+
+// Generate unique names across ALL branches
+const varName = `__evt_target_${evtCounter++}__`;
+```
+
+**Option B: Block Scoping**
+```javascript
+if (__oldMap.has(__key)) {
+  {
+    const __evt_target_0__ = ...;  // Scoped to this block
+  }
+} else {
+  {
+    const __evt_target_0__ = ...;  // Different scope - no conflict
+  }
+}
+```
+
+**Recommendation:** Option A is cleaner and more maintainable.
+
+---
+
+## ✅ Resolution - v0.16.32
+
+**Fixed in:** v0.16.32  
+**Fix Approach:** Option C - Inline null checks (no temporary variables)  
 **Implementation Details:**
 
-- Modified `generateItemSetup()` function to use `__evt_counter` and `__model_counter`
-- Modified `generateNestedItemSetup()` function to use separate counters
-- Generated variable names: `__evt_target_0__`, `__evt_target_1__`, `__evt_target_2__`, etc.
-- Prevents duplicate const declarations in same scope
+- Removed all temporary variable declarations (`__evt_target__`, `__model_target__`)
+- Changed to inline pattern: `if (${nodeRef}) ${nodeRef}.addEventListener(...)`
+- Eliminates ALL duplicate const declaration issues across if/else branches
+- Applied in both `generateItemSetup()` and `generateNestedItemSetup()` functions
+- No counters needed - completely avoids the scoping problem
 - All existing tests pass (1096/1097 passing)
 - No regressions introduced
 
 **Files Modified:**
-- `lib/codegen.js` - Lines 623-628, 658-679, 1032-1037, 1068-1089
-- `lib/codegen.event-handler-null-checks.test.js` - Updated test expectations for new naming pattern
+- `lib/codegen.js` - Lines 622-628, 654-674, 1027-1033, 1059-1079
+- `lib/codegen.event-handler-null-checks.test.js` - Updated test expectations for inline pattern
+
+**Generated Code Example:**
+```javascript
+// Before (v0.16.31 - BROKEN):
+const __evt_target_0__ = node.childNodes[3];
+if (__evt_target_0__) __evt_target_0__.addEventListener(...);
+const __evt_target_1__ = node.childNodes[3].childNodes[3].childNodes[3];
+if (__evt_target_1__) __evt_target_1__.addEventListener(...);
+
+// After (v0.16.32 - FIXED):
+if (node.childNodes[3]) node.childNodes[3].addEventListener(...);
+if (node.childNodes[3].childNodes[3].childNodes[3]) node.childNodes[3].childNodes[3].childNodes[3].addEventListener(...);
+```
 
 **Testing:**
-- Unit tests updated to match new naming pattern
-- Verified generated code has unique variable names
+- Unit tests updated to verify inline null check pattern
+- Verified generated code has NO const declarations for event targets
 - Full test suite: 1096/1097 passing (1 pre-existing Angular failure)
+- Compiled test component shows correct inline pattern with no duplicates
+
+---
+
+## Related Bugs
+
+- **BUG-0019** - Conditional elements in nested loops not generated (still broken in v0.16.31)
+- Both bugs affect test-nested-loops.wcc component
