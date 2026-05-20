@@ -1,13 +1,14 @@
 # BUG-0017: Internal Method Calls Not Getting `this._` Prefix
 
 ## Metadata
-- **Status**: 🧪 inTesting
+- **Status**: ✅ done
 - **Priority**: [high]
 - **Reported by**: QA Team / Lingma AI Testing
 - **Date reported**: 2026-05-18
 - **Date moved to research**: 2026-05-18
 - **Date moved to inProgress**: 2026-05-18
 - **Date moved to inTesting**: 2026-05-18
+- **Date resolved**: 2026-05-19
 - **Version discovered**: v0.16.24
 - **Version fixed**: v0.16.25
 - **Severity**: High - Prevents method reuse within components
@@ -318,3 +319,94 @@ However, not **Critical** because:
 This bug was discovered while testing the newly created edge case component `test-large-dataset.wcc`, which intentionally uses method composition to organize complex data manipulation logic. The bug prevented the component from functioning until all method calls were inlined as a workaround.
 
 The same issue likely affects `test-error-recovery.wcc`, which has multiple error handling methods that call a common `handleError()` helper method.
+
+## Resolution
+
+### Fix Implemented (v0.16.25)
+
+**Approach Used**: Symbol Table Approach (Option 1 from suggested fixes)
+
+**Implementation Details**:
+1. Added `methodNames` parameter to `transformMethodBody()` function in `lib/codegen.js`
+2. Built method name list from parsed component methods: `const methodNames = methods.map(m => m.name)`
+3. Added transformation logic at end of `transformMethodBody()`:
+   ```javascript
+   // Transform internal method calls: methodName(args) → this._methodName(args)
+   for (const methodName of methodNames) {
+     if (propsObjectName && methodName === propsObjectName) continue;
+     if (emitsObjectName && methodName === emitsObjectName) continue;
+     const callRe = new RegExp(`\\b${methodName}\\(`, 'g');
+     result = result.replace(callRe, `this._${methodName}(`);
+   }
+   ```
+4. Updated all 8 calls to `transformMethodBody()` to pass `methodNames` parameter
+5. Also updated `generateEventHandler()` to accept and pass `methodNames`
+
+**Files Modified**:
+- `lib/codegen.js` - Core transformation logic
+- `lib/codegen.internal-method-calls.test.js` - 7 comprehensive TDD tests
+
+**Test Coverage**:
+- ✅ Basic internal method calls
+- ✅ Method calls with arguments
+- ✅ Chained method calls (A → B → C)
+- ✅ Conditional method calls
+- ✅ Method calls in callbacks (array.map)
+- ✅ External/global function calls (should NOT transform)
+- ✅ Real-world scenario from test-large-dataset.wcc
+
+All 7 tests passing, full suite 114/114 tests passing (no regressions).
+
+### QA Verification Results (2026-05-19)
+
+**Initial Report**: ❌ Bug appeared NOT fixed (due to cached compiled files)
+
+**Root Cause of False Negative**: QA environment had cached compiled JavaScript files from previous compiler version. Even though npm package was updated to v0.16.25, the generated `.js` files in `dist/` folder were still from the old compiler.
+
+**Solution Applied by QA**:
+1. Deleted `node_modules` completely
+2. Reinstalled from scratch with `yarn install`
+3. Deleted `dist/` folder
+4. Recompiled everything with `yarn dev`
+
+**Final Result**: ✅ **BUG-0017 CONFIRMED FIXED**
+
+| Component | Status Before | Status After | Works? |
+|-----------|--------------|--------------|--------|
+| test-large-dataset | ❌ Broken | ✅ Working | ✅ Yes |
+| test-error-recovery | ❌ Broken | ✅ Working | ✅ Yes |
+
+**Console Errors**:
+- ❌ BEFORE: 8+ errors "is not defined"
+- ✅ AFTER: 0 errors related to BUG-0017
+
+**Generated Code Verification (v0.16.25)**:
+```javascript
+_generate100Items() {
+    this._generateLargeDataset(100)  // ✅ Correct
+}
+
+_sortByName() {
+    this._sortBy('name')  // ✅ Correct
+}
+
+_throwingEventHandler() {
+    try {
+        throw new Error('Intentional error for testing')
+    } catch (error) {
+        this._handleError(error)  // ✅ Correct
+        this._recoveryStatus('Error caught and handled')
+    }
+}
+```
+
+### Lessons Learned
+
+1. **Cache can be deceptive**: Old compiled files can make us think a bug persists when it's already fixed
+2. **Clean reinstall is crucial**: Always delete `node_modules` and `dist` before testing new compiler versions
+3. **Verify generated code**: Looking at the generated JavaScript confirms if the fix is applied
+4. **Browser Agent is essential**: Automated testing confirms the fix works at runtime, not just in compilation
+
+### Thank You to QA Team
+
+Special thanks to the QA team for their thorough testing and for identifying the cache issue. Their detailed report and systematic approach to verification helped confirm that the fix is working correctly.

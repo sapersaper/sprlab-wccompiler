@@ -27,6 +27,9 @@ example/.yarn/
 # Test environments
 framework-testing/
 
+# Framework integration projects (default scaffolds)
+frameworks-integrations/
+
 # npm lockfile (project uses yarn)
 package-lock.json
 
