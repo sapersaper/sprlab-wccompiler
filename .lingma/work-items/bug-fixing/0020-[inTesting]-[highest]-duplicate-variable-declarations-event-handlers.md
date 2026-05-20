@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-19  
 **Version Tested:** v0.16.30  
-**Status:** 🧪 inTesting - Fix v2 implemented (inline null checks), awaiting QA verification  
+**Status:** ✅ DONE - Fixed in v0.16.32, QA verified  
 **Priority:** [highest]  
 **Component:** lib/codegen.js (event handler variable generation)  
 **Discovered during:** Testing BUG-0019 fix in v0.16.30  
@@ -431,6 +431,44 @@ if (node.childNodes[3].childNodes[3].childNodes[3]) node.childNodes[3].childNode
 - Verified generated code has NO const declarations for event targets
 - Full test suite: 1096/1097 passing (1 pre-existing Angular failure)
 - Compiled test component shows correct inline pattern with no duplicates
+
+---
+
+## ✅ QA Verification - v0.16.32
+
+**Testing Date:** 2026-05-20  
+**Version Tested:** v0.16.32  
+**Tester:** QA Team + Browser Agent  
+**Result:** ✅ BUG-0020 COMPLETAMENTE FIXED!
+
+### QA Findings:
+
+✅ **BUG-0020 Fixed:**
+- Zero variables temporales
+- Zero duplicados
+- No SyntaxError
+- Componente carga correctamente
+- Event handlers funcionan perfectamente
+
+**Generated Code (v0.16.32):**
+```javascript
+// PERFECTO - Inline approach:
+if (node.childNodes[3]) node.childNodes[3].addEventListener('click', () => { this._toggleCategory(category.id); });
+if (node.childNodes[3].childNodes[3].childNodes[3]) node.childNodes[3].childNodes[3].childNodes[3].addEventListener('click', () => { this._selectAllInCategory(category.id); });
+if (node.childNodes[3].childNodes[3].childNodes[5]) node.childNodes[3].childNodes[3].childNodes[5].addEventListener('click', () => { this._removeCategory(category.id); });
+```
+
+❌ **BUG-0019 Still Broken:**
+- Comment placeholders `<!-- if -->` siguen presentes
+- Categorías desaparecen al hacer click
+- Items nunca renderizan
+- 9 errores en console: "[wcc] Effect error"
+
+### QA Conclusion:
+
+**BUG-0020 está DONE** - Option C (inline approach) fue la solución perfecta.
+
+**BUG-0019 sigue pendiente** - Necesita fix separado para conditional elements en nested loops.
 
 ---
 
