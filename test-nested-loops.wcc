@@ -344,7 +344,7 @@ button.warning {
     </div>
 
     <!-- Items Loop (Level 2) - Conditional on expansion -->
-    <div if={{ category.expanded }} class="items-container">
+    <div if="category.expanded" class="items-container">
       <div each="item in category.items" key={{ item.id }}  
            class="item-row"
            :class={{ selected: selectedItems().includes(item.id), 'out-of-stock': !item.inStock }}>
@@ -362,18 +362,18 @@ button.warning {
         <button 
           :class={{ 'selected': selectedItems().includes(item.id) ? 'danger' : 'success' }}
           @click={{ () => toggleItemSelection(item.id, item.price) }}
-          if="{{ item.inStock }}"
+          if="item.inStock"
         >
           {{ selectedItems().includes(item.id) ? 'Deselect' : 'Select' }}
         </button>
 
-        <span if="{{ !item.inStock }}" style="color: #a0aec0;">Unavailable</span>
+        <span if="!item.inStock" style="color: #a0aec0;">Unavailable</span>
       </div>
     </div>
   </div>
 
   <!-- Empty State -->
-  <div if={{ categories().length === 0 }}>
+  <div if="categories().length === 0">
     <p><em>No categories available. Click "Add New Category" to create one.</em></p>
   </div>
 
