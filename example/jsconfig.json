@@ -10,5 +10,5 @@
       "wcc": ["./node_modules/wccompiler/types/wcc.d.ts"]
     }
   },
-  "include": ["src/**/*", "src/**/*.wcc"]
+  "include": ["wcc.config.js", "dist/**/*.js", "src/**/*.wcc"]
 }
