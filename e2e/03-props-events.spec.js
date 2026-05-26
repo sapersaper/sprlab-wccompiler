@@ -90,7 +90,6 @@ test.describe('test-props', () => {
   });
 
   test('visual indicator text shows INACTIVO when active=false', async ({ page }) => {
-    test.fail(true, 'BUG: props.active arrives as string "false" which is truthy — ternary always shows ACTIVO');
     await page.goto(url);
     const text = page.locator('#props-defaults .visual-indicator p');
     await expect(text).toContainText('Componente INACTIVO');
