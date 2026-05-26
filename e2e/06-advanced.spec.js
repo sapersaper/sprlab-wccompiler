@@ -23,7 +23,6 @@ test.afterAll(async () => {
 // ── No console errors ─────────────────────────────────────────────────
 
 test('page loads without console errors', async ({ page }) => {
-  test.fail(true, 'BUG: dynamic components emit "Cannot read properties of undefined (reading bind)" at runtime');
   const errors = [];
   page.on('console', msg => {
     if (msg.type() === 'error') errors.push(msg.text());
@@ -101,7 +100,6 @@ test.describe('test-dynamic-comprehensive', () => {
   });
 
   test('prop forwarding works (increment count button updates)', async ({ page }) => {
-    test.fail(true, 'BUG: dynamic component prop forwarding has runtime error with bind');
     await page.goto(url);
     await expect(page.locator('test-dynamic-comprehensive')).toContainText('Count: 0');
     await page.locator('test-dynamic-comprehensive button', { hasText: 'Increment Count' }).click();

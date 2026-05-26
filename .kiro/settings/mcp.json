@@ -16,7 +16,8 @@
         "browser_press_key",
         "browser_select_option",
         "browser_wait_for",
-        "browser_tabs"
+        "browser_tabs",
+        "browser_close"
       ]
     }
   }
