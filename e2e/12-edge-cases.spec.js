@@ -110,7 +110,6 @@ test.describe('test-nested-loops', () => {
   });
 
   test('items display name and price', async ({ page }) => {
-    test.fail(true, 'BUG-0011: text binding path collision in nested loops - item.name not rendered');
     await page.goto(url);
     await page.locator('test-nested-loops .category-header').first().click();
     const firstItem = page.locator('test-nested-loops .items-container').first().locator('.item-row').first();
