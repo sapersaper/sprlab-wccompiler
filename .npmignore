@@ -4,10 +4,16 @@
 .git/
 .pnp.cjs
 .pnp.loader.mjs
+.playwright-mcp/
+.lingma/
 example/
+vscode-wcc/
 node_modules/
 __test_fixtures__/
 *.test.js
 lib/*.test.js
 vitest.config.*
 yarn.lock
+jsconfig.json
+tsconfig.json
+*.log
