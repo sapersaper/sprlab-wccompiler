@@ -55,7 +55,7 @@ function toggleActive(id) {
       <ul>
         <li each="item in items()" :key="item.id" class="list-item">
           <span>{{item.name}}</span>
-          <span class="status">{{item.active ? '✓ Activo' : '✗ Inactivo'}}</span>
+          <span class="status" :class="{active: item.active}">{{item.active ? '✓ Activo' : '✗ Inactivo'}}</span>
           <button @click="() => toggleActive(item.id)">Toggle</button>
         </li>
       </ul>
