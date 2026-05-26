@@ -27,7 +27,6 @@ test.afterAll(async () => {
 // ── No console errors ─────────────────────────────────────────────────
 
 test('page loads without console errors', async ({ page }) => {
-  test.fail(true, 'BUG: test-rapid-updates has pre-existing $index undefined error');
   const errors = [];
   page.on('console', msg => {
     if (msg.type() === 'error') errors.push(msg.text());
@@ -111,7 +110,7 @@ test.describe('test-nested-loops', () => {
   });
 
   test('items display name and price', async ({ page }) => {
-    test.fail(true, 'BUG: text binding path collision in nested loops - item.name and stock status share same path');
+    test.fail(true, 'BUG-0011: text binding path collision in nested loops - item.name not rendered');
     await page.goto(url);
     await page.locator('test-nested-loops .category-header').first().click();
     const firstItem = page.locator('test-nested-loops .items-container').first().locator('.item-row').first();
