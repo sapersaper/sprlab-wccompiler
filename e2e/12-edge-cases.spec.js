@@ -101,7 +101,6 @@ test.describe('test-nested-loops', () => {
   });
 
   test('clicking category header expands it showing items', async ({ page }) => {
-    test.fail(true, 'BUG: nested loops with conditional expansion have runtime issues');
     await page.goto(url);
     await page.locator('test-nested-loops .category-header').first().click();
     const itemsContainer = page.locator('test-nested-loops .items-container').first();
@@ -112,7 +111,7 @@ test.describe('test-nested-loops', () => {
   });
 
   test('items display name and price', async ({ page }) => {
-    test.fail(true, 'BUG: nested loops with conditional expansion have runtime issues');
+    test.fail(true, 'BUG: text binding path collision in nested loops - item.name and stock status share same path');
     await page.goto(url);
     await page.locator('test-nested-loops .category-header').first().click();
     const firstItem = page.locator('test-nested-loops .items-container').first().locator('.item-row').first();
@@ -121,7 +120,6 @@ test.describe('test-nested-loops', () => {
   });
 
   test('add category button works', async ({ page }) => {
-    test.fail(true, 'BUG: nested loops with conditional expansion have runtime issues');
     await page.goto(url);
     await page.locator('test-nested-loops button.primary', { hasText: 'Add New Category' }).click();
     const categories = page.locator('test-nested-loops .category');
