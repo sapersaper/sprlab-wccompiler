@@ -23,7 +23,6 @@ test.afterAll(async () => {
 // ── No console errors ─────────────────────────────────────────────────
 
 test('page loads without console errors', async ({ page }) => {
-  test.fail(true, 'BUG: test-batch-auto-detect has infinite effect loop (effectRunCount.set inside effect)');
   const errors = [];
   page.on('console', msg => {
     if (msg.type() === 'error') errors.push(msg.text());
@@ -61,7 +60,6 @@ test.describe('test-batch-auto-detect', () => {
   });
 
   test('"Con Batch" button causes effect count = 1', async ({ page }) => {
-    test.fail(true, 'BUG: effect with effectRunCount.set inside causes infinite loop');
     await page.goto(url);
     await page.locator('test-batch-auto-detect button', { hasText: 'Con Batch' }).click();
 

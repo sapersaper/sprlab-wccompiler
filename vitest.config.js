@@ -4,9 +4,11 @@ export default defineConfig({
   test: {
     exclude: [
       '**/frameworks-integrations/**', // Excluir proyectos de frameworks
+      '**/e2e/**',
+      '**/node_modules/**',
+      '**/dist/**',
     ],
     testTimeout: 30000,
-    exclude: ['**/e2e/**', '**/node_modules/**'],
     // Configure fast-check for deterministic property-based tests
     // This prevents flaky tests by using a fixed seed
     setupFiles: ['./vitest.setup.js'],

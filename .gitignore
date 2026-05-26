@@ -35,3 +35,6 @@ package-lock.json
 
 # Debug screenshots and test artifacts
 .debug-screenshots/
+
+# Playwright test results
+test-results/
