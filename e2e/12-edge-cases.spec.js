@@ -131,14 +131,12 @@ test.describe('test-nested-loops', () => {
 
 test.describe('test-kitchen-sink', () => {
   test('renders with initial 3 items', async ({ page }) => {
-    test.fail(true, 'BUG: kitchen-sink complex integration has runtime issues with nested features');
     await page.goto(url);
     const totalStat = page.locator('test-kitchen-sink .stat-box').nth(0).locator('p');
     await expect(totalStat).toContainText('3');
   });
 
   test('add item button works', async ({ page }) => {
-    test.fail(true, 'BUG: kitchen-sink complex integration has runtime issues with nested features');
     await page.goto(url);
     await page.locator('test-kitchen-sink button.btn-success', { hasText: 'Add Item' }).click();
     const totalStat = page.locator('test-kitchen-sink .stat-box').nth(0).locator('p');
@@ -154,7 +152,6 @@ test.describe('test-kitchen-sink', () => {
   });
 
   test('stats update reactively', async ({ page }) => {
-    test.fail(true, 'BUG: kitchen-sink complex integration has runtime issues with nested features');
     await page.goto(url);
     const activeStat = page.locator('test-kitchen-sink .stat-box').nth(1).locator('p');
     await expect(activeStat).toContainText('2');
