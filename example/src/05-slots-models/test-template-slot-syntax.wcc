@@ -10,7 +10,7 @@ export default defineComponent({
   <div class="template-slot-test">
     <h3>Test de Template Slot Syntax (v0.16.8)</h3>
     
-    <!-- Test 1: Named slots con <template> syntax -->
+    <!-- Test 1: Named slots con &lt;template&gt; syntax -->
     <section class="test-section">
       <h4>Test 1: Named Slots con &lt;template&gt;</h4>
       <test-slot-child>
