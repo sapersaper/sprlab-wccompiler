@@ -1,0 +1,106 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-visibility',
+})
+
+// Signal para controlar visibilidad
+const isVisible = signal(true)
+
+function toggleVisibility() {
+  isVisible.set(!isVisible())
+}
+
+function show() {
+  isVisible.set(true)
+}
+
+function hide() {
+  isVisible.set(false)
+}
+</script>
+
+<template>
+  <div class="visibility-test">
+    <h3>Test de Visibility (show)</h3>
+    
+    <div class="controls">
+      <button @click="show">Show</button>
+      <button @click="hide">Hide</button>
+      <button @click="toggleVisibility">Toggle</button>
+    </div>
+
+    <div class="status-display">
+      <p><strong>isVisible:</strong> {{isVisible()}}</p>
+    </div>
+
+    <!-- Elemento con directiva show -->
+    <div show="isVisible()" class="visible-box">
+      <h4>👁️ Este elemento puede mostrarse/ocultarse</h4>
+      <p>Cuando isVisible es false, este elemento se oculta con display: none.</p>
+      <p>A diferencia de if/else, el elemento permanece en el DOM pero no es visible.</p>
+    </div>
+
+    <!-- Elemento siempre visible para comparación -->
+    <div class="always-visible">
+      <p>✓ Este elemento SIEMPRE está visible (sin directiva show)</p>
+    </div>
+  </div>
+</template>
+
+<style>
+.visibility-test {
+  border: 2px solid #00bcd4;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #e0f7fa;
+}
+.visibility-test h3 {
+  color: #006064;
+  margin-top: 0;
+}
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.controls button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #00bcd4;
+  color: white;
+  cursor: pointer;
+}
+.controls button:hover {
+  background-color: #0097a7;
+}
+.status-display {
+  background: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+.status-display p {
+  margin: 0;
+  font-family: monospace;
+}
+.visible-box {
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+  border-left: 4px solid #00bcd4;
+  margin-bottom: 15px;
+}
+.visible-box h4 {
+  margin-top: 0;
+  color: #006064;
+}
+.always-visible {
+  background: #b2ebf2;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+}
+</style>

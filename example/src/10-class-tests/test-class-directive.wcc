@@ -1,0 +1,246 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-class-directive',
+})
+
+// Test signals for class binding
+const isActive = signal(true)
+const hasError = signal(false)
+const theme = signal('light')
+const size = signal('medium')
+const customClass = signal('my-custom-class')
+const isDisabled = signal(false)
+const isLoading = signal(false)
+
+function toggleActive() {
+  isActive.set(!isActive())
+}
+
+function toggleError() {
+  hasError.set(!hasError())
+}
+
+function toggleTheme() {
+  theme.set(theme() === 'light' ? 'dark' : 'light')
+}
+
+function cycleSize() {
+  const sizes = ['small', 'medium', 'large']
+  const currentIndex = sizes.indexOf(size())
+  const nextIndex = (currentIndex + 1) % sizes.length
+  size.set(sizes[nextIndex])
+}
+
+function toggleDisabled() {
+  isDisabled.set(!isDisabled())
+}
+
+function toggleLoading() {
+  isLoading.set(!isLoading())
+}
+</script>
+
+<template>
+  <div class="class-directive-test">
+    <h3>Test de Class Directive String Literal (BUG-0011)</h3>
+    
+    <!-- Test 1: Boolean class binding -->
+    <section class="test-section">
+      <h4>Test 1: Boolean Class Binding</h4>
+      <div :class="{ active: isActive(), error: hasError() }" class="demo-box">
+        Active: {{ isActive() }}, Error: {{ hasError() }}
+      </div>
+      <button @click="toggleActive">Toggle Active</button>
+      <button @click="toggleError">Toggle Error</button>
+    </section>
+
+    <!-- Test 2: Dynamic string class -->
+    <section class="test-section">
+      <h4>Test 2: Dynamic String Class</h4>
+      <div :class="theme()" class="demo-box">
+        Theme: {{ theme() }}
+      </div>
+      <button @click="toggleTheme">Toggle Theme</button>
+    </section>
+
+    <!-- Test 3: Array syntax with multiple classes -->
+    <section class="test-section">
+      <h4>Test 3: Array Syntax</h4>
+      <div :class="[customClass(), size()]" class="demo-box">
+        Classes: {{ customClass() }}, {{ size() }}
+      </div>
+      <p>Expected: "my-custom-class medium" (space-separated)</p>
+    </section>
+
+    <!-- Test 4: Mixed static and dynamic classes -->
+    <section class="test-section">
+      <h4>Test 4: Static + Dynamic Classes</h4>
+      <div class="base-class" :class="{ active: isActive() }" class="demo-box">
+        Has base-class and conditional active
+      </div>
+      <button @click="toggleActive">Toggle Active</button>
+    </section>
+
+    <!-- Test 5: Complex conditional classes -->
+    <section class="test-section">
+      <h4>Test 5: Complex Conditionals</h4>
+      <div 
+        :class="{ 
+          'is-disabled': isDisabled(),
+          'is-loading': isLoading(),
+          'is-active': isActive() && !isDisabled()
+        }" 
+        class="demo-box"
+      >
+        Disabled: {{ isDisabled() }}, Loading: {{ isLoading() }}, Active: {{ isActive() }}
+      </div>
+      <button @click="toggleDisabled">Toggle Disabled</button>
+      <button @click="toggleLoading">Toggle Loading</button>
+    </section>
+
+    <!-- Test 6: Ternary in class binding -->
+    <section class="test-section">
+      <h4>Test 6: Ternary Expression</h4>
+      <div :class="isActive() ? 'active-state' : 'inactive-state'" class="demo-box">
+        State: {{ isActive() ? 'ACTIVE' : 'INACTIVE' }}
+      </div>
+      <button @click="toggleActive">Toggle State</button>
+    </section>
+
+    <!-- Test 7: Computed class string -->
+    <section class="test-section">
+      <h4>Test 7: Computed Class String</h4>
+      <div :class="`${theme()}-theme ${size()}-size`" class="demo-box">
+        Computed: {{ theme() }}-theme {{ size() }}-size
+      </div>
+      <button @click="toggleTheme">Toggle Theme</button>
+      <button @click="cycleSize">Cycle Size</button>
+    </section>
+
+    <!-- Test 8: Multiple conditions with && -->
+    <section class="test-section">
+      <h4>Test 8: Logical AND Conditions</h4>
+      <div 
+        :class="{ 
+          'special': isActive() && !hasError(),
+          'warning': hasError() && !isDisabled()
+        }" 
+        class="demo-box"
+      >
+        Special: {{ isActive() && !hasError() }}, Warning: {{ hasError() && !isDisabled() }}
+      </div>
+      <button @click="toggleActive">Toggle Active</button>
+      <button @click="toggleError">Toggle Error</button>
+    </section>
+  </div>
+</template>
+
+<style>
+.class-directive-test {
+  border: 2px solid #9c27b0;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f3e5f5;
+}
+.class-directive-test h3 {
+  color: #6a1b9a;
+  margin-top: 0;
+}
+.test-section {
+  margin-bottom: 25px;
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+}
+.test-section h4 {
+  color: #6a1b9a;
+  margin-top: 0;
+}
+.demo-box {
+  margin: 10px 0;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dynamic classes */
+.active {
+  background-color: #4caf50;
+  color: white;
+}
+.error {
+  background-color: #f44336;
+  color: white;
+}
+.light {
+  background-color: #ffffff;
+  color: #333;
+}
+.dark {
+  background-color: #333;
+  color: #fff;
+}
+.small {
+  font-size: 12px;
+}
+.medium {
+  font-size: 16px;
+}
+.large {
+  font-size: 20px;
+}
+.my-custom-class {
+  border: 2px dashed #9c27b0;
+}
+.base-class {
+  border: 2px solid #2196f3;
+}
+.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.is-loading {
+  animation: pulse 1s infinite;
+}
+.is-active {
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+.active-state {
+  background-color: #81c784;
+}
+.inactive-state {
+  background-color: #e57373;
+}
+.special {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  color: white;
+}
+.warning {
+  background-color: #ffd93d;
+  color: #333;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+button {
+  padding: 8px 15px;
+  background-color: #9c27b0;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 5px;
+}
+button:hover {
+  background-color: #7b1fa2;
+}
+</style>

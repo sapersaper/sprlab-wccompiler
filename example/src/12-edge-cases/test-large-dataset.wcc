@@ -1,0 +1,477 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-large-dataset',
+})
+
+// Large dataset test - performance with 100+ items
+const largeList = signal([])
+const filteredList = signal([])
+const searchTerm = signal('')
+const selectedIds = signal([])
+const renderTime = signal(0)
+const isGenerating = signal(false)
+
+// Generate large dataset
+function generateLargeDataset(count = 100) {
+  isGenerating.set(true)
+  const startTime = performance.now()
+  
+  const newData = Array.from({ length: count }, (_, i) => ({
+    id: i + 1,
+    name: `Item ${i + 1}`,
+    value: Math.floor(Math.random() * 1000),
+    category: ['A', 'B', 'C', 'D', 'E'][Math.floor(Math.random() * 5)],
+    active: Math.random() > 0.3,
+    score: Math.floor(Math.random() * 100)
+  }))
+  
+  largeList.set(newData)
+  filteredList.set(newData)
+  
+  const endTime = performance.now()
+  renderTime.set(endTime - startTime)
+  isGenerating.set(false)
+}
+
+// Filter list based on search term
+function handleSearch(term) {
+  searchTerm.set(term)
+  
+  if (!term) {
+    filteredList.set(largeList())
+    return
+  }
+  
+  const lowerTerm = term.toLowerCase()
+  const filtered = largeList().filter(item => 
+    item.name.toLowerCase().includes(lowerTerm) ||
+    item.category.toLowerCase().includes(lowerTerm)
+  )
+  
+  filteredList.set(filtered)
+}
+
+// Toggle item selection
+function toggleSelection(id) {
+  const current = selectedIds()
+  if (current.includes(id)) {
+    selectedIds.set(current.filter(sid => sid !== id))
+  } else {
+    selectedIds.set([...current, id])
+  }
+}
+
+// Select all visible items
+function selectAll() {
+  selectedIds.set(filteredList().map(item => item.id))
+}
+
+// Clear selection
+function clearSelection() {
+  selectedIds.set([])
+}
+
+// Delete selected items
+function deleteSelected() {
+  const toDelete = selectedIds()
+  largeList.set(largeList().filter(item => !toDelete.includes(item.id)))
+  filteredList.set(filteredList().filter(item => !toDelete.includes(item.id)))
+  selectedIds.set([])
+}
+
+// Toggle active status for all items
+function toggleAllActive() {
+  const allActive = largeList().every(item => item.active)
+  largeList.set(largeList().map(item => ({ ...item, active: !allActive })))
+  filteredList.set(filteredList().map(item => ({ ...item, active: !allActive })))
+}
+
+// Sort by different criteria
+function sortBy(field) {
+  const sorted = [...largeList()].sort((a, b) => {
+    if (typeof a[field] === 'string') {
+      return a[field].localeCompare(b[field])
+    }
+    return a[field] - b[field]
+  })
+  largeList.set(sorted)
+  handleSearch(searchTerm())
+}
+
+// Bulk update values
+function bulkUpdateValues() {
+  largeList.set(largeList().map(item => ({
+    ...item,
+    value: item.value + Math.floor(Math.random() * 100 - 50)
+  })))
+  handleSearch(searchTerm())
+}
+
+// Reset to initial state
+function reset() {
+  generateLargeDataset(100)
+  selectedIds.set([])
+  searchTerm.set('')
+}
+
+// Wrapper functions for inline handlers
+function generate100Items() {
+  generateLargeDataset(100)
+}
+
+function generate200Items() {
+  generateLargeDataset(200)
+}
+
+function handleSearchInput(e) {
+  handleSearch(e.target.value)
+}
+
+function sortByName() {
+  sortBy('name')
+}
+
+function sortByValue() {
+  sortBy('value')
+}
+
+function sortByScore() {
+  sortBy('score')
+}
+
+function sortByCategory() {
+  sortBy('category')
+}
+</script>
+
+<style>
+.large-dataset {
+  padding: 20px;
+  font-family: monospace;
+}
+
+.performance-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 15px 0;
+  padding: 15px;
+  background: #ebf8ff;
+  border-radius: 8px;
+}
+
+.perf-stat {
+  text-align: center;
+}
+
+.perf-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2b6cb0;
+}
+
+.controls {
+  margin: 15px 0;
+  padding: 15px;
+  background: #f7fafc;
+  border-radius: 8px;
+}
+
+.search-box {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+button {
+  margin: 5px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button.primary {
+  background: #4299e1;
+  color: white;
+}
+
+button.success {
+  background: #48bb78;
+  color: white;
+}
+
+button.danger {
+  background: #f56565;
+  color: white;
+}
+
+button.warning {
+  background: #ed8936;
+  color: white;
+}
+
+button.info {
+  background: #805ad5;
+  color: white;
+}
+
+.items-container {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+
+.item-row {
+  padding: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.item-row:hover {
+  background: #f7fafc;
+}
+
+.item-row.selected {
+  background: #c6f6d5;
+}
+
+.item-row.inactive {
+  opacity: 0.5;
+}
+
+.item-info {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 100px 1fr 80px 80px 80px;
+  gap: 10px;
+  align-items: center;
+}
+
+.item-id {
+  font-weight: bold;
+  color: #4a5568;
+}
+
+.item-name {
+  color: #2d3748;
+}
+
+.item-category {
+  background: #bee3f8;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.item-value {
+  text-align: right;
+  color: #4a5568;
+}
+
+.item-score {
+  text-align: right;
+  font-weight: bold;
+}
+
+.score-high {
+  color: #48bb78;
+}
+
+.score-medium {
+  color: #ed8936;
+}
+
+.score-low {
+  color: #f56565;
+}
+
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.status-active {
+  background: #c6f6d5;
+  color: #22543d;
+}
+
+.status-inactive {
+  background: #fed7d7;
+  color: #742a2a;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-message {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  font-size: 18px;
+}
+
+.instructions {
+  margin: 15px 0;
+  padding: 15px;
+  background: #fffaf0;
+  border: 2px solid #ed8936;
+  border-radius: 8px;
+}
+</style>
+
+<template>
+<div class="large-dataset">
+  <h2>📊 Test 12.6: Large Dataset Performance</h2>
+  <p>Testing compiler performance with 100+ items and complex operations</p>
+
+  <!-- Loading Overlay -->
+  <div if="isGenerating()" class="loading-overlay">
+    <div class="loading-message">
+      Generating dataset...
+    </div>
+  </div>
+
+  <!-- Performance Stats -->
+  <div class="performance-bar">
+    <div class="perf-stat">
+      <div class="perf-label">Total Items</div>
+      <div class="perf-value">{{ largeList().length }}</div>
+    </div>
+    <div class="perf-stat">
+      <div class="perf-label">Filtered</div>
+      <div class="perf-value">{{ filteredList().length }}</div>
+    </div>
+    <div class="perf-stat">
+      <div class="perf-label">Selected</div>
+      <div class="perf-value">{{ selectedIds().length }}</div>
+    </div>
+    <div class="perf-stat">
+      <div class="perf-label">Render Time</div>
+      <div class="perf-value">{{ renderTime().toFixed(2) }}ms</div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <h3>Data Generation</h3>
+    <button class="primary" @click="generate100Items">Generate 100 Items</button>
+    <button class="primary" @click="generate200Items">Generate 200 Items</button>
+    <button class="warning" @click="reset">Reset to 100</button>
+  </div>
+
+  <div class="controls">
+    <h3>Search & Filter</h3>
+    <input 
+      type="text" 
+      class="search-box" 
+      placeholder="Search by name or category..."
+      :value="searchTerm()"
+      @input="handleSearchInput"
+    />
+  </div>
+
+  <div class="controls">
+    <h3>Bulk Operations</h3>
+    <button class="success" @click="selectAll">Select All Visible</button>
+    <button class="info" @click="clearSelection">Clear Selection</button>
+    <button class="danger" @click="deleteSelected">Delete Selected</button>
+    <button class="warning" @click="toggleAllActive">Toggle All Active</button>
+    <button class="primary" @click="bulkUpdateValues">Bulk Update Values</button>
+  </div>
+
+  <div class="controls">
+    <h3>Sorting</h3>
+    <button class="info" @click="sortByName">Sort by Name</button>
+    <button class="info" @click="sortByValue">Sort by Value</button>
+    <button class="info" @click="sortByScore">Sort by Score</button>
+    <button class="info" @click="sortByCategory">Sort by Category</button>
+  </div>
+
+  <!-- Items List -->
+  <div class="items-container">
+    <div if="filteredList().length === 0">
+      <p style="text-align: center; padding: 20px;">
+        <em>No items to display. Click "Generate 100 Items" to start.</em>
+      </p>
+    </div>
+
+    <div each="item in filteredList()" :key="item.id" 
+         class="item-row"
+         :class="{ selected: selectedIds().includes(item.id), inactive: !item.active }">
+      
+      <div class="item-info">
+        <div class="item-id">#{{ item.id }}</div>
+        <div class="item-name">{{ item.name }}</div>
+        <div class="item-category">{{ item.category }}</div>
+        <div class="item-value">${{ item.value }}</div>
+        <div class="item-score" :class="item.score >= 70 ? 'score-high' : item.score >= 40 ? 'score-medium' : 'score-low'">
+          {{ item.score }}
+        </div>
+      </div>
+
+      <div>
+        <span class="status-badge" :class="item.active ? 'status-active' : 'status-inactive'">
+          {{ item.active ? '✓ Active' : '✗ Inactive' }}
+        </span>
+        <button 
+          :class="selectedIds().includes(item.id) ? 'danger' : 'success'"
+          @click="() => toggleSelection(item.id)"
+          style="margin-left: 10px;"
+        >
+          {{ selectedIds().includes(item.id) ? 'Deselect' : 'Select' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="instructions">
+    <h3>Performance Tests to Run:</h3>
+    <ol>
+      <li><strong>Initial Load:</strong> Generate 100 items - measure render time</li>
+      <li><strong>Large Dataset:</strong> Generate 200 items - check performance degradation</li>
+      <li><strong>Filtering:</strong> Type in search box - verify filter speed</li>
+      <li><strong>Selection:</strong> Select/deselect multiple items - check responsiveness</li>
+      <li><strong>Bulk Operations:</strong> Try select all, delete selected, toggle all</li>
+      <li><strong>Sorting:</strong> Sort by different fields - verify sort speed</li>
+      <li><strong>Rapid Updates:</strong> Click "Bulk Update Values" multiple times quickly</li>
+      <li><strong>Memory:</strong> Monitor browser memory during operations</li>
+    </ol>
+    
+    <h3>Success Criteria:</h3>
+    <ul>
+      <li>✅ 100 items render in &lt; 500ms</li>
+      <li>✅ 200 items render in &lt; 1000ms</li>
+      <li>✅ Filtering responds instantly (&lt; 100ms)</li>
+      <li>✅ No UI freezing during operations</li>
+      <li>✅ Memory usage stable (no leaks)</li>
+      <li>✅ Scrolling smooth with 200+ items</li>
+      <li>✅ All operations complete without errors</li>
+    </ul>
+  </div>
+</div>
+</template>

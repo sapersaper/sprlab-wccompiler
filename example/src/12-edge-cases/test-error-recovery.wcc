@@ -1,0 +1,348 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-error-recovery',
+})
+
+// Test error recovery scenarios
+const username = signal('')
+const age = signal(0)
+const items = signal([
+  { id: 1, name: 'Item 1', value: 100 },
+  { id: 2, name: 'Item 2', value: 200 },
+  { id: 3, name: 'Item 3', value: 300 }
+])
+
+const errorMessage = signal('')
+const errorCount = signal(0)
+const recoveryStatus = signal('No errors yet')
+
+// Scenario 1: Signal becomes undefined/null
+function makeUsernameNull() {
+  try {
+    // This should handle gracefully
+    const temp = username()
+    username.set(null)
+    recoveryStatus.set('Signal set to null - handled gracefully')
+    setTimeout(() => {
+      username.set('recovered')
+      recoveryStatus.set('Recovered from null')
+    }, 1000)
+  } catch (error) {
+    handleError(error)
+  }
+}
+
+// Scenario 2: Invalid prop type simulation
+function setInvalidAge() {
+  try {
+    age.set('not a number') // Invalid type
+    recoveryStatus.set('Invalid type set - component should handle')
+  } catch (error) {
+    handleError(error)
+  }
+}
+
+// Scenario 3: Event handler that throws exception
+function throwingEventHandler() {
+  try {
+    throw new Error('Intentional error for testing')
+  } catch (error) {
+    handleError(error)
+    recoveryStatus.set('Error caught and handled')
+  }
+}
+
+// Scenario 4: Array operation on undefined
+function operateOnUndefinedArray() {
+  try {
+    const undefinedArray = undefined
+    // This would normally crash: undefinedArray.length
+    const safeLength = undefinedArray?.length || 0
+    recoveryStatus.set(`Safe handling: length = ${safeLength}`)
+  } catch (error) {
+    handleError(error)
+  }
+}
+
+// Scenario 5: Division by zero
+function divideByZero() {
+  try {
+    const result = 100 / 0
+    recoveryStatus.set(`Division by zero result: ${result} (Infinity)`)
+  } catch (error) {
+    handleError(error)
+  }
+}
+
+// Scenario 6: Access property of undefined
+function accessUndefinedProperty() {
+  try {
+    const obj = undefined
+    const value = obj?.nonExistent?.property || 'default'
+    recoveryStatus.set(`Safe access: ${value}`)
+  } catch (error) {
+    handleError(error)
+  }
+}
+
+// Error handler
+function handleError(error) {
+  errorCount.set(errorCount() + 1)
+  errorMessage.set(error.message)
+  console.error('[Error Recovery Test]', error)
+}
+
+// Reset all errors
+function resetErrors() {
+  errorMessage.set('')
+  errorCount.set(0)
+  recoveryStatus.set('Errors reset')
+  username.set('')
+  age.set(0)
+}
+
+// Add item with potential error
+function addItemWithValidation() {
+  try {
+    const newItem = {
+      id: items().length + 1,
+      name: `Item ${items().length + 1}`,
+      value: Math.random() * 1000
+    }
+    items.set([...items(), newItem])
+    recoveryStatus.set(`Added item ${newItem.id} successfully`)
+  } catch (error) {
+    handleError(error)
+  }
+}
+
+// Remove item safely
+function removeItemSafely(id) {
+  try {
+    if (!id) {
+      throw new Error('Invalid item ID')
+    }
+    items.set(items().filter(item => item.id !== id))
+    recoveryStatus.set(`Removed item ${id}`)
+  } catch (error) {
+    handleError(error)
+  }
+}
+
+// Clear all items
+function clearAllItems() {
+  try {
+    items.set([])
+    recoveryStatus.set('All items cleared')
+  } catch (error) {
+    handleError(error)
+  }
+}
+</script>
+
+<style>
+.error-recovery {
+  padding: 20px;
+  font-family: monospace;
+}
+
+.test-section {
+  margin: 20px 0;
+  padding: 15px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.test-section h3 {
+  margin-top: 0;
+  color: #2d3748;
+}
+
+.error-display {
+  background: #fed7d7;
+  border: 2px solid #f56565;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 10px 0;
+  min-height: 40px;
+}
+
+.success-display {
+  background: #c6f6d5;
+  border: 2px solid #48bb78;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+
+button {
+  margin: 5px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button.danger {
+  background: #f56565;
+  color: white;
+}
+
+button.warning {
+  background: #ed8936;
+  color: white;
+}
+
+button.success {
+  background: #48bb78;
+  color: white;
+}
+
+button.info {
+  background: #4299e1;
+  color: white;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.stat-box {
+  background: #ebf8ff;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2b6cb0;
+}
+
+.item-list {
+  margin: 10px 0;
+}
+
+.item-card {
+  padding: 10px;
+  margin: 5px 0;
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+</style>
+
+<template>
+<div class="error-recovery">
+  <h2>🛡️ Test 12.4: Error Recovery</h2>
+  <p>Testing compiler robustness when errors occur</p>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-box">
+      <div class="stat-label">Error Count</div>
+      <div class="stat-value">{{ errorCount() }}</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Items</div>
+      <div class="stat-value">{{ items().length }}</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Status</div>
+      <div class="stat-value" style="font-size: 12px;">{{ recoveryStatus() }}</div>
+    </div>
+  </div>
+
+  <!-- Error Display -->
+  <div if="errorMessage()">
+    <div class="error-display">
+      <strong>Last Error:</strong> {{ errorMessage() }}
+    </div>
+  </div>
+
+  <!-- Scenario 1: Null/Undefined Handling -->
+  <div class="test-section">
+    <h3>Scenario 1: Null/Undefined Signal Handling</h3>
+    <p>Current username: <strong>{{ username() || '(null/empty)' }}</strong></p>
+    <button class="warning" @click="makeUsernameNull">Set to Null (Auto-Recover)</button>
+    <button class="info" @click="() => username.set('manual')">Set Manually</button>
+  </div>
+
+  <!-- Scenario 2: Invalid Type Handling -->
+  <div class="test-section">
+    <h3>Scenario 2: Invalid Type Handling</h3>
+    <p>Current age: <strong>{{ age() }}</strong> (type: {{ typeof age() }})</p>
+    <button class="warning" @click="setInvalidAge">Set Invalid Type (string)</button>
+    <button class="success" @click="() => age.set(25)">Set Valid Age (25)</button>
+  </div>
+
+  <!-- Scenario 3: Exception in Event Handler -->
+  <div class="test-section">
+    <h3>Scenario 3: Exception in Event Handler</h3>
+    <button class="danger" @click="throwingEventHandler">Trigger Exception</button>
+    <p>Error should be caught and counted</p>
+  </div>
+
+  <!-- Scenario 4: Undefined Array Operations -->
+  <div class="test-section">
+    <h3>Scenario 4: Safe Array Operations</h3>
+    <button class="warning" @click="operateOnUndefinedArray">Operate on Undefined Array</button>
+    <button class="warning" @click="accessUndefinedProperty">Access Undefined Property</button>
+  </div>
+
+  <!-- Scenario 5: Mathematical Edge Cases -->
+  <div class="test-section">
+    <h3>Scenario 5: Mathematical Edge Cases</h3>
+    <button class="warning" @click="divideByZero">Divide by Zero</button>
+    <p>Should handle Infinity gracefully</p>
+  </div>
+
+  <!-- Scenario 6: Array Manipulation with Validation -->
+  <div class="test-section">
+    <h3>Scenario 6: Safe Array Manipulation</h3>
+    <button class="success" @click="addItemWithValidation">Add Item (with validation)</button>
+    <button class="danger" @click="clearAllItems">Clear All Items</button>
+    
+    <div class="item-list">
+      <div each="item in items()" :key="item.id" class="item-card">
+        <span>{{ item.name }} - Value: {{ item.value.toFixed(2) }}</span>
+        <button class="danger" @click="() => removeItemSafely(item.id)">Remove</button>
+      </div>
+      
+      <div if="items().length === 0">
+        <p><em>No items (empty array handled correctly)</em></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset -->
+  <div class="test-section">
+    <h3>Reset All</h3>
+    <button class="info" @click="resetErrors">Reset Errors & State</button>
+  </div>
+
+  <!-- Instructions -->
+  <div class="test-section">
+    <h3>What to Verify:</h3>
+    <ul>
+      <li>✅ Component doesn't crash when errors occur</li>
+      <li>✅ Errors are caught and displayed</li>
+      <li>✅ Error count increments correctly</li>
+      <li>✅ Component recovers from null/undefined states</li>
+      <li>✅ Array operations handle edge cases (empty, undefined)</li>
+      <li>✅ Invalid types don't break the component</li>
+      <li>✅ Console shows error logs but component stays functional</li>
+    </ul>
+  </div>
+</div>
+</template>

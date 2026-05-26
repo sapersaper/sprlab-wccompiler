@@ -1,0 +1,64 @@
+<script>
+import { defineComponent } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-slots-parent',
+})
+</script>
+
+<template>
+  <div class="slots-test">
+    <h3>Test de Slots (Default y Named)</h3>
+    
+    <!-- Card 1: Sin contenido custom (usa defaults) -->
+    <section class="card-example">
+      <h4>Ejemplo 1: Slots por defecto</h4>
+      <test-slot-child></test-slot-child>
+    </section>
+
+    <!-- Card 2: Con contenido custom en todos los slots -->
+    <section class="card-example">
+      <h4>Ejemplo 2: Slots personalizados</h4>
+      <test-slot-child>
+        <div slot="header">
+          <h4>🎯 Mi Header Personalizado</h4>
+        </div>
+        
+        <p>Este es mi contenido body personalizado. Reemplaza el contenido por defecto.</p>
+        <p>Puedo incluir múltiples elementos aquí.</p>
+        
+        <div slot="footer">
+          <p>⭐ Footer personalizado con botones</p>
+        </div>
+      </test-slot-child>
+    </section>
+
+    <!-- Card 3: Solo slot default personalizado -->
+    <section class="card-example">
+      <h4>Ejemplo 3: Solo body personalizado</h4>
+      <test-slot-child>
+        <p>Solo personalicé el contenido del body. Header y footer usan defaults.</p>
+      </test-slot-child>
+    </section>
+  </div>
+</template>
+
+<style>
+.slots-test {
+  border: 2px solid #e91e63;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fce4ec;
+}
+.slots-test h3 {
+  color: #880e4f;
+  margin-top: 0;
+}
+.card-example {
+  margin-bottom: 25px;
+}
+.card-example h4 {
+  color: #880e4f;
+  margin-bottom: 10px;
+}
+</style>

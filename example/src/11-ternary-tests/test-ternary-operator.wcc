@@ -1,0 +1,213 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-ternary-operator',
+})
+
+const isActive = signal(false)
+const theme = signal('light')
+const count = signal(5)
+const userName = signal('John')
+const hasPermission = signal(true)
+const role = signal('admin')
+
+function toggleActive() {
+  isActive.set(!isActive())
+}
+
+function toggleTheme() {
+  theme.set(theme() === 'light' ? 'dark' : 'light')
+}
+
+function increment() {
+  count.set(count() + 1)
+}
+
+function decrement() {
+  count.set(count() - 1)
+}
+
+function togglePermission() {
+  hasPermission.set(!hasPermission())
+}
+
+function toggleRole() {
+  role.set(role() === 'admin' ? 'user' : 'admin')
+}
+</script>
+
+<template>
+  <div class="ternary-test">
+    <h3>❓ Test Feature: Ternary Operator in Templates</h3>
+    
+    <div class="description">
+      <p><strong>Purpose:</strong> Verify that WCC Compiler correctly handles ternary operators (condition ? true : false) in template expressions.</p>
+      <p><strong>Test Areas:</strong> Simple ternaries, nested ternaries, ternaries with functions, ternaries in attributes, and edge cases.</p>
+    </div>
+
+    <!-- Test 1: Simple Ternary in Text Interpolation -->
+    <section class="test-section">
+      <h4>Test 1: Simple Ternary in Text</h4>
+      <p>Status: {{ isActive() ? 'ACTIVE' : 'INACTIVE' }}</p>
+      <button @click="toggleActive">Toggle Status</button>
+      <p>Expected: Should show "ACTIVE" when true, "INACTIVE" when false</p>
+    </section>
+
+    <!-- Test 2: Ternary with Different Data Types -->
+    <section class="test-section">
+      <h4>Test 2: Ternary with Numbers</h4>
+      <p>Count: {{ count() > 0 ? 'Positive' : count() === 0 ? 'Zero' : 'Negative' }}</p>
+      <button @click="increment">+1</button>
+      <button @click="decrement">-1</button>
+      <p>Expected: Should show "Positive", "Zero", or "Negative" based on value</p>
+    </section>
+
+    <!-- Test 3: Ternary in Class Binding -->
+    <section class="test-section">
+      <h4>Test 3: Ternary in :class</h4>
+      <div :class="theme() === 'light' ? 'light-theme' : 'dark-theme'">
+        Current Theme: {{ theme() }}
+      </div>
+      <button @click="toggleTheme">Toggle Theme</button>
+      <p>Expected: Should apply "light-theme" or "dark-theme" class</p>
+    </section>
+
+    <!-- Test 4: Ternary in Attribute Binding -->
+    <section class="test-section">
+      <h4>Test 4: Ternary in :disabled Attribute</h4>
+      <button :disabled="!hasPermission()">
+        Action Button ({{ hasPermission() ? 'Enabled' : 'Disabled' }})
+      </button>
+      <button @click="togglePermission">Toggle Permission</button>
+      <p>Expected: Button should be disabled when hasPermission is false</p>
+    </section>
+
+    <!-- Test 5: Nested Ternary -->
+    <section class="test-section">
+      <h4>Test 5: Nested Ternary</h4>
+      <p>Role Display: {{ role() === 'admin' ? 'Administrator' : role() === 'user' ? 'Regular User' : 'Guest' }}</p>
+      <button @click="toggleRole">Toggle Role</button>
+      <p>Expected: Should show different text based on role value</p>
+    </section>
+
+    <!-- Test 6: Ternary with Function Call -->
+    <section class="test-section">
+      <h4>Test 6: Ternary with Function</h4>
+      <p>User Info: {{ userName() ? `Hello, ${userName()}!` : 'Please log in' }}</p>
+      <p>Expected: Should show greeting with name or login prompt</p>
+    </section>
+
+    <!-- Test 7: Ternary with Empty/Falsy Values -->
+    <section class="test-section">
+      <h4>Test 7: Ternary with Falsy Values</h4>
+      <p>Value: {{ count() || 'No items' }}</p>
+      <p>Expected: Should show count if > 0, otherwise "No items"</p>
+    </section>
+
+    <!-- Test 8: Multiple Ternaries in Same Expression -->
+    <section class="test-section">
+      <h4>Test 8: Complex Expression with Multiple Ternaries</h4>
+      <p>Status: {{ isActive() ? (hasPermission() ? 'Active & Authorized' : 'Active & Restricted') : 'Inactive' }}</p>
+      <button @click="toggleActive">Toggle Active</button>
+      <button @click="togglePermission">Toggle Permission</button>
+      <p>Expected: Should show different status based on both conditions</p>
+    </section>
+
+    <!-- Test 9: Ternary in Style Binding -->
+    <section class="test-section">
+      <h4>Test 9: Ternary in :style (if supported)</h4>
+      <div :style="{ color: theme() === 'light' ? 'black' : 'white' }">
+        Text color changes with theme
+      </div>
+      <p>Expected: Text color should be black for light theme, white for dark</p>
+    </section>
+
+    <!-- Test 10: Ternary with Computed/Signal Comparison -->
+    <section class="test-section">
+      <h4>Test 10: Ternary with Signal Comparison</h4>
+      <p>Comparison: {{ count() > 10 ? 'High' : count() > 5 ? 'Medium' : 'Low' }}</p>
+      <button @click="increment">Increase</button>
+      <button @click="decrement">Decrease</button>
+      <p>Expected: Should show "High", "Medium", or "Low" based on count</p>
+    </section>
+  </div>
+</template>
+
+<style>
+.ternary-test {
+  border: 3px solid #ff5722;
+  padding: 25px;
+  margin: 20px 0;
+  background-color: #fbe9e7;
+  font-family: Arial, sans-serif;
+}
+
+.ternary-test .description {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.ternary-test .description code {
+  background-color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.ternary-test .test-section {
+  margin-bottom: 30px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  border-left: 4px solid #ff5722;
+}
+
+.ternary-test h4 {
+  margin-top: 0;
+  color: #ff5722;
+}
+
+.ternary-test button {
+  padding: 8px 16px;
+  margin: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #ff5722;
+  color: white;
+  font-size: 14px;
+}
+
+.ternary-test button:hover {
+  background-color: #f4511e;
+}
+
+.ternary-test button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.ternary-test .light-theme {
+  background-color: #ffffff;
+  border: 2px solid #333;
+  padding: 15px;
+  border-radius: 8px;
+  color: #333;
+}
+
+.ternary-test .dark-theme {
+  background-color: #333;
+  border: 2px solid #666;
+  padding: 15px;
+  border-radius: 8px;
+  color: white;
+}
+
+.ternary-test p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+</style>

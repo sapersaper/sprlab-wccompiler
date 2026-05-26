@@ -1,0 +1,29 @@
+<script>
+import { defineComponent } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-css-scoping',
+})
+</script>
+
+<template>
+  <div class="scoped-container">
+    <h3>Test de Scoped CSS</h3>
+    <p>Este párrafo debería ser AZUL porque está dentro del componente.</p>
+  </div>
+</template>
+
+<style>
+/* Este estilo solo debería afectar a los 'p' dentro de este componente */
+p {
+  color: blue;
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.scoped-container {
+  border: 1px dashed blue;
+  padding: 10px;
+  margin-top: 10px;
+}
+</style>

@@ -1,0 +1,442 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-rapid-updates',
+})
+
+// Core state for stress testing
+const counter = signal(0)
+const message = signal('Ready')
+const items = signal([1, 2, 3])
+const theme = signal('light')
+const isActive = signal(false)
+const color = signal('blue')
+
+// Performance tracking
+const updateCount = signal(0)
+const lastUpdateTime = signal(0)
+const updatesPerSecond = signal(0)
+const startTime = signal(0)
+
+// Batch tracking
+const batchUpdates = signal([])
+
+// Methods for rapid updates
+function rapidCounter() {
+  // 50 updates in ~2 seconds (40ms apart)
+  const start = Date.now()
+  startTime.set(start)
+  
+  for (let i = 0; i < 50; i++) {
+    setTimeout(() => {
+      counter.set(counter() + 1)
+      updateCount.set(updateCount() + 1)
+      
+      if (i === 49) {
+        const end = Date.now()
+        const duration = (end - start) / 1000
+        updatesPerSecond.set(Math.round(50 / duration))
+        lastUpdateTime.set(end)
+        message.set(`Completed 50 updates in ${duration.toFixed(2)}s`)
+      }
+    }, i * 40)
+  }
+}
+
+function rapidToggle() {
+  // Toggle boolean 30 times rapidly
+  for (let i = 0; i < 30; i++) {
+    setTimeout(() => {
+      isActive.set(!isActive())
+      updateCount.set(updateCount() + 1)
+    }, i * 30)
+  }
+}
+
+function rapidThemeSwitch() {
+  // Switch themes 20 times
+  const themes = ['light', 'dark', 'blue', 'red', 'green']
+  for (let i = 0; i < 20; i++) {
+    setTimeout(() => {
+      theme.set(themes[i % themes.length])
+      updateCount.set(updateCount() + 1)
+    }, i * 50)
+  }
+}
+
+function rapidArrayUpdate() {
+  // Add/remove items rapidly
+  let addMode = true
+  for (let i = 0; i < 40; i++) {
+    setTimeout(() => {
+      if (addMode) {
+        items.set([...items(), items().length + 1])
+      } else {
+        if (items().length > 0) {
+          items.set(items().slice(0, -1))
+        }
+      }
+      addMode = !addMode
+      updateCount.set(updateCount() + 1)
+    }, i * 25)
+  }
+}
+
+function rapidColorChange() {
+  // Change colors 25 times
+  const colors = ['blue', 'red', 'green', 'purple', 'orange', 'pink']
+  for (let i = 0; i < 25; i++) {
+    setTimeout(() => {
+      color.set(colors[i % colors.length])
+      updateCount.set(updateCount() + 1)
+    }, i * 40)
+  }
+}
+
+function batchTest() {
+  // Multiple signals updating simultaneously
+  const batchSize = 10
+  for (let i = 0; i < batchSize; i++) {
+    setTimeout(() => {
+      counter.set(counter() + 1)
+      isActive.set(!isActive())
+      message.set(`Batch update ${i + 1}/${batchSize}`)
+      updateCount.set(updateCount() + 1)
+    }, i * 10)
+  }
+}
+
+function resetAll() {
+  counter.set(0)
+  message.set('Reset complete')
+  items.set([1, 2, 3])
+  theme.set('light')
+  isActive.set(false)
+  color.set('blue')
+  updateCount.set(0)
+  updatesPerSecond.set(0)
+  startTime.set(0)
+  lastUpdateTime.set(0)
+}
+
+function chaosMode() {
+  // Trigger ALL rapid updates simultaneously
+  rapidCounter()
+  setTimeout(rapidToggle, 100)
+  setTimeout(rapidThemeSwitch, 200)
+  setTimeout(rapidArrayUpdate, 300)
+  setTimeout(rapidColorChange, 400)
+  setTimeout(batchTest, 500)
+  message.set('CHAOS MODE ACTIVATED!')
+}
+</script>
+
+<style>
+.rapid-updates {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stat-value {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.stat-label {
+  color: #718096;
+  font-size: 0.9em;
+  text-transform: uppercase;
+}
+
+.control-section {
+  background: #f7fafc;
+  border: 2px solid #cbd5e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.control-section h3 {
+  margin-top: 0;
+  color: #2d3748;
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1em;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.btn-counter { background: #667eea; color: white; }
+.btn-toggle { background: #48bb78; color: white; }
+.btn-theme { background: #ed8936; color: white; }
+.btn-array { background: #4299e1; color: white; }
+.btn-color { background: #9f7aea; color: white; }
+.btn-batch { background: #f56565; color: white; }
+.btn-chaos { 
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  color: white;
+  font-size: 1.2em;
+  padding: 15px 30px;
+}
+.btn-reset { background: #718096; color: white; }
+
+.visual-test {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.dynamic-box {
+  width: 100%;
+  height: 100px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
+  font-weight: bold;
+  transition: all 0.1s;
+  margin: 10px 0;
+}
+
+.item-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.item-tag {
+  background: #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9em;
+}
+
+.status-indicator {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.status-active { background: #48bb78; }
+.status-inactive { background: #f56565; }
+
+.message-box {
+  background: #ebf8ff;
+  border-left: 4px solid #4299e1;
+  padding: 15px;
+  border-radius: 4px;
+  margin: 10px 0;
+  font-family: monospace;
+}
+
+.chaos-warning {
+  background: #fff5f5;
+  border: 3px solid #f56565;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.chaos-warning h3 {
+  color: #f56565;
+  margin-top: 0;
+}
+</style>
+
+<template>
+<div class="rapid-updates">
+  <div class="header">
+    <h2>⚡ Rapid Update Stress Test</h2>
+    <p>Testing reactivity under high-frequency state changes</p>
+  </div>
+
+  <!-- Performance Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Updates</div>
+      <div class="stat-value" style="color: #667eea;">{{ updateCount() }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Updates/Second</div>
+      <div class="stat-value" style="color: #48bb78;">{{ updatesPerSecond() }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Counter Value</div>
+      <div class="stat-value" style="color: #ed8936;">{{ counter() }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Array Length</div>
+      <div class="stat-value" style="color: #4299e1;">{{ items().length }}</div>
+    </div>
+  </div>
+
+  <!-- Current State Display -->
+  <div class="visual-test">
+    <h3>📊 Current State Visualization</h3>
+    
+    <!-- Message display -->
+    <div class="message-box">
+      <strong>Message:</strong> {{ message() }}
+    </div>
+
+    <!-- Theme visualization -->
+    <div 
+      class="dynamic-box"
+      :class="theme + '-theme'"
+      :style="{ backgroundColor: theme === 'light' ? '#fff' : theme === 'dark' ? '#2d3748' : theme === 'blue' ? '#4299e1' : theme === 'red' ? '#f56565' : '#48bb78', color: theme === 'light' || theme === 'blue' ? '#000' : '#fff' }"
+    >
+      Theme: {{ theme() }}
+    </div>
+
+    <!-- Active status -->
+    <div style="margin: 10px 0;">
+      <span class="status-indicator" :class="isActive() ? 'status-active' : 'status-inactive'"></span>
+      <strong>Status:</strong> {{ isActive() ? 'ACTIVE' : 'INACTIVE' }}
+    </div>
+
+    <!-- Color visualization -->
+    <div 
+      class="dynamic-box"
+      :style="{ backgroundColor: color() }"
+      style="color: white;"
+    >
+      Color: {{ color() }}
+    </div>
+
+    <!-- Array items -->
+    <div>
+      <strong>Array Items ({{ items().length }}):</strong>
+      <div class="item-list">
+        <div each="arrayItem in items()" :key="$index">
+          <span class="item-tag">{{ arrayItem }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Individual Test Controls -->
+  <div class="control-section">
+    <h3>🎯 Individual Stress Tests</h3>
+    <p>Click buttons to trigger rapid state updates</p>
+    
+    <div class="button-grid">
+      <button class="btn-counter" @click="rapidCounter()">
+        🔢 Counter (50 updates)
+      </button>
+      <button class="btn-toggle" @click="rapidToggle()">
+        🔄 Toggle (30 flips)
+      </button>
+      <button class="btn-theme" @click="rapidThemeSwitch()">
+        🎨 Themes (20 switches)
+      </button>
+      <button class="btn-array" @click="rapidArrayUpdate()">
+        📋 Array (40 ops)
+      </button>
+      <button class="btn-color" @click="rapidColorChange()">
+        🌈 Colors (25 changes)
+      </button>
+      <button class="btn-batch" @click="batchTest()">
+        ⚙️ Batch (10 simultaneous)
+      </button>
+    </div>
+  </div>
+
+  <!-- Chaos Mode -->
+  <div class="chaos-warning">
+    <h3>☠️ CHAOS MODE</h3>
+    <p>This will trigger ALL stress tests simultaneously!</p>
+    <p>Expected: ~175 updates in 2-3 seconds</p>
+    <button class="btn-chaos" @click="chaosMode()">
+      ACTIVATE CHAOS MODE
+    </button>
+  </div>
+
+  <!-- Reset -->
+  <div style="text-align: center; margin-top: 20px;">
+    <button class="btn-reset" @click="resetAll()">
+      🔄 Reset All State
+    </button>
+  </div>
+
+  <!-- Instructions -->
+  <div style="background: #fffff0; border: 2px solid #ecc94b; border-radius: 8px; padding: 20px; margin-top: 20px;">
+    <h3>📝 What This Tests:</h3>
+    <ul>
+      <li><strong>Rapid counter updates:</strong> 50 sequential increments (40ms apart)</li>
+      <li><strong>Boolean toggling:</strong> 30 rapid true/false flips (30ms apart)</li>
+      <li><strong>Theme switching:</strong> 20 theme changes through 5 values (50ms apart)</li>
+      <li><strong>Array mutations:</strong> 40 add/remove operations (25ms apart)</li>
+      <li><strong>Color changes:</strong> 25 color transitions (40ms apart)</li>
+      <li><strong>Batch updates:</strong> 10 simultaneous signal updates (10ms apart)</li>
+      <li><strong>Chaos mode:</strong> All tests running concurrently</li>
+    </ul>
+    
+    <h4 style="margin-top: 15px;">🔍 What to Watch For:</h4>
+    <ul>
+      <li>UI stays synchronized with state (no stale values)</li>
+      <li>No console errors during rapid updates</li>
+      <li>Performance remains acceptable (no browser freeze)</li>
+      <li>All updates are reflected visually</li>
+      <li>No memory leaks or crashes</li>
+    </ul>
+  </div>
+</div>
+</template>

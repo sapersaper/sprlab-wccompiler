@@ -1,0 +1,308 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-deep-nesting',
+})
+
+// Level 1 state
+const level1Items = signal([
+  { id: 1, name: 'Level 1 Item A', expanded: true },
+  { id: 2, name: 'Level 1 Item B', expanded: false }
+])
+
+// Level 2 data (nested in level 1)
+const level2Data = {
+  1: [
+    { id: '1-1', name: 'Level 2A-1', type: 'component-a' },
+    { id: '1-2', name: 'Level 2A-2', type: 'component-b' }
+  ],
+  2: [
+    { id: '2-1', name: 'Level 2B-1', type: 'component-c' }
+  ]
+}
+
+// Level 3 state
+const level3Visible = signal(true)
+const level3Theme = signal('light')
+
+// Level 4 state
+const level4Items = signal(['Item 4A', 'Item 4B', 'Item 4C'])
+
+// Level 5 state
+const level5Active = signal(false)
+const level5Count = signal(0)
+
+// Level 6 state
+const level6Style = signal({ color: 'blue', fontSize: '14px' })
+const level6Class = signal('default-class')
+
+// Methods
+function toggleLevel1(id) {
+  level1Items.set(level1Items().map(item =>
+    item.id === id ? { ...item, expanded: !item.expanded } : item
+  ))
+}
+
+function toggleLevel3() {
+  level3Visible.set(!level3Visible())
+}
+
+function changeLevel3Theme() {
+  const themes = ['light', 'dark', 'blue']
+  const currentIndex = themes.indexOf(level3Theme())
+  level3Theme.set(themes[(currentIndex + 1) % themes.length])
+}
+
+function addLevel4Item() {
+  level4Items.set([...level4Items(), `Item 4${String.fromCharCode(65 + level4Items().length)}`])
+}
+
+function removeLevel4Item() {
+  if (level4Items().length > 0) {
+    level4Items.set(level4Items().slice(0, -1))
+  }
+}
+
+function toggleLevel5() {
+  level5Active.set(!level5Active())
+  level5Count.set(level5Count() + 1)
+}
+
+function changeLevel6Style() {
+  const colors = ['blue', 'red', 'green', 'purple']
+  const sizes = ['14px', '16px', '18px', '20px']
+  const colorIndex = colors.indexOf(level6Style().color)
+  const sizeIndex = sizes.indexOf(level6Style().fontSize)
+  
+  level6Style.set({
+    color: colors[(colorIndex + 1) % colors.length],
+    fontSize: sizes[(sizeIndex + 1) % sizes.length]
+  })
+}
+
+function changeLevel6Class() {
+  const classes = ['default-class', 'active-class', 'highlight-class', 'special-class']
+  const currentIndex = classes.indexOf(level6Class())
+  level6Class.set(classes[(currentIndex + 1) % classes.length])
+}
+</script>
+
+<style>
+.deep-nesting {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.level-indicator {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.level-1 { background: #667eea; color: white; }
+.level-2 { background: #f093fb; color: white; }
+.level-3 { background: #4facfe; color: white; }
+.level-4 { background: #43e97b; color: white; }
+.level-5 { background: #fa709a; color: white; }
+.level-6 { background: #fee140; color: black; }
+
+.nesting-container {
+  border: 3px solid;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 15px 0;
+  transition: all 0.3s;
+}
+
+.level-1-container { border-color: #667eea; background: #f7fafc; }
+.level-2-container { border-color: #f093fb; background: #fff5f7; }
+.level-3-container { border-color: #4facfe; background: #f0f9ff; }
+.level-4-container { border-color: #43e97b; background: #f0fff4; }
+.level-5-container { border-color: #fa709a; background: #fff5f7; }
+.level-6-container { border-color: #fee140; background: #fffff0; }
+
+.item-card {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 10px 0;
+}
+
+button {
+  padding: 8px 16px;
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-toggle { background: #667eea; color: white; }
+.btn-add { background: #48bb78; color: white; }
+.btn-remove { background: #f56565; color: white; }
+.btn-theme { background: #ed8936; color: white; }
+.btn-style { background: #4299e1; color: white; }
+</style>
+
+<template>
+<div class="deep-nesting">
+  <div class="header">
+    <h2>🪆 Deep Nesting Test - 6 Levels of Complexity</h2>
+    <p>Testing: Loop → Dynamic Component → Conditional → Slot → Loop → Class/Style Bindings</p>
+  </div>
+
+  <!-- LEVEL 1: Loop with expandable items -->
+  <div class="nesting-container level-1-container">
+    <span class="level-indicator level-1">LEVEL 1</span>
+    <h3>Loop with Expandable Items</h3>
+    
+    <div each="item in level1Items()" :key="item.id">
+      <div class="item-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h4>{{ item.name }}</h4>
+            <p>Status: {{ item.expanded ? '📂 Expanded' : '📁 Collapsed' }}</p>
+          </div>
+          <button class="btn-toggle" @click="toggleLevel1(item.id)">
+            {{ item.expanded ? 'Collapse' : 'Expand' }}
+          </button>
+        </div>
+
+        <!-- LEVEL 2: Conditional rendering based on expansion -->
+        <div if="item.expanded" class="nesting-container level-2-container">
+          <span class="level-indicator level-2">LEVEL 2</span>
+          <h4>Dynamic Components (Conditional)</h4>
+          
+          <div each="subItem in level2Data[item.id] || []" :key="subItem.id">
+            <div class="item-card">
+              <p><strong>{{ subItem.name }}</strong></p>
+              <p>Type: {{ subItem.type }}</p>
+
+              <!-- LEVEL 3: Dynamic component inside loop -->
+              <div class="nesting-container level-3-container">
+                <span class="level-indicator level-3">LEVEL 3</span>
+                <h5>Dynamic Component + Conditional</h5>
+                
+                <component :is="subItem.type">
+                  <template #header>
+                    <p>Slot header for {{ subItem.name }}</p>
+                  </template>
+                  
+                  <!-- LEVEL 4: Conditional inside dynamic component slot -->
+                  <div if="level3Visible" slot="body">
+                    <div class="nesting-container level-4-container">
+                      <span class="level-indicator level-4">LEVEL 4</span>
+                      <h6>Nested Loop Inside Slot</h6>
+                      
+                      <div each="level4Item in level4Items()" :key="$index">
+                        <div class="item-card" style="margin: 5px 0;">
+                          <p>Level 4 Item: {{ level4Item }}</p>
+                          
+                          <!-- LEVEL 5: Conditional inside nested loop -->
+                          <div if="level5Active" class="nesting-container level-5-container">
+                            <span class="level-indicator level-5">LEVEL 5</span>
+                            <p><strong>Level 5 Active!</strong></p>
+                            <p>Activation count: {{ level5Count() }}</p>
+                            
+                            <!-- LEVEL 6: Class and Style bindings at deepest level -->
+                            <div 
+                              class="nesting-container level-6-container"
+                              :class="level6Class()"
+                              :style="level6Style()"
+                            >
+                              <span class="level-indicator level-6">LEVEL 6</span>
+                              <h6>Deepest Level - Class & Style Bindings</h6>
+                              <p>Current class: <code>{{ level6Class() }}</code></p>
+                              <p>Current style: <code>color: {{ level6Style().color }}, fontSize: {{ level6Style().fontSize }}</code></p>
+                              
+                              <div style="margin-top: 10px;">
+                                <button class="btn-style" @click="changeLevel6Style()">
+                                  Change Style
+                                </button>
+                                <button class="btn-theme" @click="changeLevel6Class()">
+                                  Change Class
+                                </button>
+                              </div>
+                            </div>
+                            
+                            <button class="btn-toggle" @click="toggleLevel5()" style="margin-top: 10px;">
+                              Toggle Level 5
+                            </button>
+                          </div>
+                          <div else class="nesting-container level-5-container" style="opacity: 0.5;">
+                            <span class="level-indicator level-5">LEVEL 5</span>
+                            <p>Level 5 is INACTIVE</p>
+                            <button class="btn-toggle" @click="toggleLevel5()">
+                              Activate Level 5
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div style="margin-top: 10px;">
+                        <button class="btn-add" @click="addLevel4Item()">Add Level 4 Item</button>
+                        <button class="btn-remove" @click="removeLevel4Item()">Remove Last</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div else slot="body">
+                    <p>Level 3 content is hidden</p>
+                  </div>
+                  
+                  <div slot="footer">
+                    <p>Footer for {{ subItem.name }}</p>
+                  </div>
+                </component>
+                
+                <div style="margin-top: 10px;">
+                  <button class="btn-theme" @click="toggleLevel3()">Toggle Visibility</button>
+                  <button class="btn-theme" @click="changeLevel3Theme()">Change Theme</button>
+                  <p style="margin-top: 5px;">Current theme: {{ level3Theme() }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary section -->
+  <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin-top: 20px;">
+    <h3>📊 Nesting Depth Summary</h3>
+    <ul>
+      <li><strong>Level 1:</strong> Loop with expandable items ({{ level1Items().length }} items)</li>
+      <li><strong>Level 2:</strong> Dynamic components (conditional on expansion)</li>
+      <li><strong>Level 3:</strong> Conditional visibility + theme switching</li>
+      <li><strong>Level 4:</strong> Nested loop inside slot content ({{ level4Items().length }} items)</li>
+      <li><strong>Level 5:</strong> Conditional activation with counter ({{ level5Count() }} activations)</li>
+      <li><strong>Level 6:</strong> Class and style bindings at deepest level</li>
+    </ul>
+    <p style="margin-top: 15px; padding: 10px; background: #fff; border-radius: 4px;">
+      <strong>Total nesting depth:</strong> 6 levels<br>
+      <strong>Features tested:</strong> Loops, conditionals, dynamic components, slots, class bindings, style bindings, events
+    </p>
+  </div>
+</div>
+</template>

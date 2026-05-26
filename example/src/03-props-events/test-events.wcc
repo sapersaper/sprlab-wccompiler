@@ -1,0 +1,131 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-events',
+})
+
+// Signals para tracking de eventos
+const clickCount = signal(0)
+const lastEvent = signal('Ninguno')
+const inputValue = signal('')
+
+// Event handlers
+function handleClick() {
+  clickCount.set(clickCount() + 1)
+  lastEvent.set('Click detectado')
+}
+
+function handleDoubleClick() {
+  lastEvent.set('Double Click detectado')
+}
+
+function handleMouseEnter() {
+  lastEvent.set('Mouse Enter')
+}
+
+function handleMouseLeave() {
+  lastEvent.set('Mouse Leave')
+}
+
+function handleInput(e) {
+  inputValue.set(e.target.value)
+  lastEvent.set(`Input: "${e.target.value}"`)
+}
+
+function handleKeydown(e) {
+  lastEvent.set(`Keydown: ${e.key}`)
+}
+</script>
+
+<template>
+  <div class="events-test">
+    <h3>Test de Eventos</h3>
+    
+    <div class="stats">
+      <p><strong>Click Count:</strong> {{clickCount()}}</p>
+      <p><strong>Last Event:</strong> {{lastEvent()}}</p>
+    </div>
+
+    <div class="button-section">
+      <button @click="handleClick">Click Me!</button>
+      <button @dblclick="handleDoubleClick">Double Click</button>
+    </div>
+
+    <div 
+      class="hover-box" 
+      @mouseenter="handleMouseEnter" 
+      @mouseleave="handleMouseLeave"
+    >
+      Pasa el mouse aquí
+    </div>
+
+    <div class="input-section">
+      <input 
+        type="text" 
+        placeholder="Escribe algo..." 
+        @input="handleInput"
+        @keydown="handleKeydown"
+      />
+      <p>Valor actual: {{inputValue()}}</p>
+    </div>
+  </div>
+</template>
+
+<style>
+.events-test {
+  border: 1px solid #9c27b0;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f3e5f5;
+}
+.events-test h3 {
+  color: #7b1fa2;
+  margin-top: 0;
+}
+.stats {
+  background: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+.stats p {
+  margin: 5px 0;
+  font-family: monospace;
+}
+.button-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #9c27b0;
+  color: white;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #7b1fa2;
+}
+.hover-box {
+  background: white;
+  padding: 20px;
+  text-align: center;
+  border-radius: 4px;
+  border: 2px dashed #9c27b0;
+  margin-bottom: 15px;
+}
+.input-section input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #9c27b0;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+.input-section p {
+  font-family: monospace;
+  color: #7b1fa2;
+}
+</style>

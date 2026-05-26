@@ -1,0 +1,282 @@
+<script>
+import { defineComponent, signal, computed } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-dynamic-comprehensive',
+})
+
+// Signal principal para controlar el componente dinámico
+const currentView = signal('view-a')
+
+// Signals para props
+const title = signal('Initial Title')
+const count = signal(0)
+
+// Signal para eventos recibidos
+const eventLog = signal([])
+
+// Computed para expresión compleja
+const isAdmin = signal(false)
+const routeComponent = computed(() => isAdmin() ? 'admin-panel' : 'user-panel')
+
+// Signal para condición if
+const showComponent = signal(true)
+
+// Array para each loop
+const items = signal([
+  { id: 1, component: 'view-a' },
+  { id: 2, component: 'view-b' },
+  { id: 3, component: 'view-c' }
+])
+
+// Funciones de control
+function switchToA() { currentView.set('view-a') }
+function switchToB() { currentView.set('view-b') }
+function switchToC() { currentView.set('view-c') }
+function setFalsy() { currentView.set('') }
+function toggleAdmin() { isAdmin.set(!isAdmin()) }
+function toggleShow() { showComponent.set(!showComponent()) }
+function updateTitle() { title.set(`Title ${Date.now()}`) }
+function incrementCount() { count.set(count() + 1) }
+function logEvent(eventName, detail) {
+  eventLog.set([...eventLog(), `${eventName}: ${JSON.stringify(detail)}`])
+}
+function clearLog() { eventLog.set([]) }
+
+// Rapid swap test
+async function rapidSwap() {
+  currentView.set('view-a')
+  await new Promise(r => setTimeout(r, 10))
+  currentView.set('view-b')
+  await new Promise(r => setTimeout(r, 10))
+  currentView.set('view-c')
+  await new Promise(r => setTimeout(r, 10))
+  currentView.set('view-a')
+}
+</script>
+
+<template>
+  <div class="comprehensive-test">
+    <h3>🧪 Test Exhaustivo: Dynamic Components</h3>
+
+    <!-- TEST 1 & 2: Render inicial y Swap reactivo -->
+    <section class="test-section">
+      <h4>Test 1-2: Render Inicial y Swap Reactivo</h4>
+      <div class="controls">
+        <button @click="switchToA">View A</button>
+        <button @click="switchToB">View B</button>
+        <button @click="switchToC">View C</button>
+        <button @click="setFalsy">Set Falsy ('')</button>
+        <button @click="rapidSwap">Rapid Swap (A→B→C→A)</button>
+      </div>
+      <p><strong>Current View:</strong> {{currentView() || '(empty)'}}</p>
+      
+      <div class="dynamic-container">
+        <component :is="currentView()" 
+                   :title="title()" 
+                   :count="count()"
+                   @custom-event="(e) => logEvent('main-component', e.detail)">
+        </component>
+      </div>
+    </section>
+
+    <!-- TEST 3: Expresión falsy -->
+    <section class="test-section">
+      <h4>Test 3: Expresión Falsy</h4>
+      <p>Haz click en "Set Falsy" arriba. El componente debería desaparecer del DOM.</p>
+      <p>Luego haz click en cualquier View para verificar que se recrea correctamente.</p>
+    </section>
+
+    <!-- TEST 4: Prop forwarding -->
+    <section class="test-section">
+      <h4>Test 4: Prop Forwarding (:attr="expr")</h4>
+      <div class="controls">
+        <button @click="updateTitle">Update Title</button>
+        <button @click="incrementCount">Increment Count ({{count()}})</button>
+      </div>
+      <p><strong>Title:</strong> {{title()}}</p>
+      <p><strong>Count:</strong> {{count()}}</p>
+      <p>Las props deberían actualizarse reactivamente en el componente dinámico.</p>
+    </section>
+
+    <!-- TEST 5: Event forwarding -->
+    <section class="test-section">
+      <h4>Test 5: Event Forwarding (@event="handler")</h4>
+      <div class="controls">
+        <button @click="clearLog">Clear Log</button>
+      </div>
+      <div class="event-log">
+        <p><strong>Event Log (últimos 5):</strong></p>
+        <ul>
+          <li each="log in eventLog().slice(-5).reverse()">{{log}}</li>
+        </ul>
+      </div>
+      <p>Haz click en los botones dentro del componente dinámico para emitir eventos.</p>
+    </section>
+
+    <!-- TEST 6: Lifecycle (verificado via console) -->
+    <section class="test-section">
+      <h4>Test 6: Lifecycle (connectedCallback / disconnectedCallback)</h4>
+      <p>Abre la consola del navegador (F12) para ver los logs de lifecycle.</p>
+      <p>Al hacer swap, deberías ver:</p>
+      <ol>
+        <li>disconnectedCallback del componente viejo</li>
+        <li>connectedCallback del componente nuevo</li>
+      </ol>
+    </section>
+
+    <!-- TEST 7: Composición con if -->
+    <section class="test-section">
+      <h4>Test 7: Composición con if</h4>
+      <div class="controls">
+        <button @click="toggleShow">{{showComponent() ? 'Hide' : 'Show'}} Component</button>
+      </div>
+      <div if="showComponent()">
+        <component :is="currentView()"></component>
+      </div>
+      <p else>El componente está oculto por la directiva if.</p>
+    </section>
+
+    <!-- TEST 8: Composición con each -->
+    <section class="test-section">
+      <h4>Test 8: Composición con each</h4>
+      <div class="each-container">
+        <div each="item in items()" :key="item.id" class="each-item">
+          <p><strong>Item {{item.id}}:</strong></p>
+          <component :is="item.component"></component>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEST 9: Expresiones complejas -->
+    <section class="test-section">
+      <h4>Test 9: Expresiones Complejas</h4>
+      <div class="controls">
+        <button @click="toggleAdmin">Toggle Admin (Actual: {{isAdmin() ? 'Admin' : 'User'}})</button>
+      </div>
+      <p><strong>Ternario:</strong> :is="isAdmin() ? 'admin-panel' : 'user-panel'"</p>
+      <component :is="routeComponent()"></component>
+    </section>
+
+    <!-- TEST 10: Casos edge -->
+    <section class="test-section">
+      <h4>Test 10: Casos Edge</h4>
+      
+      <h5>10.1: Tag no registrado</h5>
+      <p>El siguiente componente usa un tag que NO está registrado:</p>
+      <component :is="'non-existent-tag'"></component>
+      <p>Debería crear un HTMLUnknownElement sin errores.</p>
+
+      <h5>10.2: Múltiples componentes dinámicos independientes</h5>
+      <div class="multiple-dynamic">
+        <div>
+          <p>Dynamic 1:</p>
+          <component :is="currentView()"></component>
+        </div>
+        <div>
+          <p>Dynamic 2 (siempre view-b):</p>
+          <component :is="'view-b'"></component>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<style>
+.comprehensive-test {
+  border: 3px solid #9c27b0;
+  border-radius: 12px;
+  padding: 25px;
+  margin: 20px 0;
+  background-color: #f3e5f5;
+}
+
+.test-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  border-left: 4px solid #9c27b0;
+}
+
+.test-section h4 {
+  margin-top: 0;
+  color: #9c27b0;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.controls button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #9c27b0;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.controls button:hover {
+  background-color: #7b1fa2;
+}
+
+.dynamic-container {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  min-height: 100px;
+}
+
+.event-log {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #fafafa;
+  border-radius: 4px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.event-log ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.event-log li {
+  font-family: monospace;
+  font-size: 12px;
+  margin: 5px 0;
+}
+
+.each-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.each-item {
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border: 2px solid #e0e0e0;
+}
+
+.multiple-dynamic {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.multiple-dynamic > div {
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+</style>

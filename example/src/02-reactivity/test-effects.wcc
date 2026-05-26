@@ -1,0 +1,98 @@
+<script>
+import { defineComponent, signal, effect } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-effects',
+})
+
+// Signals para el test
+const count = signal(0)
+
+// Array NO reactivo para logs (solo lectura en template)
+let logs = []
+const logsDisplay = signal('') // Signal para mostrar logs
+
+// Effect que se ejecuta cuando count cambia
+// Solo lee 'count', NO lee 'logs' ni 'logsDisplay'
+effect(() => {
+  const newValue = count()
+  logs.push(`Count cambió a: ${newValue}`)
+  logsDisplay.set(logs.join('\n'))
+})
+
+// Funciones
+function increment() {
+  count.set(count() + 1)
+}
+
+function clearLogs() {
+  count.set(0)
+  logs = []
+  logsDisplay.set('')
+}
+</script>
+
+<template>
+  <div class="effects-test">
+    <h3>Test de Effects</h3>
+    
+    <div class="control-section">
+      <p>Count: {{count()}}</p>
+      <button @click="increment">Incrementar (+1)</button>
+      <button @click="clearLogs">Clear All</button>
+    </div>
+
+    <div class="logs-section">
+      <h4>Log de Effects (auto-update):</h4>
+      <pre class="log-content">{{logsDisplay()}}</pre>
+    </div>
+  </div>
+</template>
+
+<style>
+.effects-test {
+  border: 1px solid #ff5722;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fbe9e7;
+}
+.effects-test h3 {
+  color: #d84315;
+  margin-top: 0;
+}
+.control-section {
+  margin-bottom: 15px;
+}
+button {
+  padding: 8px 16px;
+  margin: 5px;
+  background-color: #ff5722;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #e64a19;
+}
+.logs-section {
+  background: white;
+  padding: 10px;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.log-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.log-list li {
+  padding: 5px;
+  margin: 3px 0;
+  background: #f5f5f5;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+</style>

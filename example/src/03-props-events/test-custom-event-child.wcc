@@ -1,0 +1,67 @@
+<script>
+import { defineComponent, defineEmits, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-custom-event-child',
+})
+
+// Definir eventos que este componente puede emitir
+const emit = defineEmits(['increment', 'decrement', 'reset', 'message'])
+
+const count = signal(0)
+
+function handleIncrement() {
+  count.set(count() + 1)
+  emit('increment', { value: count() })
+}
+
+function handleDecrement() {
+  count.set(count() - 1)
+  emit('decrement', { value: count() })
+}
+
+function handleReset() {
+  count.set(0)
+  emit('reset', { value: 0 })
+}
+
+function sendMessage() {
+  emit('message', { text: 'Hola desde el hijo!' })
+}
+</script>
+
+<template>
+  <div class="child-component">
+    <h4>Child Component</h4>
+    <p>Count: {{count()}}</p>
+    <button @click="handleIncrement">+1 (emit increment)</button>
+    <button @click="handleDecrement">-1 (emit decrement)</button>
+    <button @click="handleReset">Reset (emit reset)</button>
+    <button @click="sendMessage">Send Message</button>
+  </div>
+</template>
+
+<style>
+.child-component {
+  border: 2px solid #ff9800;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fff3e0;
+}
+.child-component h4 {
+  color: #e65100;
+  margin-top: 0;
+}
+button {
+  margin: 5px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #ff9800;
+  color: white;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #f57c00;
+}
+</style>

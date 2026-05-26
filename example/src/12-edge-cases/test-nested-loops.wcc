@@ -1,0 +1,397 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-nested-loops',
+})
+
+// Nested loops test - categories with sub-items
+const categories = signal([
+  {
+    id: 1,
+    name: 'Electronics',
+    expanded: false,
+    items: [
+      { id: 101, name: 'Laptop', price: 999.99, inStock: true },
+      { id: 102, name: 'Phone', price: 699.99, inStock: true },
+      { id: 103, name: 'Tablet', price: 499.99, inStock: false },
+      { id: 104, name: 'Headphones', price: 199.99, inStock: true },
+      { id: 105, name: 'Camera', price: 899.99, inStock: true }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Clothing',
+    expanded: false,
+    items: [
+      { id: 201, name: 'T-Shirt', price: 29.99, inStock: true },
+      { id: 202, name: 'Jeans', price: 59.99, inStock: true },
+      { id: 203, name: 'Jacket', price: 129.99, inStock: false },
+      { id: 204, name: 'Shoes', price: 89.99, inStock: true }
+    ]
+  },
+  {
+    id: 3,
+    name: 'Books',
+    expanded: false,
+    items: [
+      { id: 301, name: 'JavaScript Guide', price: 49.99, inStock: true },
+      { id: 302, name: 'Python Basics', price: 39.99, inStock: true },
+      { id: 303, name: 'React Handbook', price: 44.99, inStock: true },
+      { id: 304, name: 'Node.js Deep Dive', price: 54.99, inStock: false },
+      { id: 305, name: 'CSS Mastery', price: 34.99, inStock: true },
+      { id: 306, name: 'TypeScript Pro', price: 59.99, inStock: true }
+    ]
+  }
+])
+
+const selectedItems = signal([])
+const totalValue = signal(0)
+const itemCount = signal(0)
+
+// Toggle category expansion
+function toggleCategory(categoryId) {
+  categories.set(categories().map(cat => 
+    cat.id === categoryId ? { ...cat, expanded: !cat.expanded } : cat
+  ))
+}
+
+// Toggle item selection
+function toggleItemSelection(itemId, price) {
+  const currentSelected = selectedItems()
+  const isSelected = currentSelected.includes(itemId)
+  
+  if (isSelected) {
+    selectedItems.set(currentSelected.filter(id => id !== itemId))
+    totalValue.set(totalValue() - price)
+  } else {
+    selectedItems.set([...currentSelected, itemId])
+    totalValue.set(totalValue() + price)
+  }
+  
+  itemCount.set(selectedItems().length)
+}
+
+// Select all items in category
+function selectAllInCategory(categoryId) {
+  const category = categories().find(cat => cat.id === categoryId)
+  if (!category) return
+  
+  const categoryItemIds = category.items.map(item => item.id)
+  const newSelected = [...new Set([...selectedItems(), ...categoryItemIds])]
+  
+  selectedItems.set(newSelected)
+  
+  // Calculate total value
+  let total = 0
+  categories().forEach(cat => {
+    cat.items.forEach(item => {
+      if (newSelected.includes(item.id)) {
+        total += item.price
+      }
+    })
+  })
+  
+  totalValue.set(total)
+  itemCount.set(newSelected.length)
+}
+
+// Clear all selections
+function clearSelections() {
+  selectedItems.set([])
+  totalValue.set(0)
+  itemCount.set(0)
+}
+
+// Add new category dynamically
+function addNewCategory() {
+  const newId = categories().length + 1
+  const newCategory = {
+    id: newId,
+    name: `Category ${newId}`,
+    expanded: true,
+    items: [
+      { id: newId * 100 + 1, name: 'Item 1', price: Math.random() * 100, inStock: true },
+      { id: newId * 100 + 2, name: 'Item 2', price: Math.random() * 100, inStock: false }
+    ]
+  }
+  categories.set([...categories(), newCategory])
+}
+
+// Remove category
+function removeCategory(categoryId) {
+  categories.set(categories().filter(cat => cat.id !== categoryId))
+  
+  // Remove associated selections
+  const category = categories().find(cat => cat.id === categoryId)
+  if (category) {
+    const categoryItemIds = category.items.map(item => item.id)
+    selectedItems.set(selectedItems().filter(id => !categoryItemIds.includes(id)))
+  }
+}
+</script>
+
+<style>
+.nested-loops {
+  padding: 20px;
+  font-family: monospace;
+}
+
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 15px 0;
+  padding: 15px;
+  background: #ebf8ff;
+  border-radius: 8px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2b6cb0;
+}
+
+.category {
+  margin: 15px 0;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.category-header {
+  padding: 15px;
+  background: #f7fafc;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.category-header:hover {
+  background: #edf2f7;
+}
+
+.category-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2d3748;
+}
+
+.item-count-badge {
+  background: #4299e1;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.items-container {
+  padding: 15px;
+  background: white;
+}
+
+.item-row {
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.item-row.selected {
+  background: #c6f6d5;
+  border-color: #48bb78;
+}
+
+.item-row.out-of-stock {
+  opacity: 0.6;
+  background: #fed7d7;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-name {
+  font-weight: bold;
+  color: #2d3748;
+}
+
+.item-price {
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.stock-status {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 10px;
+}
+
+.in-stock {
+  background: #c6f6d5;
+  color: #22543d;
+}
+
+.out-of-stock {
+  background: #fed7d7;
+  color: #742a2a;
+}
+
+button {
+  margin: 5px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button.primary {
+  background: #4299e1;
+  color: white;
+}
+
+button.success {
+  background: #48bb78;
+  color: white;
+}
+
+button.danger {
+  background: #f56565;
+  color: white;
+}
+
+button.warning {
+  background: #ed8936;
+  color: white;
+}
+
+.actions-bar {
+  margin: 15px 0;
+  padding: 15px;
+  background: #f7fafc;
+  border-radius: 8px;
+}
+
+.expand-icon {
+  font-size: 20px;
+  transition: transform 0.2s;
+}
+
+.expand-icon.expanded {
+  transform: rotate(90deg);
+}
+</style>
+
+<template>
+<div class="nested-loops">
+  <h2>🔄 Test 12.5: Nested Loops</h2>
+  <p>Testing loops inside loops with complex interactions</p>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-label">Categories</div>
+      <div class="stat-value">{{ categories().length }}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Total Items</div>
+      <div class="stat-value">
+        {{ categories().reduce((sum, cat) => sum + cat.items.length, 0) }}
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Selected</div>
+      <div class="stat-value">{{ itemCount() }}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Total Value</div>
+      <div class="stat-value">${{ totalValue().toFixed(2) }}</div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions-bar">
+    <button class="primary" @click="addNewCategory">Add New Category</button>
+    <button class="warning" @click="clearSelections">Clear All Selections</button>
+  </div>
+
+  <!-- Categories Loop (Level 1) -->
+  <div each="category in categories()" :key="category.id" class="category">
+    <!-- Category Header -->
+    <div class="category-header" @click="() => toggleCategory(category.id)">
+      <div>
+        <span class="expand-icon" :class="{ expanded: category.expanded }">▶</span>
+        <span class="category-name">{{ category.name }}</span>
+      </div>
+      <div>
+        <span class="item-count-badge">{{ category.items.length }} items</span>
+        <button class="success" @click="() => selectAllInCategory(category.id)">Select All</button>
+        <button class="danger" @click="() => removeCategory(category.id)">Remove</button>
+      </div>
+    </div>
+
+    <!-- Items Loop (Level 2) - Conditional on expansion -->
+    <div if="category.expanded" class="items-container">
+      <div each="item in category.items" :key="item.id" 
+           class="item-row"
+           :class="{ selected: selectedItems().includes(item.id), 'out-of-stock': !item.inStock }">
+        
+        <div class="item-info">
+          <div class="item-name">
+            {{ item.name }}
+            <span class="stock-status" :class="item.inStock ? 'in-stock' : 'out-of-stock'">
+              {{ item.inStock ? '✓ In Stock' : '✗ Out of Stock' }}
+            </span>
+          </div>
+          <div class="item-price">${{ item.price.toFixed(2) }}</div>
+        </div>
+
+        <button 
+          :class="selectedItems().includes(item.id) ? 'danger' : 'success'"
+          @click="() => toggleItemSelection(item.id, item.price)"
+          if="item.inStock"
+        >
+          {{ selectedItems().includes(item.id) ? 'Deselect' : 'Select' }}
+        </button>
+
+        <span if="!item.inStock" style="color: #a0aec0;">Unavailable</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div if="categories().length === 0">
+    <p><em>No categories available. Click "Add New Category" to create one.</em></p>
+  </div>
+
+  <!-- Instructions -->
+  <div class="actions-bar">
+    <h3>What to Verify:</h3>
+    <ul>
+      <li>✅ Outer loop (categories) renders correctly</li>
+      <li>✅ Inner loop (items) renders within each category</li>
+      <li>✅ Keys work correctly at both levels</li>
+      <li>✅ Conditional rendering (expanded/collapsed) works</li>
+      <li>✅ Class bindings work in nested context</li>
+      <li>✅ Events fire correctly from nested items</li>
+      <li>✅ State updates propagate through nested structure</li>
+      <li>✅ Adding/removing categories updates UI correctly</li>
+      <li>✅ Select/deselect works across nested loops</li>
+      <li>✅ Performance acceptable with ~20+ items total</li>
+    </ul>
+  </div>
+</div>
+</template>

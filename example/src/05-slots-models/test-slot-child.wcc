@@ -1,0 +1,62 @@
+<script>
+import { defineComponent } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-slot-child',
+})
+</script>
+
+<template>
+  <div class="slot-card">
+    <header class="card-header">
+      <slot name="header">
+        <h4>Header por defecto</h4>
+      </slot>
+    </header>
+    
+    <main class="card-body">
+      <slot>
+        <p>Contenido body por defecto</p>
+      </slot>
+    </main>
+    
+    <footer class="card-footer">
+      <slot name="footer">
+        <p>Footer por defecto</p>
+      </slot>
+    </footer>
+  </div>
+</template>
+
+<style>
+.slot-card {
+  border: 2px solid #9c27b0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+}
+.card-header {
+  background-color: #e1bee7;
+  padding: 15px;
+  border-bottom: 2px solid #9c27b0;
+}
+.card-header h4 {
+  margin: 0;
+  color: #6a1b9a;
+}
+.card-body {
+  padding: 20px;
+  min-height: 100px;
+}
+.card-footer {
+  background-color: #f3e5f5;
+  padding: 10px 15px;
+  border-top: 1px solid #e1bee7;
+  text-align: right;
+}
+.card-footer p {
+  margin: 0;
+  color: #6a1b9a;
+  font-size: 0.9em;
+}
+</style>

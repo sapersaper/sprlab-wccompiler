@@ -1,0 +1,154 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-conditionals',
+})
+
+// Signal para controlar el estado
+const status = signal('active')
+
+function setActive() {
+  status.set('active')
+}
+
+function setPending() {
+  status.set('pending')
+}
+
+function setInactive() {
+  status.set('inactive')
+}
+</script>
+
+<template>
+  <div class="conditionals-test">
+    <h3>Test de Condicionales (if/else-if/else)</h3>
+    
+    <div class="controls">
+      <button @click="setActive">Set Active</button>
+      <button @click="setPending">Set Pending</button>
+      <button @click="setInactive">Set Inactive</button>
+    </div>
+
+    <div class="status-display">
+      <p><strong>Status actual:</strong> {{status()}}</p>
+    </div>
+
+    <!-- Test de if/else-if/else -->
+    <div class="conditional-block">
+      <div if="status() === 'active'" class="status-card active">
+        <h4>✓ Estado Activo</h4>
+        <p>El sistema está funcionando correctamente.</p>
+      </div>
+      
+      <div else-if="status() === 'pending'" class="status-card pending">
+        <h4>⏳ Estado Pendiente</h4>
+        <p>Esperando confirmación...</p>
+      </div>
+      
+      <div else class="status-card inactive">
+        <h4>✗ Estado Inactivo</h4>
+        <p>El sistema está fuera de línea.</p>
+      </div>
+    </div>
+
+    <!-- Test de if simple sin else -->
+    <div class="simple-if">
+      <p if="status() === 'active'" class="alert success">
+        ¡Sistema activo! Todo funciona bien.
+      </p>
+      <p if="status() === 'pending'" class="alert warning">
+        Sistema en espera...
+      </p>
+      <p if="status() === 'inactive'" class="alert error">
+        ¡Sistema inactivo! Requiere atención.
+      </p>
+    </div>
+  </div>
+</template>
+
+<style>
+.conditionals-test {
+  border: 2px solid #ff5722;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fbe9e7;
+}
+.conditionals-test h3 {
+  color: #d84315;
+  margin-top: 0;
+}
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.controls button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #ff5722;
+  color: white;
+  cursor: pointer;
+}
+.controls button:hover {
+  background-color: #e64a19;
+}
+.status-display {
+  background: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+.status-display p {
+  margin: 0;
+  font-family: monospace;
+}
+.conditional-block {
+  margin-bottom: 15px;
+}
+.status-card {
+  padding: 15px;
+  border-radius: 4px;
+  border-left: 4px solid;
+}
+.status-card.active {
+  background-color: #c8e6c9;
+  border-color: #4caf50;
+}
+.status-card.active h4 {
+  color: #2e7d32;
+}
+.status-card.pending {
+  background-color: #fff9c4;
+  border-color: #fbc02d;
+}
+.status-card.pending h4 {
+  color: #f57f17;
+}
+.status-card.inactive {
+  background-color: #ffcdd2;
+  border-color: #f44336;
+}
+.status-card.inactive h4 {
+  color: #c62828;
+}
+.simple-if .alert {
+  padding: 10px;
+  border-radius: 4px;
+  margin: 5px 0;
+}
+.simple-if .success {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
+.simple-if .warning {
+  background-color: #fff9c4;
+  color: #f57f17;
+}
+.simple-if .error {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+</style>
