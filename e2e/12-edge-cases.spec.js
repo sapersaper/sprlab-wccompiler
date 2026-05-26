@@ -27,7 +27,7 @@ test.afterAll(async () => {
 // ── No console errors ─────────────────────────────────────────────────
 
 test('page loads without console errors', async ({ page }) => {
-  test.fail(true, 'BUG: test-deep-nesting has runtime error with nested component childNodes access');
+  test.fail(true, 'BUG: test-rapid-updates has pre-existing $index undefined error');
   const errors = [];
   page.on('console', msg => {
     if (msg.type() === 'error') errors.push(msg.text());
