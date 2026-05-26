@@ -1,0 +1,98 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-dynamic-component',
+})
+
+// Signal para controlar qué componente renderizar
+const currentComponent = signal('comp-a')
+
+function switchToA() {
+  currentComponent.set('comp-a')
+}
+
+function switchToB() {
+  currentComponent.set('comp-b')
+}
+
+function switchToC() {
+  currentComponent.set('comp-c')
+}
+</script>
+
+<template>
+  <div class="dynamic-test">
+    <h3>Test de Componente Dinámico (&lt;component is="..."&gt;)</h3>
+    
+    <div class="controls">
+      <button @click="switchToA">Render Component A</button>
+      <button @click="switchToB">Render Component B</button>
+      <button @click="switchToC">Render Component C</button>
+    </div>
+
+    <div class="status">
+      <p><strong>Componente actual:</strong> {{currentComponent()}}</p>
+    </div>
+
+    <!-- Intento 1: Sintaxis incorrecta (is sin binding) -->
+    <div class="attempt-1">
+      <h4>Intento 1: &lt;component is="currentComponent()"&gt; ❌</h4>
+      <p style="color: red;">ERROR: El compilador requiere :is, no is</p>
+    </div>
+
+    <!-- Intento 2: Con binding dinámico (CORRECTO) -->
+    <div class="attempt-2">
+      <h4>Intento 2: &lt;component :is="currentComponent()"&gt; ✅</h4>
+      <component :is="currentComponent()"></component>
+    </div>
+  </div>
+</template>
+
+<style>
+.dynamic-test {
+  border: 2px solid #e91e63;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  background-color: #fce4ec;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.controls button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #e91e63;
+  color: white;
+  cursor: pointer;
+}
+
+.controls button:hover {
+  background-color: #c2185b;
+}
+
+.status {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 4px;
+}
+
+.attempt-1, .attempt-2 {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: white;
+  border-radius: 4px;
+}
+
+.attempt-1 h4, .attempt-2 h4 {
+  margin-top: 0;
+  color: #e91e63;
+}
+</style>

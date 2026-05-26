@@ -1,0 +1,60 @@
+<script>
+import { defineComponent, defineProps, computed } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-props',
+})
+
+// Definir props con valores por defecto
+const props = defineProps({
+  title: 'Título por defecto',
+  count: 0,
+  active: false
+})
+
+// Computed derivado de props
+const statusText = computed(() => props.active ? 'Activo' : 'Inactivo')
+</script>
+
+<template>
+  <div class="props-test">
+    <h3>Test de Props</h3>
+    
+    <div class="prop-display">
+      <p><strong>Title:</strong> {{props.title}}</p>
+      <p><strong>Count:</strong> {{props.count}}</p>
+      <p><strong>Active:</strong> {{props.active}}</p>
+      <p><strong>Status:</strong> {{statusText()}}</p>
+    </div>
+
+    <div class="visual-indicator" :style="{ backgroundColor: props.active ? '#42b983' : '#f66' }">
+      <p>{{props.active ? 'Componente ACTIVO' : 'Componente INACTIVO'}}</p>
+    </div>
+  </div>
+</template>
+
+<style>
+.props-test {
+  border: 1px solid #607d8b;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #eceff1;
+}
+.props-test.active {
+  border-color: #4caf50;
+  background-color: #e8f5e9;
+}
+.props-test h3 {
+  color: #455a64;
+  margin-top: 0;
+}
+.prop-display {
+  background: white;
+  padding: 10px;
+  border-radius: 4px;
+}
+.prop-display p {
+  margin: 5px 0;
+  font-family: monospace;
+}
+</style>

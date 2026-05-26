@@ -1,0 +1,90 @@
+<script>
+import { defineComponent, defineModel } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-model-child',
+})
+
+// defineModel crea un signal con two-way binding
+const username = defineModel({ name: 'username', default: '' })
+const age = defineModel({ name: 'age', default: 0 })
+const agree = defineModel({ name: 'agree', default: false })
+
+function clearUsername() {
+  username.set('')
+}
+</script>
+
+<template>
+  <div class="child-form">
+    <h4>Child Form Component</h4>
+    
+    <div class="form-group">
+      <label>Username:</label>
+      <input type="text" model="username" placeholder="Enter username" />
+      <button @click="clearUsername">Clear</button>
+      <p>Current: "{{username()}}"</p>
+    </div>
+
+    <div class="form-group">
+      <label>Age:</label>
+      <input type="number" model="age" min="0" max="120" />
+      <p>Current: {{age()}}</p>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input type="checkbox" model="agree" />
+        I agree to terms
+      </label>
+      <p>Agreed: {{agree()}}</p>
+    </div>
+  </div>
+</template>
+
+<style>
+.child-form {
+  border: 2px solid #4caf50;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #e8f5e9;
+}
+.child-form h4 {
+  color: #2e7d32;
+  margin-top: 0;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #2e7d32;
+}
+.form-group input[type="text"],
+.form-group input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #4caf50;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+.form-group button {
+  padding: 5px 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.form-group button:hover {
+  background-color: #388e3c;
+}
+.form-group p {
+  margin: 5px 0 0 0;
+  font-family: monospace;
+  font-size: 0.9em;
+  color: #1b5e20;
+}
+</style>

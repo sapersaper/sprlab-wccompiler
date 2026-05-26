@@ -1,0 +1,144 @@
+<script>
+import { defineComponent, signal, templateRef, onMount } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-template-refs',
+})
+
+// Template refs
+const inputRef = templateRef('myInput')
+const canvasRef = templateRef('myCanvas')
+const divRef = templateRef('myDiv')
+
+// Signals para mostrar información
+const inputValue = signal('')
+const canvasInfo = signal('Canvas no inicializado')
+const divDimensions = signal('Div no medido')
+
+onMount(() => {
+  // Acceder al input via ref
+  if (inputRef.value) {
+    inputRef.value.focus()
+    inputRef.value.value = 'Texto inicial desde ref'
+    inputValue.set(inputRef.value.value)
+  }
+
+  // Dibujar en canvas via ref
+  if (canvasRef.value) {
+    const ctx = canvasRef.value.getContext('2d')
+    ctx.fillStyle = '#4caf50'
+    ctx.fillRect(10, 10, 180, 80)
+    ctx.fillStyle = 'white'
+    ctx.font = '16px Arial'
+    ctx.fillText('Canvas dibujado!', 30, 60)
+    canvasInfo.set('Canvas inicializado y dibujado')
+  }
+
+  // Medir div via ref
+  if (divRef.value) {
+    const rect = divRef.value.getBoundingClientRect()
+    divDimensions.set(`Ancho: ${rect.width.toFixed(0)}px, Alto: ${rect.height.toFixed(0)}px`)
+  }
+})
+
+function updateInput() {
+  if (inputRef.value) {
+    inputRef.value.value = 'Actualizado via ref!'
+    inputValue.set(inputRef.value.value)
+  }
+}
+
+function clearCanvas() {
+  if (canvasRef.value) {
+    const ctx = canvasRef.value.getContext('2d')
+    ctx.clearRect(0, 0, 200, 100)
+    canvasInfo.set('Canvas limpiado')
+  }
+}
+</script>
+
+<template>
+  <div class="refs-test">
+    <h3>Test de Template Refs</h3>
+    
+    <!-- Test 1: Input ref -->
+    <div class="ref-section">
+      <h4>Input Ref</h4>
+      <p>Valor actual: {{inputValue()}}</p>
+      <input ref="myInput" type="text" placeholder="Input con ref" />
+      <button @click="updateInput">Actualizar via Ref</button>
+    </div>
+
+    <!-- Test 2: Canvas ref -->
+    <div class="ref-section">
+      <h4>Canvas Ref</h4>
+      <p>{{canvasInfo()}}</p>
+      <canvas ref="myCanvas" width="200" height="100"></canvas>
+      <button @click="clearCanvas">Limpiar Canvas</button>
+    </div>
+
+    <!-- Test 3: Div ref -->
+    <div class="ref-section">
+      <h4>Div Ref</h4>
+      <p>{{divDimensions()}}</p>
+      <div ref="myDiv" class="measurable-div">
+        Este div será medido via ref
+      </div>
+    </div>
+  </div>
+</template>
+
+<style>
+.refs-test {
+  border: 2px solid #607d8b;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #eceff1;
+}
+.refs-test h3 {
+  color: #37474f;
+  margin-top: 0;
+}
+.ref-section {
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+.ref-section h4 {
+  margin-top: 0;
+  color: #455a64;
+}
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #607d8b;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+canvas {
+  border: 1px solid #607d8b;
+  border-radius: 4px;
+  display: block;
+  margin: 10px 0;
+}
+.measurable-div {
+  background: #cfd8dc;
+  padding: 20px;
+  border-radius: 4px;
+  text-align: center;
+  margin: 10px 0;
+}
+button {
+  margin: 5px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #607d8b;
+  color: white;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #455a64;
+}
+</style>

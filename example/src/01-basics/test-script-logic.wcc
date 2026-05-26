@@ -1,0 +1,48 @@
+<script>
+import { defineComponent, computed } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-script-logic',
+})
+
+// Variables constantes (no reactivas)
+const APP_NAME = 'WCC Tester'
+const VERSION = '1.0.0'
+const MAX_ITEMS = 100
+
+// Usando computed en lugar de función
+const fullVersion = computed(() => `${APP_NAME} v${VERSION}`)
+
+// Función con parámetros (esto debería funcionar según la doc)
+function calculatePercentage(value) {
+  return ((value / MAX_ITEMS) * 100).toFixed(1)
+}
+</script>
+
+<template>
+  <div class="logic-test">
+    <h3>Test de Script Logic</h3>
+    <p>App: {{APP_NAME}}</p>
+    <p>Version: {{VERSION}}</p>
+    <p>Full: {{fullVersion()}}</p>
+    <p>50 de 100 = {{calculatePercentage(50)}}%</p>
+    <p>75 de 100 = {{calculatePercentage(75)}}%</p>
+  </div>
+</template>
+
+<style>
+.logic-test {
+  border: 1px solid #ff9800;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fff3e0;
+}
+.logic-test h3 {
+  color: #e65100;
+  margin-top: 0;
+}
+.logic-test p {
+  margin: 5px 0;
+  font-family: monospace;
+}
+</style>

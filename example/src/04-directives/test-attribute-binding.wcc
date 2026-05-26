@@ -1,0 +1,119 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-attribute-binding',
+})
+
+// Signals para atributos dinámicos
+const url = signal('https://example.com')
+const isDisabled = signal(false)
+const textColor = signal('#2196f3')
+const fontSize = signal(16)
+
+function changeUrl() {
+  url.set('https://github.com')
+}
+
+function toggleDisabled() {
+  isDisabled.set(!isDisabled())
+}
+
+function changeColor() {
+  const colors = ['#2196f3', '#4caf50', '#ff5722', '#9c27b0']
+  const currentIndex = colors.indexOf(textColor())
+  const nextIndex = (currentIndex + 1) % colors.length
+  textColor.set(colors[nextIndex])
+}
+
+function increaseFontSize() {
+  fontSize.set(fontSize() + 2)
+}
+</script>
+
+<template>
+  <div class="attr-test">
+    <h3>Test de Attribute Binding</h3>
+    
+    <!-- Test :href -->
+    <div class="attr-section">
+      <h4>:href Binding</h4>
+      <p>URL actual: {{url()}}</p>
+      <a :href="url()" target="_blank" class="dynamic-link">
+        Click para visitar {{url()}}
+      </a>
+      <button @click="changeUrl">Cambiar URL</button>
+    </div>
+
+    <!-- Test :disabled -->
+    <div class="attr-section">
+      <h4>:disabled Binding</h4>
+      <p>Estado: {{isDisabled() ? 'Deshabilitado' : 'Habilitado'}}</p>
+      <button :disabled="isDisabled()" @click="toggleDisabled">
+        {{isDisabled() ? 'Estoy Deshabilitado' : 'Click para Deshabilitarme'}}
+      </button>
+    </div>
+
+    <!-- Test :style inline -->
+    <div class="attr-section">
+      <h4>:style Binding (Inline)</h4>
+      <p>Color: {{textColor()}}, Tamaño: {{fontSize()}}px</p>
+      <div :style="{ color: textColor(), fontSize: fontSize() + 'px', fontWeight: 'bold' }">
+        Texto con estilo dinámico
+      </div>
+      <button @click="changeColor">Cambiar Color</button>
+      <button @click="increaseFontSize">Aumentar Tamaño</button>
+    </div>
+  </div>
+</template>
+
+<style>
+.attr-test {
+  border: 2px solid #ff9800;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fff3e0;
+}
+.attr-test h3 {
+  color: #e65100;
+  margin-top: 0;
+}
+.attr-section {
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+.attr-section h4 {
+  margin-top: 0;
+  color: #ef6c00;
+}
+.dynamic-link {
+  display: inline-block;
+  padding: 8px 15px;
+  background-color: #2196f3;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+.dynamic-link:hover {
+  background-color: #1976d2;
+}
+button {
+  margin: 5px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #ff9800;
+  color: white;
+  cursor: pointer;
+}
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+button:hover:not(:disabled) {
+  background-color: #f57c00;
+}
+</style>

@@ -1,0 +1,98 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-model-parent',
+})
+
+// Signals en el parent que se sincronizan con el child via two-way binding
+const parentUsername = signal('')
+const parentAge = signal(0)
+const parentAgree = signal(false)
+
+function resetAll() {
+  parentUsername.set('')
+  parentAge.set(0)
+  parentAgree.set(false)
+}
+</script>
+
+<template>
+  <div class="parent-container">
+    <h3>Test de Two-Way Binding (defineModel)</h3>
+    
+    <div class="parent-state">
+      <h4>Parent State:</h4>
+      <p><strong>Username:</strong> "{{parentUsername()}}"</p>
+      <p><strong>Age:</strong> {{parentAge()}}</p>
+      <p><strong>Agreed:</strong> {{parentAgree()}}</p>
+      <button @click="resetAll">Reset All</button>
+    </div>
+
+    <!-- Child component con two-way binding -->
+    <test-model-child 
+      :username="parentUsername()"
+      @username-changed="(e) => parentUsername.set(e.detail)"
+      :age="parentAge()"
+      @age-changed="(e) => parentAge.set(e.detail)"
+      :agree="parentAgree()"
+      @agree-changed="(e) => parentAgree.set(e.detail)"
+    ></test-model-child>
+
+    <div class="sync-indicator">
+      <p>✓ Los cambios en el child se reflejan automáticamente en el parent</p>
+      <p>✓ Los cambios en el parent (Reset) se reflejan en el child</p>
+    </div>
+  </div>
+</template>
+
+<style>
+.parent-container {
+  border: 2px solid #3f51b5;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #e8eaf6;
+}
+.parent-container h3 {
+  color: #283593;
+  margin-top: 0;
+}
+.parent-state {
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+.parent-state h4 {
+  margin-top: 0;
+  color: #283593;
+}
+.parent-state p {
+  margin: 8px 0;
+  font-family: monospace;
+}
+.parent-state button {
+  margin-top: 10px;
+  padding: 8px 15px;
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.parent-state button:hover {
+  background-color: #283593;
+}
+.sync-indicator {
+  margin-top: 15px;
+  padding: 10px;
+  background: #c5cae9;
+  border-radius: 4px;
+  text-align: center;
+}
+.sync-indicator p {
+  margin: 5px 0;
+  color: #283593;
+  font-size: 0.9em;
+}
+</style>

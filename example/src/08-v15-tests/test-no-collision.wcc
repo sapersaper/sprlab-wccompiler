@@ -1,0 +1,111 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-no-collision',
+})
+
+const greeting = signal('Hello')
+
+// Función con nombre DIFERENTE al signal - debería funcionar
+function getGreeting() {
+  return 'Hi from function'
+}
+
+function updateGreeting() {
+  greeting.set('Updated Hello')
+}
+</script>
+
+<template>
+  <div class="test-container">
+    <h3>✅ Test 1: Parameterless Functions WITHOUT Collision</h3>
+    
+    <div class="test-case">
+      <h4>Test Case 1: Signal + Function with Different Names</h4>
+      
+      <div class="result">
+        <p><strong>Signal value:</strong> {{greeting()}}</p>
+        <p><strong>Function call:</strong> {{getGreeting()}}</p>
+      </div>
+
+      <button @click="updateGreeting">Update Signal</button>
+      
+      <div class="expected">
+        <h5>Expected Results:</h5>
+        <ul>
+          <li>✅ Component compiles without errors</li>
+          <li>✅ Signal value displays: "Hello"</li>
+          <li>✅ Function call displays: "Hi from function"</li>
+          <li>✅ Both values update correctly when signal changes</li>
+          <li>✅ No console errors</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style>
+.test-container {
+  border: 3px solid #4caf50;
+  border-radius: 12px;
+  padding: 25px;
+  margin: 20px 0;
+  background-color: #e8f5e9;
+}
+
+.test-case {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+.result {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 4px;
+  margin: 15px 0;
+}
+
+.result p {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.expected {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+  border-radius: 4px;
+}
+
+.expected h5 {
+  margin-top: 0;
+  color: #856404;
+}
+
+.expected ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.expected li {
+  margin: 5px 0;
+}
+</style>

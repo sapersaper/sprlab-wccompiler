@@ -1,0 +1,171 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-style-binding',
+})
+
+// Test signals for style binding
+const bgColor = signal('lightblue')
+const textColor = signal('darkblue')
+const fontSize = signal('16px')
+const fontWeight = signal('bold')
+const padding = signal('10px')
+const borderRadius = signal('8px')
+const isVisible = signal(true)
+const opacity = signal(1)
+
+function changeColors() {
+  bgColor.set(bgColor() === 'lightblue' ? 'lightcoral' : 'lightblue')
+  textColor.set(textColor() === 'darkblue' ? 'darkred' : 'darkblue')
+}
+
+function toggleVisibility() {
+  isVisible.set(!isVisible())
+  opacity.set(isVisible() ? 0.5 : 1)
+}
+
+function increaseSize() {
+  const currentSize = parseInt(fontSize())
+  fontSize.set(`${currentSize + 2}px`)
+}
+</script>
+
+<template>
+  <div class="style-binding-test">
+    <h3>Test de Style Binding Multi-Property (BUG-0009)</h3>
+    
+    <!-- Test 1: Single property style binding -->
+    <section class="test-section">
+      <h4>Test 1: Single Property Binding</h4>
+      <div :style="{ backgroundColor: bgColor() }" class="style-box">
+        Background: {{ bgColor() }}
+      </div>
+      <button @click="changeColors">Change Colors</button>
+    </section>
+
+    <!-- Test 2: Multiple properties in single :style -->
+    <section class="test-section">
+      <h4>Test 2: Multiple Properties (Object Syntax)</h4>
+      <div 
+        :style="{ 
+          backgroundColor: bgColor(),
+          color: textColor(),
+          fontSize: fontSize(),
+          fontWeight: fontWeight(),
+          padding: padding(),
+          borderRadius: borderRadius()
+        }" 
+        class="style-box"
+      >
+        Multi-property styled box
+      </div>
+      <button @click="increaseSize">Increase Font Size</button>
+    </section>
+
+    <!-- Test 3: Conditional style properties -->
+    <section class="test-section">
+      <h4>Test 3: Conditional Properties</h4>
+      <div 
+        :style="{ 
+          opacity: isVisible() ? 1 : 0.3,
+          display: isVisible() ? 'block' : 'none',
+          transition: 'all 0.3s ease'
+        }" 
+        class="style-box"
+      >
+        This box can be hidden
+      </div>
+      <button @click="toggleVisibility">Toggle Visibility</button>
+    </section>
+
+    <!-- Test 4: Dynamic computed styles -->
+    <section class="test-section">
+      <h4>Test 4: Computed/Expression Styles</h4>
+      <div 
+        :style="{ 
+          transform: `rotate(${fontSize().replace('px', '') * 2}deg)`,
+          scale: opacity(),
+          backgroundColor: bgColor()
+        }" 
+        class="style-box"
+      >
+        Transformed box (rotation based on font size)
+      </div>
+    </section>
+
+    <!-- Test 5: Mixed static and dynamic styles -->
+    <section class="test-section">
+      <h4>Test 5: Mixed Static + Dynamic</h4>
+      <div 
+        style="border: 2px solid #333; margin: 10px;"
+        :style="{ 
+          backgroundColor: bgColor(),
+          color: textColor()
+        }" 
+        class="style-box"
+      >
+        Has both static and dynamic styles
+      </div>
+    </section>
+
+    <!-- Test 6: Style with units -->
+    <section class="test-section">
+      <h4>Test 6: Styles with Units</h4>
+      <div 
+        :style="{ 
+          width: '200px',
+          height: '100px',
+          lineHeight: '100px',
+          textAlign: 'center',
+          backgroundColor: bgColor()
+        }" 
+        class="style-box"
+      >
+        Fixed dimensions
+      </div>
+    </section>
+  </div>
+</template>
+
+<style>
+.style-binding-test {
+  border: 2px solid #ff9800;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fff3e0;
+}
+.style-binding-test h3 {
+  color: #e65100;
+  margin-top: 0;
+}
+.test-section {
+  margin-bottom: 25px;
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+}
+.test-section h4 {
+  color: #e65100;
+  margin-top: 0;
+}
+.style-box {
+  margin: 10px 0;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+button {
+  padding: 8px 15px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 5px;
+}
+button:hover {
+  background-color: #f57c00;
+}
+</style>
