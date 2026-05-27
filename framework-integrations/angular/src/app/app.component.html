@@ -21,14 +21,14 @@
 <!-- TWO-WAY BINDING                                                    -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 
-<h2>Test 3: Two-way binding ([(count)] with wccModel)</h2>
-<wcc-counter id="test3" wccModel [(count)]="modelCount"></wcc-counter>
+<h2>Test 3: Two-way binding ([(count)] via plugin)</h2>
+<wcc-counter id="test3" [count]="modelCount" (countChange)="modelCount = $any($event).detail"></wcc-counter>
 <p>Angular modelCount: {{ modelCount }}</p>
 <button (click)="modelCount = modelCount + 1">Angular increment (two-way)</button>
 
 <h2>Test 4: Multiple two-way bindings</h2>
 <!-- N/A: v-model.number modifier — Angular no tiene modifiers en [()] -->
-<wcc-counter id="test4" wccModel [(count)]="multiCount" label="Multi-test"></wcc-counter>
+<wcc-counter id="test4" [count]="multiCount" (countChange)="multiCount = $any($event).detail" label="Multi-test"></wcc-counter>
 <p>Angular multiCount: {{ multiCount }}</p>
 
 <!-- ═══════════════════════════════════════════════════════════════════ -->

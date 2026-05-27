@@ -328,6 +328,7 @@ function copyIntegrationPlugin(integration, rootDir, outputDir) {
     angular: [
       { src: join(rootDir, 'adapters/angular-compiled/angular.js'), dest: 'angular-adapter.js' },
       { src: join(rootDir, 'adapters/angular-compiled/angular.d.ts'), dest: 'angular-adapter.d.ts' },
+      { src: join(rootDir, 'integrations/angular-plugin.js'), dest: 'angular-plugin.mjs' },
     ],
   };
 
