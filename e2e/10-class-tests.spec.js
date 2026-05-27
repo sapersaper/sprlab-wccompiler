@@ -32,6 +32,7 @@ test('page loads without console errors', async ({ page }) => {
   await page.goto(url);
   await page.waitForSelector('test-class-binding');
   await page.waitForSelector('test-class-directive');
+  await page.waitForSelector('test-static-class-preservation');
 
   expect(errors).toEqual([]);
 });
@@ -142,5 +143,71 @@ test.describe('test-class-directive', () => {
     // Toggle error off
     await page.locator('test-class-directive .test-section').nth(0).locator('button', { hasText: 'Toggle Error' }).click();
     await expect(demoBox).not.toHaveClass(/\berror\b/);
+  });
+});
+
+// ── test-static-class-preservation ────────────────────────────────────
+
+test.describe('test-static-class-preservation', () => {
+  test('ternary :class preserves static classes (box + base-style)', async ({ page }) => {
+    await page.goto(url);
+    const box = page.locator('test-static-class-preservation #test-ternary .box');
+
+    // Should have static classes AND dynamic class
+    await expect(box).toHaveClass(/\bbox\b/);
+    await expect(box).toHaveClass(/\bbase-style\b/);
+    await expect(box).toHaveClass(/\bactive-state\b/);
+
+    // Toggle to inactive
+    await page.locator('test-static-class-preservation #test-ternary button').click();
+    await expect(box).toHaveClass(/\bbox\b/);
+    await expect(box).toHaveClass(/\bbase-style\b/);
+    await expect(box).toHaveClass(/\binactive-state\b/);
+    await expect(box).not.toHaveClass(/\bactive-state\b/);
+  });
+
+  test('string :class preserves static classes (box + base-style)', async ({ page }) => {
+    await page.goto(url);
+    const box = page.locator('test-static-class-preservation #test-string .box');
+
+    // Should have static classes AND dynamic class
+    await expect(box).toHaveClass(/\bbox\b/);
+    await expect(box).toHaveClass(/\bbase-style\b/);
+    await expect(box).toHaveClass(/\blight\b/);
+
+    // Toggle to dark
+    await page.locator('test-static-class-preservation #test-string button').click();
+    await expect(box).toHaveClass(/\bbox\b/);
+    await expect(box).toHaveClass(/\bbase-style\b/);
+    await expect(box).toHaveClass(/\bdark\b/);
+    await expect(box).not.toHaveClass(/\blight\b/);
+  });
+
+  test('array :class preserves static classes (box + base-style)', async ({ page }) => {
+    await page.goto(url);
+    const box = page.locator('test-static-class-preservation #test-array .box');
+
+    // Should have static classes AND dynamic classes from array
+    await expect(box).toHaveClass(/\bbox\b/);
+    await expect(box).toHaveClass(/\bbase-style\b/);
+    await expect(box).toHaveClass(/\blight\b/);
+    await expect(box).toHaveClass(/\bmedium\b/);
+
+    // Cycle size
+    await page.locator('test-static-class-preservation #test-array button').click();
+    await expect(box).toHaveClass(/\bbox\b/);
+    await expect(box).toHaveClass(/\bbase-style\b/);
+    await expect(box).toHaveClass(/\blarge\b/);
+    await expect(box).not.toHaveClass(/\bmedium\b/);
+  });
+
+  test('object :class preserves static classes (reference, already worked)', async ({ page }) => {
+    await page.goto(url);
+    const box = page.locator('test-static-class-preservation #test-object .box');
+
+    // Object syntax always preserved static classes via classList
+    await expect(box).toHaveClass(/\bbox\b/);
+    await expect(box).toHaveClass(/\bbase-style\b/);
+    await expect(box).toHaveClass(/\bactive\b/);
   });
 });

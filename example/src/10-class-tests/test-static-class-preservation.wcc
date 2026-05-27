@@ -1,0 +1,125 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-static-class-preservation',
+})
+
+const isActive = signal(true)
+const theme = signal('light')
+const size = signal('medium')
+
+function toggleActive() {
+  isActive.set(!isActive())
+}
+
+function toggleTheme() {
+  theme.set(theme() === 'light' ? 'dark' : 'light')
+}
+
+function cycleSize() {
+  const sizes = ['small', 'medium', 'large']
+  const idx = sizes.indexOf(size())
+  size.set(sizes[(idx + 1) % sizes.length])
+}
+</script>
+
+<template>
+  <div class="static-class-test">
+    <h3>🧪 Static Class Preservation with Dynamic :class</h3>
+
+    <p class="description">
+      Verifies that static <code>class="..."</code> is preserved when combined with
+      dynamic <code>:class</code> using ternary, string, or array expressions.
+    </p>
+
+    <!-- Test 1: static class + ternary :class -->
+    <section class="test-section" id="test-ternary">
+      <h4>Test 1: Static + Ternary</h4>
+      <div class="box base-style" :class="isActive() ? 'active-state' : 'inactive-state'">
+        State: {{isActive() ? 'ACTIVE' : 'INACTIVE'}}
+      </div>
+      <button @click="toggleActive">Toggle Active</button>
+    </section>
+
+    <!-- Test 2: static class + string :class -->
+    <section class="test-section" id="test-string">
+      <h4>Test 2: Static + String</h4>
+      <div class="box base-style" :class="theme()">
+        Theme: {{theme()}}
+      </div>
+      <button @click="toggleTheme">Toggle Theme</button>
+    </section>
+
+    <!-- Test 3: static class + array :class -->
+    <section class="test-section" id="test-array">
+      <h4>Test 3: Static + Array</h4>
+      <div class="box base-style" :class="[theme(), size()]">
+        Theme: {{theme()}}, Size: {{size()}}
+      </div>
+      <button @click="cycleSize">Cycle Size</button>
+    </section>
+
+    <!-- Test 4: static class + object :class (already works, for comparison) -->
+    <section class="test-section" id="test-object">
+      <h4>Test 4: Static + Object (reference)</h4>
+      <div class="box base-style" :class="{ active: isActive(), dark: theme() === 'dark' }">
+        Active: {{isActive()}}, Dark: {{theme() === 'dark'}}
+      </div>
+      <button @click="toggleActive">Toggle Active</button>
+    </section>
+  </div>
+</template>
+
+<style>
+.static-class-test {
+  font-family: system-ui, sans-serif;
+  padding: 1rem;
+}
+.description {
+  color: #666;
+  margin-bottom: 1rem;
+}
+.test-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+.box {
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.base-style {
+  border: 2px solid #333;
+  font-weight: bold;
+}
+.active-state {
+  background: #d4edda;
+  color: #155724;
+}
+.inactive-state {
+  background: #f8d7da;
+  color: #721c24;
+}
+.light {
+  background: #fff3cd;
+}
+.dark {
+  background: #343a40;
+  color: white;
+}
+.small { font-size: 0.8rem; }
+.medium { font-size: 1rem; }
+.large { font-size: 1.3rem; }
+.active {
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+}
+button {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+</style>
