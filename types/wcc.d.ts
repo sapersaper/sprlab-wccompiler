@@ -7,6 +7,7 @@ declare module 'wcc' {
   export function signal<T>(value: T): Signal<T>;
   export function computed<T>(fn: () => T): () => T;
   export function effect(fn: () => void): void;
+  export function batch(fn: () => void): void;
   export function watch<T>(target: Signal<T>, fn: (newVal: T, oldVal: T) => void): void;
   export function watch<T>(target: () => T, fn: (newVal: T, oldVal: T) => void): void;
   export function defineComponent(options: {
@@ -18,6 +19,8 @@ declare module 'wcc' {
 
   export function defineEmits<T>(): T;
   export function defineEmits(names: string[]): (name: string, detail?: any) => void;
+
+  export function defineModel<T>(initialValue: T): Signal<T>;
 
   export function templateRef<T = HTMLElement>(name: string): { value: T | null };
 

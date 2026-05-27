@@ -76,7 +76,7 @@ describe('Feature: volar-language-server, Property 1: Asignación correcta de la
 
         // Count expected blocks
         let expectedCount = 0;
-        if (config.includeScript) expectedCount++;
+        if (config.includeScript) expectedCount += 2; // script_0 + wcc_types_0
         if (config.includeTemplate) expectedCount++;
         if (config.includeStyle) expectedCount++;
 
@@ -156,6 +156,9 @@ describe('Feature: volar-language-server, Property 2: Round-trip de mapeo de pos
 
         // Verify round-trip for each embedded code
         for (const embedded of wccCode.embeddedCodes) {
+          // Skip wcc_types_0 — it has no mappings (ambient declarations only)
+          if (embedded.id === 'wcc_types_0') continue;
+
           const mapping = embedded.mappings[0];
           expect(mapping).toBeDefined();
 
@@ -222,6 +225,9 @@ describe('Feature: volar-language-server, Property 2: Round-trip de mapeo de pos
         const wccCode = new WccCode(createSnapshot(source));
 
         for (const embedded of wccCode.embeddedCodes) {
+          // Skip wcc_types_0 — it has no mappings (ambient declarations only)
+          if (embedded.id === 'wcc_types_0') continue;
+
           const mapping = embedded.mappings[0];
           const sourceOffset = mapping.sourceOffsets[0];
           const length = mapping.lengths[0];
@@ -310,7 +316,7 @@ describe('Feature: volar-language-server, Property 4: Consistencia de actualizac
 
         // Count expected blocks
         let expectedCount = 0;
-        if (config.includeScript) expectedCount++;
+        if (config.includeScript) expectedCount += 2; // script_0 + wcc_types_0
         if (config.includeTemplate) expectedCount++;
         if (config.includeStyle) expectedCount++;
 
@@ -341,6 +347,9 @@ describe('Feature: volar-language-server, Property 4: Consistencia de actualizac
 
         // Verify mappings have correct offsets for the new source
         for (const embedded of wccCode.embeddedCodes) {
+          // Skip wcc_types_0 — it has no mappings (ambient declarations only)
+          if (embedded.id === 'wcc_types_0') continue;
+
           const mapping = embedded.mappings[0];
           expect(mapping).toBeDefined();
 

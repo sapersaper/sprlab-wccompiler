@@ -16,28 +16,30 @@ function mockUri(path: string) {
 }
 
 describe('WccCode', () => {
-  it('file with three blocks generates three embeddedCodes', () => {
+  it('file with three blocks generates embeddedCodes for each block plus wcc_types', () => {
     const source = `<script>const x = 1;</script>
 <template><div>Hello</div></template>
 <style>.foo { color: red; }</style>`;
 
     const code = new WccCode(createSnapshot(source));
 
-    expect(code.embeddedCodes).toHaveLength(3);
+    expect(code.embeddedCodes).toHaveLength(4);
     expect(code.embeddedCodes[0].id).toBe('script_0');
     expect(code.embeddedCodes[1].id).toBe('template_0');
     expect(code.embeddedCodes[2].id).toBe('style_0');
+    expect(code.embeddedCodes[3].id).toBe('wcc_types_0');
   });
 
-  it('file without <style> generates two embeddedCodes', () => {
+  it('file without <style> generates embeddedCodes for script, template, and wcc_types', () => {
     const source = `<script>const x = 1;</script>
 <template><div>Hello</div></template>`;
 
     const code = new WccCode(createSnapshot(source));
 
-    expect(code.embeddedCodes).toHaveLength(2);
+    expect(code.embeddedCodes).toHaveLength(3);
     expect(code.embeddedCodes[0].id).toBe('script_0');
     expect(code.embeddedCodes[1].id).toBe('template_0');
+    expect(code.embeddedCodes[2].id).toBe('wcc_types_0');
   });
 
   it('<script lang="ts"> produces languageId "typescript"', () => {
@@ -84,7 +86,7 @@ describe('WccCode', () => {
 <template><div>Hello</div></template>`;
 
     const code = new WccCode(createSnapshot(source1));
-    expect(code.embeddedCodes).toHaveLength(2);
+    expect(code.embeddedCodes).toHaveLength(3);
 
     // Update with new content that adds a style block
     const source2 = `<script>const y = 2;</script>
@@ -93,7 +95,7 @@ describe('WccCode', () => {
 
     code.update(createSnapshot(source2));
 
-    expect(code.embeddedCodes).toHaveLength(3);
+    expect(code.embeddedCodes).toHaveLength(4);
 
     const scriptCode = code.embeddedCodes.find((c) => c.id === 'script_0')!;
     expect(scriptCode.snapshot.getText(0, scriptCode.snapshot.getLength())).toBe('const y = 2;');
@@ -118,7 +120,7 @@ const x: number = 42;
 
     const code = new WccCode(createSnapshot(source));
 
-    expect(code.embeddedCodes).toHaveLength(3);
+    expect(code.embeddedCodes).toHaveLength(4);
 
     // Script block: opening tag is `<script lang="ts">` (18 chars), content starts at offset 18
     const scriptCode = code.embeddedCodes[0];
@@ -197,7 +199,8 @@ describe('Compatibility - template_expressions_0', () => {
     expect(ids).toContain('template_0');
     expect(ids).toContain('style_0');
     expect(ids).toContain('template_expressions_0');
-    expect(code.embeddedCodes).toHaveLength(4);
+    expect(ids).toContain('wcc_types_0');
+    expect(code.embeddedCodes).toHaveLength(5);
   });
 
   it('file without template block does NOT generate template_expressions_0', () => {
@@ -245,14 +248,18 @@ function handleClick() {}
     const scriptCode = code.embeddedCodes.find((c) => c.id === 'script_0')!;
     const scriptContent = scriptCode.snapshot.getText(0, scriptCode.snapshot.getLength());
 
-    // script_0 should contain ONLY the raw script content (usage variables are in template_expressions_0)
+    // script_0 should contain the raw script content plus void-usage suffix
     expect(scriptContent).toContain(`\nconst name = signal('World');\nfunction handleClick() {}\n`);
     
-    // The mapping should cover the entire script content
+    // The mapping should cover only the original script content (suffix is unmapped)
     const mapping = scriptCode.mappings[0];
     const rawScriptContent = `\nconst name = signal('World');\nfunction handleClick() {}\n`;
     expect(mapping.lengths[0]).toBe(rawScriptContent.length);
-    expect(scriptContent.length).toBe(rawScriptContent.length);
+    // The full content includes the void-usage suffix for template-referenced identifiers
+    expect(scriptContent.length).toBeGreaterThan(rawScriptContent.length);
+    // Should contain void usages for template-referenced identifiers
+    expect(scriptContent).toContain('void name;');
+    expect(scriptContent).toContain('void handleClick;');
   });
 
   it('the template_0 VirtualCode still contains the full template HTML content (unchanged)', () => {
