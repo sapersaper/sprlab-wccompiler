@@ -1,0 +1,12 @@
+{
+  "name": "wcc-framework-components",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:vue": "wcc build --config wcc.config.vue.js",
+    "build:react": "wcc build --config wcc.config.react.js",
+    "build:angular": "wcc build --config wcc.config.angular.js",
+    "build": "npm run build:vue && npm run build:react && npm run build:angular"
+  }
+}

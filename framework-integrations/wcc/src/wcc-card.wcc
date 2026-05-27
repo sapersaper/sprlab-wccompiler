@@ -1,0 +1,46 @@
+<script>
+import { defineComponent } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-card',
+})
+</script>
+
+<template>
+<div class="card">
+  <div class="card-header">
+    <slot name="header"><em>default header</em></slot>
+  </div>
+  <div class="card-body">
+    <slot><em>no body</em></slot>
+  </div>
+  <div class="card-footer">
+    <slot name="footer"><em>default footer</em></slot>
+  </div>
+</div>
+</template>
+
+<style>
+.card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+.card-header {
+  background: #f5f5f5;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
+  font-weight: bold;
+}
+.card-body {
+  padding: 16px;
+}
+.card-footer {
+  background: #f5f5f5;
+  padding: 12px 16px;
+  border-top: 1px solid #ddd;
+  font-size: 0.9em;
+  color: #666;
+}
+</style>

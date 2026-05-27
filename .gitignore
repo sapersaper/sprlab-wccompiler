@@ -24,11 +24,15 @@ example/.yarn/
 # VS Code extension packages
 *.vsix
 
-# Test environments
-framework-testing/
-
-# Framework integration projects (default scaffolds)
-frameworks-integrations/
+# Framework integration projects — compiled wcc dist and node_modules ignored
+framework-integrations/*/node_modules/
+framework-integrations/*/dist/
+framework-integrations/*/package-lock.json
+framework-integrations/*/.pnp.cjs
+framework-integrations/*/.pnp.loader.mjs
+framework-integrations/*/.yarn/
+framework-integrations/wcc/dist/
+framework-integrations/*/.angular/
 
 # npm lockfile (project uses yarn)
 package-lock.json

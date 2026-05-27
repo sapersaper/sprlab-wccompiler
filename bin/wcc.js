@@ -311,9 +311,47 @@ function discoverCompiledEntries(outputDir) {
   return results;
 }
 
+/**
+ * Copies the integration plugin for the specified framework to the output directory.
+ * @param {'vue'|'react'|'angular'} integration
+ * @param {string} rootDir — project root (where integrations/ and adapters/ live)
+ * @param {string} outputDir — build output directory
+ */
+function copyIntegrationPlugin(integration, rootDir, outputDir) {
+  const INTEGRATIONS = {
+    vue: [
+      { src: join(rootDir, 'integrations/vue.js'), dest: 'vue-plugin.js' },
+    ],
+    react: [
+      { src: join(rootDir, 'integrations/react.js'), dest: 'react-plugin.js' },
+    ],
+    angular: [
+      { src: join(rootDir, 'adapters/angular-compiled/angular.js'), dest: 'angular-adapter.js' },
+      { src: join(rootDir, 'adapters/angular-compiled/angular.d.ts'), dest: 'angular-adapter.d.ts' },
+    ],
+  };
+
+  const files = INTEGRATIONS[integration];
+  if (!files) return;
+
+  for (const { src, dest } of files) {
+    if (existsSync(src)) {
+      copyFileSync(src, join(outputDir, dest));
+      console.log(`  ✓ Integration: ${dest}`);
+    } else {
+      console.warn(`  ⚠ Missing integration file: ${src}`);
+    }
+  }
+}
+
 async function main() {
   const cwd = process.cwd();
-  const config = await loadConfig(cwd);
+
+  // Parse --config <path> flag
+  const configIdx = process.argv.indexOf('--config');
+  const configFile = configIdx !== -1 ? process.argv[configIdx + 1] : undefined;
+
+  const config = await loadConfig(cwd, configFile);
 
   // CLI flags override config
   if (process.argv.includes('--minify')) config.minify = true;
@@ -354,6 +392,14 @@ async function main() {
 
         console.log(`Bundled ${entryPoints.length} components → ${config.output}/bundle.js`);
       }
+    }
+
+    // Integration plugin copy step
+    if (config.integration) {
+      const outputDir = resolve(cwd, config.output);
+      const binDir = dirname(__filename);
+      const rootDir = resolve(binDir, '..');
+      copyIntegrationPlugin(config.integration, rootDir, outputDir);
     }
   } else if (command === 'dev') {
     await build(config, cwd);
