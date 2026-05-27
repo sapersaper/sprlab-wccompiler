@@ -1,10 +1,10 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { WccSlotsDirective, WccSlotDef, WccModel } from '../wcc-components/angular-adapter';
+import { WccSlotsDirective, WccSlotDef } from '../wcc-components_back/angular-adapter';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [WccSlotsDirective, WccSlotDef, WccModel],
+  imports: [WccSlotsDirective, WccSlotDef],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './app.component.html',
 })
