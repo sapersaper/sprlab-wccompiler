@@ -1,55 +1,68 @@
-# Framework Testing
+# Framework Integrations
 
 Manual QA testing projects for verifying WCC components work correctly in each host framework.
 
 ## Structure
 
 ```
-framework-testing/
-├── vue/        — Vue 3 + Vite test app
-├── angular/    — Angular 19 standalone test app
-├── react/      — React 19 + Vite test app
+framework-integrations/
+├── wcc/        — Shared .wcc source components + build configs
+├── vue/        — Vue 3 + Vite (port 4001)
+├── react/      — React 19 + Vite (port 4002)
+├── angular/    — Angular 19 standalone (port 4003)
 └── README.md
+```
+
+## Building WCC Components
+
+```bash
+cd framework-integrations/wcc
+
+# Build for all frameworks
+node ../../bin/wcc.js build --config wcc.config.vue.js
+node ../../bin/wcc.js build --config wcc.config.react.js
+node ../../bin/wcc.js build --config wcc.config.angular.js
+```
+
+## Running
+
+### Vue (port 4001)
+
+```bash
+cd framework-integrations/vue
+npm install
+npm run dev
+```
+
+### React (port 4002)
+
+```bash
+cd framework-integrations/react
+npm install
+npm run dev
+```
+
+### Angular (port 4003)
+
+```bash
+cd framework-integrations/angular
+npm install
+npm run start
 ```
 
 ## Feature Coverage
 
 Each test app covers the full feature support matrix:
 
-| Feature | Vue | Angular | React 19 |
-|---------|-----|---------|-----------|
-| Props | `:count="ref"` | `[attr.count]="val"` | `count={state}` |
-| Events | `@count-changed` | `(count-changed)` | `oncountchanged` |
-| Two-way binding | `v-model:count` | `[(count)]` | N/A |
-| Default slot | children | children | children |
-| Named slots | `<template #name>` | `<div slot-name>` | compound / props |
-| Scoped slots | `<template #name="{ prop }">` | `<ng-template slot="name" let-prop>` | render props / compound |
-
-## Running
-
-### Vue
-
-```bash
-cd framework-testing/vue
-npm install
-npm run dev
-```
-
-### Angular
-
-```bash
-cd framework-testing/angular
-npm install
-npm run start
-```
-
-### React
-
-```bash
-cd framework-testing/react
-npm install
-npm run dev
-```
+| Feature | Vue | React 19 | Angular 19 |
+|---------|-----|----------|------------|
+| Props | `:count="ref"` | `count={state}` | `[attr.count]="val"` |
+| Events | `@count-changed` | `oncountchanged` | `(count-changed)` |
+| Two-way binding | `v-model:count` | N/A | N/A |
+| Default slot (fallback) | ✅ | ✅ | ✅ |
+| Default slot (content) | children | children | children |
+| Named slots | `<template #name>` | `slot="name"` | `slot="name"` |
+| Scoped slots | `<template #name="{ prop }">` | `slot-template-name` | `slot-template-name` |
 
 ## Event Architecture (v0.11+)
 

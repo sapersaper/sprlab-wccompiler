@@ -10,7 +10,7 @@ export default function App() {
       {/* ═══════════════════════════════════════════════════════════════════ */}
 
       <h2>Test 1: Props (count, label)</h2>
-      <wcc-counter id="test1" count="10" label="Static Label"></wcc-counter>
+      <PropsTest />
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* EVENTS                                                             */}
@@ -20,104 +20,101 @@ export default function App() {
       <EventsTest />
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* TWO-WAY BINDING                                                    */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+
+      <h2>Test 3: Two-way binding</h2>
+      {/* N/A: React no tiene two-way binding nativo con custom elements.
+         Se logra manualmente con prop + event handler (ver Test 2). */}
+      <p><em>No aplica en React — se resuelve con prop + event (Test 2).</em></p>
+
+      <h2>Test 4: Two-way binding (modifier / multiple)</h2>
+      {/* N/A: React no tiene v-model ni [()] — no hay modifiers ni multiple bindings. */}
+      <p><em>No aplica en React.</em></p>
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* DEFAULT SLOT                                                       */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
 
-      <h2>Test 3: Default slot (children)</h2>
-      <wcc-card id="test3">
-        <p>Body content via children</p>
+      <h2>Test 5: Default slot (children)</h2>
+      <wcc-card id="test5">
+        <p>Body content via default slot</p>
       </wcc-card>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* NAMED SLOTS                                                       */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
 
-      <h2>Test 4: Named slot (string prop)</h2>
-      <wcc-card id="test4" header="Simple Header" footer="Simple Footer">
+      <h2>Test 6: Named slots (slot="name")</h2>
+      <wcc-card id="test6">
+        <div slot="header"><strong>Header via slot attr</strong></div>
         <p>Body content</p>
+        <span slot="footer">Footer via slot attr</span>
       </wcc-card>
 
-      <h2>Test 5: Named slot (JSX prop)</h2>
-      <wcc-card id="test5"
-        header={<h3>Header via JSX prop</h3>}
+      <h2>Test 7: Named slots (slot="name" — nested elements)</h2>
+      <wcc-card id="test7">
+        <div slot="header"><strong>Bold</strong> header with <em>emphasis</em></div>
+        <p>Body content</p>
+        <div slot="footer">Footer with <a href="#">link</a></div>
+      </wcc-card>
+
+      <h2>Test 8: Named slots (JSX prop — via React plugin)</h2>
+      {/* N/A: v-slot:name — React no tiene esa sintaxis.
+         El equivalente es pasar JSX como prop (requiere wccReactPlugin). */}
+      <wcc-card id="test8"
+        header={<strong>Header via JSX prop</strong>}
         footer={<span>Footer via JSX prop</span>}
       >
         <p>Body content</p>
-      </wcc-card>
-
-      <h2>Test 6: Named slots with nested elements</h2>
-      <wcc-card id="test6"
-        header={<div><strong>Bold</strong> header with <em>emphasis</em></div>}
-        footer={<div>Footer with <a href="#">link</a></div>}
-      >
-        <p>Body 6</p>
       </wcc-card>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SCOPED SLOTS                                                       */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
 
-      <h2>Test 7: Scoped slot (single param)</h2>
-      <wcc-list id="test7"
-        renderItem={(item) => <li><strong>{item}</strong></li>}
-      />
-
-      <h2>Test 8: Scoped slot (multiple params)</h2>
-      <wcc-list id="test8"
-        renderItem={(item, index) => <li>{index}: {item}</li>}
-      />
-
-      <h2>Test 9: Scoped slot with class attribute</h2>
+      <h2>Test 9: Scoped slot (render prop — item + index)</h2>
       <wcc-list id="test9"
-        renderItem={(item) => <li className="custom-item">★ {item}</li>}
+        renderItem={(item, index) => <li><strong>{index}</strong>: {item}</li>}
       />
 
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* MISC                                                               */}
-      {/* ═══════════════════════════════════════════════════════════════════ */}
+      <h2>Test 10: Scoped slot (render prop — custom class)</h2>
+      <wcc-list id="test10"
+        renderItem={(item) => <li className="custom">★ {item}</li>}
+      />
 
-      <h2>Test 10: Passthrough props + slot props</h2>
-      <wcc-card id="test10"
-        data-testid="my-card"
-        aria-label="Card component"
-        header={<h3>Header 10</h3>}
-      >
-        <p>Body with passthrough props</p>
-      </wcc-card>
+      <h2>Test 11: Scoped slot + React state coexistence</h2>
+      <ScopedWithStateTest />
+    </div>
+  )
+}
 
-      <h2>Test 11: Event handlers + slot props</h2>
-      <wcc-card id="test11"
-        onClick={() => console.log('clicked!')}
-        header={<h3>Clickable Card</h3>}
-      >
-        <p>Click me (check console)</p>
-      </wcc-card>
-
-      <h2>Test 12: ref preserved</h2>
-      <RefTest />
+function PropsTest() {
+  const [propCount] = useState(10)
+  return (
+    <div>
+      <wcc-counter id="test1" count={propCount} label="Static Label"></wcc-counter>
+      <p>React propCount: {propCount}</p>
     </div>
   )
 }
 
 function EventsTest() {
-  const [count, setCount] = useState(0)
+  const [eventCount, setEventCount] = useState(0)
   return (
     <div>
-      <wcc-counter id="test2" count={count} oncountchanged={(e) => setCount(e.detail)}></wcc-counter>
-      <p>React eventCount: {count}</p>
+      <wcc-counter id="test2" count={eventCount} oncountchanged={(e) => setEventCount(e.detail)}></wcc-counter>
+      <p>React eventCount: {eventCount}</p>
+      <button onClick={() => setEventCount(c => c + 1)}>React increment (manual)</button>
     </div>
   )
 }
 
-function RefTest() {
-  const cardRef = useRef(null)
-
+function ScopedWithStateTest() {
+  const [reactMessage] = useState('hello from React!')
   return (
-    <wcc-card id="test12"
-      ref={cardRef}
-      header={<h3>Card with ref</h3>}
-    >
-      <p>ref is preserved on the element</p>
-    </wcc-card>
+    <wcc-list id="test11"
+      renderItem={(item) => <li>{item} (React says: {reactMessage})</li>}
+    />
   )
 }

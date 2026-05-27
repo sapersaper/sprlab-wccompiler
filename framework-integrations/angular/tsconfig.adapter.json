@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "../../adapters/angular-compiled",
+    "declaration": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "experimentalDecorators": true,
+    "lib": ["ES2022", "dom"],
+    "skipLibCheck": true
+  },
+  "angularCompilerOptions": {
+    "compilationMode": "partial"
+  },
+  "files": ["../../adapters/angular.ts"]
+}

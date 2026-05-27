@@ -7,7 +7,7 @@ export default defineComponent({
 
 const props = defineProps({ label: 'Clicks' })
 const emit = defineEmits(['count-changed'])
-const count = defineModel(0)
+const count = defineModel({ name: 'count', default: 0 })
 
 function increment() {
   count.set(count() + 1)

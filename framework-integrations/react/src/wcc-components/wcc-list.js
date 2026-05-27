@@ -92,7 +92,9 @@ class WccList extends HTMLElement {
     this.__connected = true;
     const __root = __t_WccList.content.cloneNode(true);
     this.__for0_tpl = document.createElement('template');
-    this.__for0_tpl.innerHTML = `<span data-slot="item"><li>{{item}}</li></span>`;
+    this.__for0_tpl.innerHTML = `<li>
+    <span data-slot="item">{{item}}</span>
+  </li>`;
     this.__for0_anchor = __root.childNodes[1].childNodes[1];
     this.__for0_nodes = [];
     this.innerHTML = '';
@@ -110,10 +112,10 @@ class WccList extends HTMLElement {
       for (const n of this.__for0_nodes) n.remove();
       this.__for0_nodes = [];
 
-      __iter.forEach((item, __idx) => {
+      __iter.forEach((item, index) => {
         const clone = this.__for0_tpl.content.cloneNode(true);
         const node = clone.firstChild;
-          { const __slotEl = node;
+          { const __slotEl = node.childNodes[1];
             const __sp = { 'item': item, 'index': index };
             let __h = __slotEl.innerHTML;
             for (const [k, v] of Object.entries(__sp)) {

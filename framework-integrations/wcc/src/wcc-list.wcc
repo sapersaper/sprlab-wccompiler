@@ -10,9 +10,11 @@ const items = signal(['Apple', 'Banana', 'Cherry'])
 
 <template>
 <ul class="wcc-list">
-  <slot name="item" each="item in items()" :item="item" :index="index">
-    <li>{{item}}</li>
-  </slot>
+  <li each="(item, index) in items()">
+    <slot name="item" :item="item" :index="index">
+      {{item}}
+    </slot>
+  </li>
 </ul>
 </template>
 

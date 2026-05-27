@@ -81,13 +81,14 @@ __t_WccCounter.innerHTML = `
 `;
 
 class WccCounter extends HTMLElement {
-  static get observedAttributes() { return ['label']; }
+  static get observedAttributes() { return ['label', 'count']; }
 
-  static __meta = { tag: 'wcc-counter', props: [{ name: 'label', default: 'Clicks' }], events: ['count-changed'], models: [], slots: [] };
+  static __meta = { tag: 'wcc-counter', props: [{ name: 'label', default: 'Clicks' }], events: ['count-changed'], models: ['count'], slots: [] };
 
   constructor() {
     super();
     this._s_label = __signal('Clicks');
+    this._m_count = __signal(0);
   }
 
   connectedCallback() {
@@ -106,7 +107,7 @@ class WccCounter extends HTMLElement {
       this.__text_props_label_0.textContent = this._s_label() ?? '';
     }));
     this.__disposers.push(__effect(() => {
-      this.__text_count_1.textContent = count() ?? '';
+      this.__text_count_1.textContent = this._m_count() ?? '';
     }));
     if (this.__evt_click_increment_0) this.__evt_click_increment_0.addEventListener('click', this._increment.bind(this), { signal: this.__ac.signal });
   }
@@ -119,10 +120,14 @@ class WccCounter extends HTMLElement {
 
   attributeChangedCallback(name, oldVal, newVal) {
     if (name === 'label') this._s_label(newVal ?? 'Clicks');
+    if (name === 'count') this._m_count(newVal != null ? Number(newVal) : 0);
   }
 
   get label() { return this._s_label(); }
   set label(val) { this._s_label(val); this.setAttribute('label', String(val)); }
+
+  get count() { return this._m_count(); }
+  set count(val) { this._m_count(val); this.setAttribute('count', String(val)); }
 
   _emit(name, detail) {
     const evt = { detail, bubbles: true, composed: true };
@@ -131,9 +136,29 @@ class WccCounter extends HTMLElement {
     if (lower !== name) this.dispatchEvent(new CustomEvent(lower, evt));
   }
 
+  _modelSet_count(newVal) {
+    const oldVal = this._m_count();
+    this._m_count(newVal);
+    this.dispatchEvent(new CustomEvent('wcc:model', {
+      detail: { prop: 'count', value: newVal, oldValue: oldVal },
+      bubbles: true,
+      composed: true
+    }));
+    this.dispatchEvent(new CustomEvent('count-changed', { detail: newVal, bubbles: true }));
+  }
+
+  // --- Model wrapper methods ---
+  _count(val) {
+    if (arguments.length === 0) {
+      return this._m_count();
+    } else {
+      this._modelSet_count(val);
+    }
+  }
+
   _increment() {
-    count.set(count() + 1)
-      this._emit('count-changed', count())
+    this._modelSet_count(this._m_count() + 1)
+      this._emit('count-changed', this._m_count())
   }
 
 }

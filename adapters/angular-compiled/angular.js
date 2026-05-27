@@ -6,6 +6,7 @@
  *   - WccSlotsDirective: Main directive activated via [wccSlots] attribute
  *   - WccEvent: Single-event directive (wccEvent="name" + wccEmit output)
  *   - WccEvents: Multi-event bridging directive (kebab-case → camelCase)
+ *   - WccModel: Two-way binding bridge for [(prop)] banana-box syntax
  *   - SlotContext: Interface for template context typing
  *
  * Usage:
@@ -484,5 +485,82 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.2.21", ngImpo
                     standalone: true,
                 }]
         }], propDecorators: { wccEvents: [{
+                type: Input
+            }] } });
+// ─── WccModel — Two-way Binding Bridge (OPTIONAL) ───────────────────────────
+/**
+ * Optional directive for Angular's [(prop)] banana-box syntax on WCC elements.
+ *
+ * NOTE: As of WCC v0.11+, the compiled component emits `propChange` directly,
+ * so [(prop)] works zero-config without this directive. This directive is kept
+ * as an alternative that uses the structured wcc:model event instead.
+ *
+ * Angular's [(prop)] expands to:
+ *   [prop]="value" (propChange)="value = $event.detail"
+ *
+ * The component already emits `propChange` natively, so this works out of the box.
+ * This directive provides an alternative path via wcc:model for advanced use cases
+ * (e.g., when you need access to oldValue or want to handle multiple models centrally).
+ *
+ * Usage (optional):
+ *   <wcc-input wccModel [(value)]="text"></wcc-input>
+ */
+export class WccModel {
+    /** Optional explicit list of model prop names to bridge */
+    wccModel = '';
+    el = inject(ElementRef);
+    listener = null;
+    ngOnInit() {
+        const hostEl = this.el.nativeElement;
+        const tagName = hostEl.tagName.toLowerCase();
+        if (!tagName.includes('-'))
+            return;
+        this.setupModelBridge(hostEl, tagName);
+    }
+    async setupModelBridge(hostEl, tagName) {
+        // Determine which model props to bridge
+        let modelNames;
+        if (Array.isArray(this.wccModel) && this.wccModel.length > 0) {
+            modelNames = this.wccModel;
+        }
+        else {
+            // Auto-discover from component metadata
+            await customElements.whenDefined(tagName);
+            const ctor = customElements.get(tagName);
+            modelNames = ctor?.__meta?.models || [];
+        }
+        if (modelNames.length === 0)
+            return;
+        const modelSet = new Set(modelNames);
+        // Listen for wcc:model and re-dispatch as propChange
+        this.listener = (e) => {
+            const detail = e.detail;
+            if (!detail || !modelSet.has(detail.prop))
+                return;
+            // Dispatch propChange (Angular banana-box convention)
+            hostEl.dispatchEvent(new CustomEvent(`${detail.prop}Change`, {
+                detail: detail.value,
+                bubbles: false,
+                cancelable: false,
+            }));
+        };
+        hostEl.addEventListener('wcc:model', this.listener);
+    }
+    ngOnDestroy() {
+        if (this.listener) {
+            this.el.nativeElement.removeEventListener('wcc:model', this.listener);
+            this.listener = null;
+        }
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "19.2.21", ngImport: i0, type: WccModel, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "19.2.21", type: WccModel, isStandalone: true, selector: "[wccModel]", inputs: { wccModel: "wccModel" }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.2.21", ngImport: i0, type: WccModel, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[wccModel]',
+                    standalone: true,
+                }]
+        }], propDecorators: { wccModel: [{
                 type: Input
             }] } });

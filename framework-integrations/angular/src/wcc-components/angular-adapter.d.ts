@@ -6,6 +6,7 @@
  *   - WccSlotsDirective: Main directive activated via [wccSlots] attribute
  *   - WccEvent: Single-event directive (wccEvent="name" + wccEmit output)
  *   - WccEvents: Multi-event bridging directive (kebab-case → camelCase)
+ *   - WccModel: Two-way binding bridge for [(prop)] banana-box syntax
  *   - SlotContext: Interface for template context typing
  *
  * Usage:
@@ -194,4 +195,32 @@ export declare class WccEvents implements OnInit, OnDestroy {
     ngOnDestroy(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<WccEvents, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<WccEvents, "[wccEvents]", never, { "wccEvents": { "alias": "wccEvents"; "required": false; }; }, {}, never, never, true, never>;
+}
+/**
+ * Optional directive for Angular's [(prop)] banana-box syntax on WCC elements.
+ *
+ * NOTE: As of WCC v0.11+, the compiled component emits `propChange` directly,
+ * so [(prop)] works zero-config without this directive. This directive is kept
+ * as an alternative that uses the structured wcc:model event instead.
+ *
+ * Angular's [(prop)] expands to:
+ *   [prop]="value" (propChange)="value = $event.detail"
+ *
+ * The component already emits `propChange` natively, so this works out of the box.
+ * This directive provides an alternative path via wcc:model for advanced use cases
+ * (e.g., when you need access to oldValue or want to handle multiple models centrally).
+ *
+ * Usage (optional):
+ *   <wcc-input wccModel [(value)]="text"></wcc-input>
+ */
+export declare class WccModel implements OnInit, OnDestroy {
+    /** Optional explicit list of model prop names to bridge */
+    wccModel: string[] | '';
+    private el;
+    private listener;
+    ngOnInit(): void;
+    private setupModelBridge;
+    ngOnDestroy(): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<WccModel, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<WccModel, "[wccModel]", never, { "wccModel": { "alias": "wccModel"; "required": false; }; }, {}, never, never, true, never>;
 }

@@ -57,9 +57,9 @@
 
   <h2>Test 7: Named slots (div slot="name")</h2>
   <wcc-card id="test7">
-    <div slot="header"><strong>Header via slot attr</strong></div>
+    <div slot="header"><strong>Bold</strong> header with <em>emphasis</em></div>
     <p>Body content</p>
-    <span slot="footer">Footer via slot attr</span>
+    <div slot="footer">Footer with <a href="#">link</a></div>
   </wcc-card>
 
   <h2>Test 8: Named slots (template v-slot:name)</h2>
