@@ -1,0 +1,61 @@
+<h1>WCC Angular Integration Tests</h1>
+
+<h2>Test 1: Default slot (fallback — no content)</h2>
+<wcc-card id="test1"></wcc-card>
+
+<h2>Test 2: Default slot with content</h2>
+<wcc-card id="test2">
+  <p>Body content from Angular</p>
+</wcc-card>
+
+<h2>Test 3: Named slots via slot="name"</h2>
+<wcc-card id="test3">
+  <div slot="header"><h3>Header via slot attr</h3></div>
+  <p>Body content</p>
+  <span slot="footer">Footer via slot attr</span>
+</wcc-card>
+
+<h2>Test 4: Scoped slot via slot-template-item</h2>
+<wcc-list id="test4">
+  <div slot-template-item="<li><strong>{%index%}</strong>: {%item%}</li>"></div>
+</wcc-list>
+
+<h2>Test 5: Scoped slot — custom template</h2>
+<wcc-list id="test5">
+  <div slot-template-item="<li class='custom'>★ {%item%}</li>"></div>
+</wcc-list>
+
+<h2>Test 6: Counter (events + attributes)</h2>
+<wcc-counter id="test6" [attr.count]="count" (count-changed)="onCountChanged($event)"></wcc-counter>
+<p>Angular count: {{ count }}</p>
+<button (click)="count = count + 1">Angular increment</button>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Scoped Slots via WccSlotsDirective + WccSlotDef                   -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+<h2>Test 7: Named slot via ng-template[slot] (WccSlotsDirective)</h2>
+<wcc-scoped-card id="test7" wccSlots>
+  <ng-template slot="header"><strong>Custom Header via ng-template</strong></ng-template>
+</wcc-scoped-card>
+
+<h2>Test 8: Scoped slot via ng-template[slot] with let-* binding</h2>
+<wcc-scoped-card id="test8" wccSlots>
+  <ng-template slot="header"><strong>Scoped Demo</strong></ng-template>
+  <ng-template slot="stats" let-likes>⭐ {{ likes }} likes!</ng-template>
+</wcc-scoped-card>
+
+<h2>Test 9: Multiple scoped slots with multiple props</h2>
+<wcc-scoped-card id="test9" wccSlots>
+  <ng-template slot="header"><strong>Multi-Prop Demo</strong></ng-template>
+  <ng-template slot="stats" let-likes>👍 {{ likes }} likes</ng-template>
+  <ng-template slot="details" let-data let-likes="likes" let-total="total">
+    📊 {{ likes }}/{{ total }} engagement
+  </ng-template>
+</wcc-scoped-card>
+
+<h2>Test 10: Mixed usage — ng-template[slot] + slot-template-* coexistence</h2>
+<wcc-scoped-card id="test10" wccSlots>
+  <ng-template slot="header"><strong>Mixed Mode</strong></ng-template>
+  <ng-template slot="stats" let-likes>🎯 {{ likes }} (via directive)</ng-template>
+</wcc-scoped-card>

@@ -1,0 +1,32 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-list',
+})
+
+const items = signal(['Apple', 'Banana', 'Cherry'])
+</script>
+
+<template>
+<ul class="wcc-list">
+  <slot name="item" each="item in items()" :item="item" :index="index">
+    <li>{{item}}</li>
+  </slot>
+</ul>
+</template>
+
+<style>
+.wcc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.wcc-list li {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+}
+.wcc-list li:last-child {
+  border-bottom: none;
+}
+</style>

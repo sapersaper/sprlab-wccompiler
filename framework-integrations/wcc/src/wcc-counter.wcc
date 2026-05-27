@@ -1,0 +1,38 @@
+<script>
+import { defineComponent, defineProps, defineEmits, defineModel } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-counter',
+})
+
+const props = defineProps({ label: 'Clicks' })
+const emit = defineEmits(['count-changed'])
+const count = defineModel(0)
+
+function increment() {
+  count.set(count() + 1)
+  emit('count-changed', count())
+}
+</script>
+
+<template>
+<div class="counter">
+  <span>{{props.label}}: {{count()}}</span>
+  <button @click="increment">+</button>
+</div>
+</template>
+
+<style>
+.counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+button {
+  cursor: pointer;
+  padding: 4px 8px;
+}
+</style>
