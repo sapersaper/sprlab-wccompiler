@@ -17,6 +17,21 @@ const fullCapabilities: CodeInformation = {
 };
 
 /**
+ * Capabilities for the script block mapping.
+ * Verification is enabled so TypeScript reports real errors.
+ * To suppress false "unused" warnings for template-referenced variables,
+ * we append void-usage statements as an unmapped suffix in the script virtual code.
+ */
+const scriptCapabilities: CodeInformation = {
+  completion: true,
+  format: true,
+  navigation: true,
+  semantic: true,
+  structure: true,
+  verification: true,
+};
+
+/**
  * Capabilities for template expression mappings — enables intellisense features
  * (completion, hover, go-to-definition) including type diagnostics.
  *
@@ -287,7 +302,30 @@ export class WccCode implements VirtualCode {
         }
       }
 
-      const fullScriptContent = block.content + exposeSuffix;
+      // Generate void-usage suffix for identifiers referenced in the template.
+      // This prevents false "unused variable" warnings (ts6133) for variables
+      // that are only used in the template block.
+      let templateUsageSuffix = '';
+      if (parsed.template) {
+        const expressions = extractTemplateExpressions(parsed.template.content);
+        const usedIdentifiers = new Set<string>();
+        for (const expr of expressions) {
+          // Extract top-level identifiers from each expression
+          const identRe = /\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g;
+          let m: RegExpExecArray | null;
+          while ((m = identRe.exec(expr.content)) !== null) {
+            const name = m[1];
+            if (!jsKeywords.has(name) && name !== 'undefined') {
+              usedIdentifiers.add(name);
+            }
+          }
+        }
+        if (usedIdentifiers.size > 0) {
+          templateUsageSuffix = '\n' + [...usedIdentifiers].map(id => `void ${id};`).join('\n') + '\n';
+        }
+      }
+
+      const fullScriptContent = block.content + exposeSuffix + templateUsageSuffix;
 
       codes.push({
         id: 'script_0',
@@ -297,8 +335,8 @@ export class WccCode implements VirtualCode {
           {
             sourceOffsets: [block.startOffset],
             generatedOffsets: [0],
-            lengths: [fullScriptContent.length],
-            data: fullCapabilities,
+            lengths: [block.content.length],
+            data: scriptCapabilities,
           },
         ],
         embeddedCodes: [],
@@ -361,6 +399,40 @@ export class WccCode implements VirtualCode {
       });
     }
 
+    // Inject a virtual .d.ts that declares the 'wcc' module with proper generics.
+    // This ensures TypeScript can resolve signal<T>, computed<T>, etc. without
+    // relying on jsconfig.json path resolution within Volar's virtual file system.
+    if (parsed.script) {
+      const wccDts = `
+declare module 'wcc' {
+  interface Signal<T> { (): T; set(value: T): void; }
+  export function signal<T>(value: T): Signal<T>;
+  export function computed<T>(fn: () => T): () => T;
+  export function effect(fn: () => void): void;
+  export function batch(fn: () => void): void;
+  export function watch<T>(target: Signal<T> | (() => T), fn: (newVal: T, oldVal: T) => void): void;
+  export function defineComponent(options: { tag: string }): void;
+  export function defineProps<T extends Record<string, any>>(defaults?: Partial<T>): T;
+  export function defineProps(names: string[]): Record<string, any>;
+  export function defineEmits<T>(): T;
+  export function defineEmits(names: string[]): (name: string, detail?: any) => void;
+  export function defineModel<T>(initialValue: T): Signal<T>;
+  export function templateRef<T = HTMLElement>(name: string): { value: T | null };
+  export function onMount(fn: () => void | Promise<void>): void;
+  export function onDestroy(fn: () => void | Promise<void>): void;
+  export function onAdopt(fn: () => void | Promise<void>): void;
+  export function defineExpose(bindings: Record<string, any>): void;
+}
+`;
+      codes.push({
+        id: 'wcc_types_0',
+        languageId: 'typescript',
+        snapshot: createSnapshot(wccDts),
+        mappings: [],
+        embeddedCodes: [],
+      });
+    }
+
     return codes;
   }
 }
@@ -414,6 +486,14 @@ export const wccLanguagePlugin: LanguagePlugin<URI> = {
             extension: ext,
             scriptKind: code.languageId === 'typescript' ? 3 : 1,
             fileName: fileName + '.template_expressions' + ext,
+          });
+        }
+        if (code.id === 'wcc_types_0') {
+          scripts.push({
+            code,
+            extension: '.d.ts',
+            scriptKind: 3, /* ts.ScriptKind.TS */
+            fileName: fileName + '.wcc_types.d.ts',
           });
         }
       }
