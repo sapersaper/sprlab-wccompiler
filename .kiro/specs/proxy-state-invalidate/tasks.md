@@ -6,7 +6,7 @@ Implementation of the Proxy-based state container and static `__invalidate(key)`
 
 ## Tasks
 
-- [ ] 1. Create `extractDeps` and `buildDepGraph` utility functions
+- [x] 1. Create `extractDeps` and `buildDepGraph` utility functions
   - [ ] 1.1 Create the `extractDeps(rawExpr, signalNames, propNames, modelDefs)` function in `lib/codegen.js` that scans a raw expression for known signal/prop/model names using regex and returns a `Set` of dependency keys
   - [ ] 1.2 Create the `refsComputedOrMethod(rawExpr, computedNames, methodNames)` helper that returns `true` if an expression references any computed value or method call
   - [ ] 1.3 Create the `buildDepGraph(parseResult, transformContext)` function that iterates over `bindings`, `showBindings`, and `attrBindings`, classifies each as eligible for `__invalidate` or remaining in `__effect`, and returns `{ depGraph, effectBindings }`
@@ -15,20 +15,20 @@ Implementation of the Proxy-based state container and static `__invalidate(key)`
   - [ ] 1.6 Handle attr bindings: skip expressions referencing computeds/methods, extract deps, determine `subKind` (object/array/string) for class/style, and build `DepEntry` with appropriate type
   - [ ] 1.7 Write unit tests in `test/dep-graph.test.js` covering single-signal text binding, multi-signal expression, show binding, attr/bool/class/style bindings, and computed-referencing expressions that should be excluded
 
-- [ ] 2. Modify `transformExpr` for signal reads
+- [x] 2. Modify `transformExpr` for signal reads
   - [ ] 2.1 In `transformExpr`, change the signal read regex replacement from `this._${name}()` to `this._state.${name}` for both `callRe` (matching `name()`) and `bareRe` (matching bare `name`)
   - [ ] 2.2 Change prop read output from `this._s_${propName}()` to `this._state.${propName}`
   - [ ] 2.3 Change model read output from `this._m_${propNameVal}()` to `this._state.${propNameVal}`
   - [ ] 2.4 Ensure computed reads (`this._c_doubled()`) remain unchanged — verify the computed regex path is not affected
   - [ ] 2.5 Update existing `transformExpr` unit tests to expect the new `this._state.x` output pattern
 
-- [ ] 3. Modify `transformMethodBody` for signal writes
+- [x] 3. Modify `transformMethodBody` for signal writes
   - [ ] 3.1 Change the signal write regex in `transformMethodBody` from `this._${name}(val)` to `this._state.${name} = val` by capturing the argument with `([^)]+)` and replacing with `this._state.${name} = $1`
   - [ ] 3.2 Ensure signal reads within method bodies also use `this._state.${name}` (the read regex should already be updated from Task 2's pattern)
   - [ ] 3.3 Verify that model writes (`varName.set(...)`) remain unchanged — they must still call `this._modelSet_propName(...)` for event emission
   - [ ] 3.4 Update existing `transformMethodBody` unit tests to expect `this._state.x = val` for signal writes and `this._state.x` for signal reads
 
-- [ ] 4. Generate Proxy state container in constructor
+- [x] 4. Generate Proxy state container in constructor
   - [ ] 4.1 In `generateComponent`, replace the `__signal()` constructor calls with a single `this._state = new Proxy({...}, handler)` block that collects initial values from props, user signals, and model definitions
   - [ ] 4.2 Generate the `set` trap that checks `target[key] === value` for equality, assigns the value, and calls `self.__invalidate(key)`
   - [ ] 4.3 Conditionally generate the `get` trap (for `__currentEffect` tracking) only when `needsEffect` is true (component has complex features)
@@ -36,7 +36,7 @@ Implementation of the Proxy-based state container and static `__invalidate(key)`
   - [ ] 4.5 Remove all `this._s_propName = __signal(...)`, `this._signalName = __signal(...)`, and `this._m_modelName = __signal(...)` lines from constructor output
   - [ ] 4.6 Write unit tests verifying constructor output for a simple component (set-only Proxy) and a complex component (get+set Proxy with effect tracking)
 
-- [ ] 5. Generate `__invalidate(key)` method
+- [x] 5. Generate `__invalidate(key)` method
   - [ ] 5.1 Create `generateInvalidateMethod(depGraph, lines)` function that emits the `__invalidate(key) { switch(key) { ... } }` method
   - [ ] 5.2 For each signal key in the dep graph, generate a `case 'key':` block with the appropriate DOM update operations based on `DepEntry.type` (text, show, attr, bool, class, style)
   - [ ] 5.3 Generate the wildcard `case '*':` block that executes all unique update operations (deduplicated) for initial render
@@ -45,14 +45,14 @@ Implementation of the Proxy-based state container and static `__invalidate(key)`
   - [ ] 5.6 Handle style binding sub-kinds: object (style[key] = value loop), string (style.cssText assignment), preserving static style prefixes
   - [ ] 5.7 Write unit tests in `test/codegen-invalidate.test.js` verifying generated switch cases for text, show, attr, bool, class (all sub-kinds), style (all sub-kinds), multi-signal, and wildcard
 
-- [ ] 6. Modify connectedCallback
+- [x] 6. Modify connectedCallback
   - [ ] 6.1 Remove `this.__disposers.push(__effect(() => {...}))` wrappers for bindings that are now handled by `__invalidate` (those in the dep graph)
   - [ ] 6.2 Add `this.__invalidate('*')` call at the end of connectedCallback after DOM setup and event listeners
   - [ ] 6.3 Keep `this.__disposers.push(__effect(...))` for bindings classified in `effectBindings` (computed-dependent, method-referencing) and for complex features (if/each/watchers/user effects/model/child props/dynamic components/scoped slots)
   - [ ] 6.4 Remove `this.__disposers = []` initialization when no complex features exist (no effect bindings remain)
   - [ ] 6.5 In `disconnectedCallback`, remove `this.__disposers.forEach(d => d())` when no disposers are needed
 
-- [ ] 7. Modify attributeChangedCallback and public getters/setters
+- [x] 7. Modify attributeChangedCallback and public getters/setters
   - [ ] 7.1 In `attributeChangedCallback`, change prop updates from `this._s_${propName}(newVal ?? default)` to `this._state.${propName} = newVal ?? default`
   - [ ] 7.2 In `attributeChangedCallback`, change model updates from `this._m_${modelName}(newVal ?? default)` to `this._state.${modelName} = newVal ?? default`
   - [ ] 7.3 In public getters for props, change `return this._s_${propName}()` to `return this._state.${propName}`
@@ -60,7 +60,7 @@ Implementation of the Proxy-based state container and static `__invalidate(key)`
   - [ ] 7.5 Verify that `this.setAttribute(...)` calls in setters remain unchanged
   - [ ] 7.6 Update related unit tests to expect the new `this._state` patterns in attributeChangedCallback and getter/setter output
 
-- [ ] 8. Add Proxy `get` trap for backward compatibility
+- [x] 8. Add Proxy `get` trap for backward compatibility
   - [ ] 8.1 Detect when a component has complex features requiring `__effect` by checking for if blocks, each loops, watchers, user effects, computed-dependent bindings, child component props, model bindings, dynamic components, or scoped slots
   - [ ] 8.2 When complex features are detected, generate the Proxy with both `get` and `set` traps — the `get` trap registers `__currentEffect` as a subscriber in `target.__subs[key]`
   - [ ] 8.3 In the `set` trap for complex components, add subscriber notification logic: iterate `target.__subs[key]` and either add to `__pendingEffects` (if batching) or invoke directly
@@ -68,7 +68,7 @@ Implementation of the Proxy-based state container and static `__invalidate(key)`
   - [ ] 8.5 When no complex features exist, generate the simpler Proxy with only the `set` trap (no `get` trap, no subscriber logic)
   - [ ] 8.6 Write unit tests verifying that a component with an `if` block generates the full get+set Proxy, while a simple component generates set-only Proxy
 
-- [ ] 9. Modify `buildInlineRuntime` for runtime pruning
+- [x] 9. Modify `buildInlineRuntime` for runtime pruning
   - [ ] 9.1 Add `needsSignal` parameter to `buildInlineRuntime` in `lib/reactive-runtime.js` (default `false`)
   - [ ] 9.2 Conditionally include `runtimeGlobals` (`__currentEffect`, `__batchDepth`, `__pendingEffects`) only when `needsEffect || needsComputed` is true
   - [ ] 9.3 Conditionally include `runtimeSignal` only when `needsSignal` is true (should be `false` for all Phase 1 components)
@@ -76,7 +76,7 @@ Implementation of the Proxy-based state container and static `__invalidate(key)`
   - [ ] 9.5 Verify that a simple component (no complex features) generates zero runtime code (no globals, no `__signal`, no `__effect`)
   - [ ] 9.6 Verify that a component with computeds generates `__computed` + globals but no `__signal`
 
-- [ ] 10. Update existing tests and add new tests
+- [x] 10. Update existing tests and add new tests
   - [ ] 10.1 Create `test/codegen-proxy-state.test.js` with end-to-end tests: compile a simple component and verify the full output matches the new Proxy + `__invalidate` pattern (no `__signal`, no `__effect` wrappers)
   - [ ] 10.2 Create a test case for a component with multi-signal text binding (`{{firstName + ' ' + lastName}}`) and verify both signals appear in the dep graph and switch cases
   - [ ] 10.3 Create a test case for a component with complex features (if block + signals) and verify: Proxy has get+set traps, `__effect` is kept for the if block, simple bindings use `__invalidate`, runtime includes `__effect` but not `__signal`
