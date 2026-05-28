@@ -53,7 +53,7 @@ async function build(config, cwd) {
   // Generate shared runtime ONLY if needed
   if (needsSharedRuntime) {
     const { reactiveRuntime } = await import('../lib/reactive-runtime.js');
-    const signalsContent = reactiveRuntime.trim() + '\nexport { __signal, __computed, __effect, __batch, __untrack };\n';
+    const signalsContent = reactiveRuntime.trim() + '\nexport { __signal, __computed, __effect, __batch, __untrack, __currentEffect, __batchDepth, __pendingEffects };\n';
     const signalsDest = join(outputDir, '__wcc-signals.js');
     writeFileSync(signalsDest, signalsContent);
   }
@@ -437,7 +437,7 @@ async function main() {
         // If this component uses shared runtime and the file doesn't exist yet, generate it
         if (usesSharedRuntime && !existsSync(signalsDest)) {
           const { reactiveRuntime } = await import('../lib/reactive-runtime.js');
-          const signalsContent = reactiveRuntime.trim() + '\nexport { __signal, __computed, __effect, __batch, __untrack };\n';
+          const signalsContent = reactiveRuntime.trim() + '\nexport { __signal, __computed, __effect, __batch, __untrack, __currentEffect, __batchDepth, __pendingEffects };\n';
           writeFileSync(signalsDest, signalsContent);
         }
 

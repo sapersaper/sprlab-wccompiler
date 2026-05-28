@@ -1,31 +1,19 @@
 # TODO — Tareas pendientes
 
-## 🔴 PRIORIDAD ALTA
+## 🔴 PRIORIDAD ALTA (Zero-Runtime Refactor)
 
-- [x] ~~⏫ **PascalCase + self-closing en templates WCC**~~ ✅
-  - Soportar `<WccBadge color="red" />` como equivalente a `<wcc-badge color="red"></wcc-badge>`
-  - Language server: ya sugiere PascalCase ✅ (v0.1.7)
-  - Compiler: `template-normalizer.js` transforma PascalCase → kebab-case y self-closing → open+close antes de linkedom
-  - Impacto: mejor DX, menos verbosidad en templates
-
-- [x] ~~**Bug: TypeScript hover/go-to-definition no funciona en .wcc**~~ ✅
-  - Causa: `.vsix` se empaquetaba con `--no-dependencies` (sin node_modules)
-  - Fix: empaquetar sin esa flag — incluye todas las dependencias del server
+- [ ] **Fase 1**: Proxy State + `__invalidate` básico (text, show, attr, class, style) → `.kiro/specs/proxy-state-invalidate/`
+- [ ] **Fase 2**: If-blocks + Computed + Watch → `.kiro/specs/if-computed-watch-zero-runtime/`
+- [ ] **Fase 3**: Each loops (keyed, non-keyed, external signals, nested) → `.kiro/specs/each-loops-zero-runtime/`
+- [ ] **Fase 4**: Model bindings, child props, scoped slots, dynamic components, effect removal → `.kiro/specs/advanced-features-zero-runtime/`
 
 ## core
 
 - [ ]* Source maps — generar `.map` que mapee el JS compilado al `.wcc` original
 - [ ]* Opciones adicionales en defineComponent (shadow, extends, formAssociated, mode)
-- [ ]* Componente dinámico (`<component :is="...">`)
 
 ## volar-language-server
 
-- [x] ~~⏫ Autocompletado de `ref`, `@events` DOM y directivas WCC en templates~~ ✅ (v0.1.8)
-  - `ref` sugerido en custom elements
-  - 26 eventos DOM comunes (`@click`, `@input`, `@change`, `@focus`, etc.)
-  - Directivas WCC (`show`, `if`, `else-if`, `else`, `each`, `model`)
-  - `model:propName` para two-way binding en custom elements
-  - Todo registrado como `globalAttributes` (disponible en elementos HTML nativos también)
 - [ ]* Semantic tokens para colorear props, signals y computeds en template
 
 ## interop / compatibilidad (baja prioridad)
@@ -40,71 +28,3 @@
 `*` = opcional / futuro
 
 ## ✅ COMPLETADO
-
-<details>
-<summary>v0.11.x</summary>
-
-- [x] WCC-to-WCC autocompletado automático de props de hijos en template → v0.11.11
-  - El language server escanea los `.wcc` del workspace al inicializar
-  - Ofrece `:propName` y `@eventName` sin config del usuario
-  - Funciona en Kiro y VS Code automáticamente
-- [x] Tipado Vue: `wcc build` genera `dist/wcc-vue.d.ts` con `declare module 'vue' { GlobalComponents }` → v0.11.10
-  - Consumidor agrega `"dist/wcc-vue.d.ts"` a tsconfig `include` y Volar ofrece autocompletado
-- [x] Tipado React: stubs `.d.ts` generados por `wcc build` (custom elements son `any` en JSX por diseño de React)
-- [x] Tipado Angular: N/A (`CUSTOM_ELEMENTS_SCHEMA` desactiva type-checking por diseño del framework)
-- [x] Top-level section comments en output (`--comments`) → v0.11.9
-- [x] Tree-shake runtime inline en standalone mode → v0.11.8
-- [x] Comentarios inline opcionales en output (`--comments`) → v0.11.7
-- [x] `onAdopt` lifecycle hook (adoptedCallback) → v0.11.4/v0.11.6
-- [x] Minificación opcional via esbuild (`--minify`) → v0.11.5
-- [x] Nombres descriptivos para bindings DOM → v0.11.2/v0.11.3
-- [x] Fix múltiples v-model:prop "Duplicate attribute" → v0.11.1
-- [x] Reducir dual-emit: 5/3 eventos → 2/2 → v0.11.0
-
-</details>
-
-<details>
-<summary>v0.8.x — v0.10.x</summary>
-
-- [x] Scoped slots cross-framework (slotProps) → v0.8.8+
-- [x] Slots cross-framework: `slot="name"` en elementos regulares → v0.8.8
-- [x] Vue integration: v-model:propName + fix createRequire → v0.8.7
-- [x] Two-way binding nativo para frameworks → v0.8.0
-- [x] Generador de stubs tipados (wcc-react.d.ts, wcc-vue.d.ts) → v0.9.0
-
-</details>
-
----
-
-## Notas de integración
-
-### IDE — Autocompletado en templates
-
-El language server escanea automáticamente los `.wcc` del workspace y ofrece autocompletado de props (`:propName`), eventos (`@eventName`), `ref`, directivas (`show`, `if`, `each`) y `model:propName` al escribir dentro de tags. No requiere configuración.
-
-Opcionalmente, `wcc build` también genera `dist/wcc-html-data.json` que puede usarse en proyectos sin la extensión WCC:
-
-```json
-// .vscode/settings.json (solo si no usás la extensión WCC)
-{
-  "html.customData": ["./dist/wcc-html-data.json"]
-}
-```
-
-### Vue — Autocompletado en templates (Volar)
-
-`wcc build` genera `dist/wcc-vue.d.ts` con tipos globales. Agregar a `tsconfig.json`:
-
-```json
-{
-  "include": ["src/**/*", "dist/wcc-vue.d.ts"]
-}
-```
-
-### React — Custom Elements
-
-React 19 trata custom elements (tags con hyphen) como `any` en JSX. Los stubs de compound components (`WccCard.Header`) requieren `wccReactPlugin()` activo.
-
-### Angular — CUSTOM_ELEMENTS_SCHEMA
-
-Angular desactiva todo type-checking en custom elements con `CUSTOM_ELEMENTS_SCHEMA`.
