@@ -1,5 +1,5 @@
 <script>
-import { defineComponent, signal, effect, batch } from 'wcc'
+import { defineComponent, signal, watch, batch } from 'wcc'
 
 export default defineComponent({
   tag: 'test-batch-auto-detect',
@@ -10,14 +10,8 @@ const lastName = signal('')
 const age = signal(0)
 const effectRunCount = signal(0)
 
-// Effect que cuenta cuántas veces se ejecuta
-effect(() => {
-  // Leer los signals para suscribirse
-  firstName()
-  lastName()
-  age()
-  
-  // Incrementar contador
+// Watch expression que lee los signals para suscribirse (reemplaza effect())
+watch(() => firstName() + lastName() + age(), () => {
   effectRunCount.set(effectRunCount() + 1)
 })
 

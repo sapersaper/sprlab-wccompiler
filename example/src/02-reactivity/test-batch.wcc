@@ -1,5 +1,5 @@
 <script>
-import { defineComponent, signal, effect, batch } from 'wcc'
+import { defineComponent, signal, watch, batch } from 'wcc'
 
 export default defineComponent({
   tag: 'test-batch',
@@ -10,13 +10,12 @@ const firstName = signal('')
 const lastName = signal('')
 const age = signal(0)
 
-// Contador de ejecuciones del effect
+// Contador de ejecuciones del watch
 let effectRunCount = 0
 const effectCount = signal(0)
 
-// Este effect debería ejecutarse UNA SOLA VEZ cuando usamos batch
-effect(() => {
-  const fullName = `${firstName()} ${lastName()}`
+// Watch expression que se ejecuta cuando cambian los signals (reemplaza effect())
+watch(() => firstName() + ' ' + lastName(), () => {
   effectRunCount++
   effectCount.set(effectRunCount)
 })
