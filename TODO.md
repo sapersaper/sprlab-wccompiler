@@ -4,7 +4,7 @@
 
 - [x] **Fase 1**: Proxy State + `__invalidate` básico (text, show, attr, class, style) → `.kiro/specs/proxy-state-invalidate/`
 - [x] **Fase 2**: If-blocks + Computed + Watch → `.kiro/specs/if-computed-watch-zero-runtime/`
-- [ ] **Fase 3**: Each loops (keyed, non-keyed, external signals, nested) → `.kiro/specs/each-loops-zero-runtime/`
+- [x] **Fase 3**: Each loops (keyed, non-keyed, external signals, nested) → `.kiro/specs/each-loops-zero-runtime/`
 - [ ] **Fase 4**: Model bindings, child props, scoped slots, dynamic components, effect removal → `.kiro/specs/advanced-features-zero-runtime/`
 
 ## core
