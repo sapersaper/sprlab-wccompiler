@@ -6,8 +6,8 @@ export default defineComponent({
 })
 
 const children = signal([])
-
 const theme = signal('default')
+const showChildren = signal(true)
 
 function addChild() {
   children.set([...children(), { id: Date.now() }])
@@ -37,6 +37,7 @@ button { padding: 3px 8px; border: none; border-radius: 3px; cursor: pointer; fo
 .btn-add { background: #48bb78; }
 .btn-remove { background: #f56565; }
 .btn-theme { background: #ed8936; }
+.btn-toggle { background: #667eea; }
 .count { font-size: 11px; color: #a0aec0; margin-left: 4px; }
 .info { font-size: 10px; color: #718096; margin: 2px 0; }
 .default-theme { background: #f7fafc; }
@@ -50,18 +51,23 @@ button { padding: 3px 8px; border: none; border-radius: 3px; cursor: pointer; fo
     <button class="btn-add" @click="addChild">+</button>
     <button class="btn-remove" @click="removeLast">-</button>
     <button class="btn-theme" @click="toggleTheme">T</button>
+    <button class="btn-toggle" @click="showChildren.set(!showChildren())">
+      {{ showChildren() ? 'Hide' : 'Show' }}
+    </button>
     <span class="count">({{ children().length }})</span>
   </div>
 
-  <!-- SHOW: info hidden when dark theme -->
   <div show="theme() !== 'dark'" class="info">
     Theme: {{ theme() }}
   </div>
 
-  <!-- EACH: recursive children -->
-  <div each="child in children()" :key="child.id">
-    <div style="padding-left: 16px;">
-      <test-recursive></test-recursive>
+  <!-- IF: show/hide children -->
+  <div if="showChildren()">
+    <!-- EACH: recursive children -->
+    <div each="child in children()" :key="child.id">
+      <div style="padding-left: 16px;">
+        <test-recursive></test-recursive>
+      </div>
     </div>
   </div>
 </div>
