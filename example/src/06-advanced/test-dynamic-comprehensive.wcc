@@ -155,6 +155,8 @@ async function rapidSwap() {
         <button @click="toggleAdmin">Toggle Admin (Actual: {{isAdmin() ? 'Admin' : 'User'}})</button>
       </div>
       <p><strong>Ternario:</strong> :is="isAdmin() ? 'admin-panel' : 'user-panel'"</p>
+      routeComponent -> {{routeComponent()}}
+      <br></br>
       <component :is="routeComponent()"></component>
     </section>
 

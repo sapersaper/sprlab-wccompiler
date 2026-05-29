@@ -7,6 +7,8 @@ export default defineComponent({
 
 const children = signal([])
 
+const theme = signal('default')
+
 function addChild() {
   children.set([...children(), { id: Date.now() }])
 }
@@ -14,8 +16,6 @@ function addChild() {
 function removeLast() {
   children.set(children().slice(0, -1))
 }
-
-const theme = signal('default')
 
 function toggleTheme() {
   const themes = ['default', 'dark', 'blue']
@@ -39,10 +39,13 @@ button { padding: 3px 8px; border: none; border-radius: 3px; cursor: pointer; fo
 .btn-theme { background: #ed8936; }
 .count { font-size: 11px; color: #a0aec0; margin-left: 4px; }
 .info { font-size: 10px; color: #718096; margin: 2px 0; }
+.default-theme { background: #f7fafc; }
+.dark-theme { background: #2d3748; color: #e2e8f0; }
+.blue-theme { background: #ebf8ff; }
 </style>
 
 <template>
-<div class="container">
+<div class="container" :class="theme() + '-theme'">
   <div class="header">
     <button class="btn-add" @click="addChild">+</button>
     <button class="btn-remove" @click="removeLast">-</button>
@@ -50,7 +53,12 @@ button { padding: 3px 8px; border: none; border-radius: 3px; cursor: pointer; fo
     <span class="count">({{ children().length }})</span>
   </div>
 
-  <!-- EACH: recursive children loop -->
+  <!-- SHOW: info hidden when dark theme -->
+  <div show="theme() !== 'dark'" class="info">
+    Theme: {{ theme() }}
+  </div>
+
+  <!-- EACH: recursive children -->
   <div each="child in children()" :key="child.id">
     <test-recursive></test-recursive>
   </div>
