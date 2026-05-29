@@ -2,61 +2,52 @@
 
 ## Overview
 
-Enable `if/else` wrapping `<component :is>` inside nested forEach templates by making
-the nested forEach codegen call `generateItemSetup` recursively and fixing the tree-walker's
-anchor path recalculation for if-blocks.
+Enable `if/else` wrapping `<component :is>` inside nested forEach templates.
+
+## Status
+
+**BLOCKED** — requires tree-walker anchor path refactor (see `.kiro/specs/tree-walker-anchor-paths/`).
+
+## Root Cause Analysis
+
+The tree-walker computes childNode indices for anchor paths (like `<!-- if -->`, `<!-- each -->`)
+using a temporary DOM created by `walkBranch`. These paths are correct at compile time.
+
+However, when the template HTML is serialized to a string and later cloned via
+`template.content.cloneNode(true)`, the whitespace text nodes in the cloned DOM may differ
+from the temporary DOM used during compilation. This causes anchor paths like
+`node.childNodes[1].childNodes[7].childNodes[5]` to resolve to `undefined` at runtime.
+
+The `stripFirstAnchorSegment` function removes the first segment (for the `__branchRoot`
+wrapper), but does not address the whitespace mismatch.
+
+**Why it works for `show`**: `show` uses a CSS display toggle directly on the element,
+without anchor paths. No DOM insertion/removal is needed.
+
+**Why it works for top-level `if/else`**: Top-level templates are processed once
+(by the root `processIfChains`), and the anchor paths are calculated directly from the
+root DOM which matches the actual template clone.
+
+**Why it fails for nested `if/else`**: Nested templates are processed by `walkBranch`
+which creates a temporary DOM. The anchor paths from this temp DOM don't match the
+actual template clones at runtime.
 
 ## Prerequisites
 
-Phase 4 core features must be complete: `__renderEach_N()`, `__renderIf_N()`,
-`generateItemSetup` with ifBlocks + dynamicComponents, `processNestedForBlock` dep graph.
+- [ ] Anchor path refactor (separate spec): make anchor paths robust against whitespace
+  differences between compile-time and runtime DOM
 
 ## Tasks
 
-- [ ] 1. Fix tree-walker: strip first anchor segment for if-blocks
-  - [ ] 1.1 In `walkBranch`, after `processIfChains`, call `stripFirstAnchorSegment(ifBlocks)`
-  - [ ] 1.2 Verify anchor paths are correct in the compiled output (JSDOM test)
-  - [ ] 1.3 Ensure no regression on top-level if-blocks
+All tasks depend on the anchor path refactor being completed first.
 
+- [ ] 1. Fix tree-walker anchor path calculation for nested templates (separate spec)
 - [ ] 2. Make if-branch nested forEach call `generateItemSetup` recursively
-  - [ ] 2.1 Replace inline bindings/events/show/dynamicComponents generation with recursive call
-  - [ ] 2.2 Use `const node = clone2.content.firstChild` (not `innerNode2`)
-  - [ ] 2.3 Pass `indent + '    '` as indentOverride
-  - [ ] 2.4 Verify compile output matches expected JS
-
+  - [ ] 2.1 Replace inline bindings/events with recursive call using `node` variable
+  - [ ] 2.2 Pass `indent + '    '` as indentOverride
 - [ ] 3. Make direct nested forEach call `generateItemSetup` recursively
-  - [ ] 3.1 Replace inline bindings/events/show/dynamicComponents generation with recursive call
-  - [ ] 3.2 Use `const node = clone.content.firstChild` (not `innerNode`)
-  - [ ] 3.3 Pass `indent + '  '` as indentOverride
-  - [ ] 3.4 Verify compile output matches expected JS
-
-- [ ] 4. Update `test-deep-nesting.wcc` to use `if/else`
-  - [ ] 4.1 Replace `<div show="level3Visible">` with `<div if="level3Visible">...</div><div else>...</div>`
-  - [ ] 4.2 Compile and verify `document.createElement(__tag)` is generated
-  - [ ] 4.3 Verify component renders correctly in JSDOM
-
-- [ ] 5. Update e2e tests
-  - [ ] 5.1 Update Toggle Visibility test to verify if/else behavior (component destroyed, else text shown)
-  - [ ] 5.2 Verify all existing e2e tests still pass
-
-- [ ] 6. Update unit tests
-  - [ ] 6.1 Fix `codegen.event-handler-null-checks.test.js` to match new variable names
-  - [ ] 6.2 Fix any other tests broken by the recursive codegen change
-  - [ ] 6.3 Add test: if + component inside nested forEach compiles correctly
-
-- [ ] 7. Run final test suite
-  - [ ] 7.1 `npm test` — all 1268+ tests pass
-  - [ ] 7.2 `npx playwright test` — all ~200 e2e tests pass
-  - [ ] 7.3 Manual test: deep-nesting Toggle Visibility shows/hides component via if/else
-
-## Task Dependency Graph
-
-```
-[1] → [2, 3] → [4] → [5, 6] → [7]
-```
-
-- Task 1 (anchor fix) must be done first
-- Tasks 2 and 3 can be done in parallel
-- Task 4 depends on 2 and 3
-- Tasks 5 and 6 depend on 4
-- Task 7 is final verification
+  - [ ] 3.1 Replace inline bindings/events with recursive call using `node` variable
+  - [ ] 3.2 Pass `indent + '  '` as indentOverride
+- [ ] 4. Update `test-deep-nesting.wcc` to use `if/else` instead of `show`
+- [ ] 5. Update e2e tests for if/else behavior
+- [ ] 6. Run final test suite
