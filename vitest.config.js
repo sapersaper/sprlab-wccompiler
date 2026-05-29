@@ -7,6 +7,7 @@ export default defineConfig({
       '**/e2e/**',
       '**/node_modules/**',
       '**/dist/**',
+      '**/lib.backup-phase4/**', // Phase 5 refactor backup
     ],
     testTimeout: 30000,
     // Configure fast-check for deterministic property-based tests
