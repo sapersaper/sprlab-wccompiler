@@ -4,50 +4,42 @@
 
 Enable `if/else` wrapping `<component :is>` inside nested forEach templates.
 
-## Status
+## Root Cause
 
-**BLOCKED** — requires tree-walker anchor path refactor (see `.kiro/specs/tree-walker-anchor-paths/`).
+The tree-walker computes `childNodes[n]` anchor paths for `<!-- if -->` comments using a
+temporary DOM in `walkBranch`. At runtime, when the template is cloned via
+`template.content.cloneNode(true)`, whitespace text nodes differ between the compile-time
+DOM and the runtime DOM. This causes paths like `node.childNodes[1].childNodes[7].childNodes[5]`
+to resolve to `undefined`.
 
-## Root Cause Analysis
-
-The tree-walker computes childNode indices for anchor paths (like `<!-- if -->`, `<!-- each -->`)
-using a temporary DOM created by `walkBranch`. These paths are correct at compile time.
-
-However, when the template HTML is serialized to a string and later cloned via
-`template.content.cloneNode(true)`, the whitespace text nodes in the cloned DOM may differ
-from the temporary DOM used during compilation. This causes anchor paths like
-`node.childNodes[1].childNodes[7].childNodes[5]` to resolve to `undefined` at runtime.
-
-The `stripFirstAnchorSegment` function removes the first segment (for the `__branchRoot`
-wrapper), but does not address the whitespace mismatch.
-
-**Why it works for `show`**: `show` uses a CSS display toggle directly on the element,
-without anchor paths. No DOM insertion/removal is needed.
-
-**Why it works for top-level `if/else`**: Top-level templates are processed once
-(by the root `processIfChains`), and the anchor paths are calculated directly from the
-root DOM which matches the actual template clone.
-
-**Why it fails for nested `if/else`**: Nested templates are processed by `walkBranch`
-which creates a temporary DOM. The anchor paths from this temp DOM don't match the
-actual template clones at runtime.
-
-## Prerequisites
-
-- [ ] Anchor path refactor (separate spec): make anchor paths robust against whitespace
-  differences between compile-time and runtime DOM
+The fix must happen in `walkBranch`/`processIfChains`: instead of computing paths from
+the temporary `__branchRoot` DOM, compute them relative to the actual template content.
 
 ## Tasks
 
-All tasks depend on the anchor path refactor being completed first.
+- [ ] 1. Fix anchor path calculation for nested templates
+  - [ ] 1.1 In `walkBranch`, after processing ifBlocks, recalculate anchor paths so they
+         are relative to the actual template content, not the `__branchRoot` wrapper
+  - [ ] 1.2 Verify anchor paths resolve correctly in JSDOM for nested templates
+  - [ ] 1.3 Ensure no regression: existing top-level if-blocks still work
 
-- [ ] 1. Fix tree-walker anchor path calculation for nested templates (separate spec)
 - [ ] 2. Make if-branch nested forEach call `generateItemSetup` recursively
-  - [ ] 2.1 Replace inline bindings/events with recursive call using `node` variable
-  - [ ] 2.2 Pass `indent + '    '` as indentOverride
+  - [ ] 2.1 Replace inline code with `const node` + `generateItemSetup(lines, ..., indent + '    ')`
+  - [ ] 2.2 Remove duplicate inline bindings/events/show/dynamicComponents code
+
 - [ ] 3. Make direct nested forEach call `generateItemSetup` recursively
-  - [ ] 3.1 Replace inline bindings/events with recursive call using `node` variable
-  - [ ] 3.2 Pass `indent + '  '` as indentOverride
+  - [ ] 3.1 Replace inline code with `const node` + `generateItemSetup(lines, ..., indent + '  ')`
+  - [ ] 3.2 Remove duplicate inline bindings/events/show/dynamicComponents code
+
 - [ ] 4. Update `test-deep-nesting.wcc` to use `if/else` instead of `show`
-- [ ] 5. Update e2e tests for if/else behavior
-- [ ] 6. Run final test suite
+
+- [ ] 5. Update e2e tests for if/else behavior (component destroyed/created, else text shown)
+
+- [ ] 6. Update unit tests
+
+- [ ] 7. Run final test suite
+
+## Dependencies
+
+Tasks 2 and 3 can be done in parallel, both depend on Task 1.
+Tasks 4-7 depend on Tasks 2+3.

@@ -21,7 +21,23 @@ For each forBlock item:
   4. Generate dynamicComponents (line ~940): inline document.createElement
 ```
 
-### The Problem
+## Root Cause: Anchor Path Whitespace Mismatch
+
+The tree-walker computes anchor paths using a temporary DOM (`<div id="__branchRoot">`).
+When the template HTML is serialized and later cloned, whitespace text nodes differ
+between the temp DOM and the actual clone. This causes `childNodes[n]` paths to be wrong.
+
+Example: a path computed as `node.childNodes[1].childNodes[5]` in the temp DOM might
+need to be `node.childNodes[1].childNodes[7]` in the real DOM because the temp DOM has
+fewer whitespace text nodes.
+
+**The fix**: after `processIfChains`/`processForBlocks` modify the temp DOM, recompute
+anchor paths using the `recomputeAnchorPath` approach (which uses `Array.from(parent.childNodes)`
+to get accurate indices), applied relative to the template root rather than the branch root.
+
+The `stripFirstAnchorSegment` already removes the wrapper segment. The issue is that
+subsequent segments may also be wrong due to whitespace differences between how the
+HTML parser creates text nodes for `innerHTML` vs how `cloneNode` does.
 
 When `if` wraps `<component>` inside a forEach template:
 
