@@ -15,7 +15,9 @@ const items = signal([
 const nextId = signal(4)
 const selectedComponent = signal('comp-a')
 const parentMessage = signal('Parent message')
-const childValue = signal('')
+const childUsername = signal('')
+const childAge = signal(0)
+const childAgree = signal(false)
 const toggleCount = signal(0)
 const rapidClicks = signal(0)
 
@@ -73,6 +75,13 @@ function switchComponent() {
 
 function handleChildEvent(detail) {
   parentMessage.set(`Child event received: ${detail}`)
+}
+
+function handleChildModel(e) {
+  const { prop, value } = e.detail
+  if (prop === 'username') childUsername.set(value)
+  else if (prop === 'age') childAge.set(value)
+  else if (prop === 'agree') childAgree.set(value)
 }
 
 function rapidUpdate() {
@@ -324,10 +333,9 @@ button:hover {
       <p>{{ parentMessage() }}</p>
     </div>
 
-    <!-- Child component with v-model and events -->
+    <!-- Child component with defineModel and slots -->
     <test-model-child 
-      :value="childValue()"
-      @input="(e) => childValue.set(e.detail)"
+      @wcc:model="(e) => handleChildModel(e)"
       @custom-event="(e) => handleChildEvent(e.detail)"
     >
       <template #custom-slot>
@@ -336,7 +344,9 @@ button:hover {
     </test-model-child>
 
     <div style="margin-top: 15px;">
-      <p><strong>Child Value:</strong> {{ childValue() }}</p>
+      <p><strong>Child Username:</strong> {{ childUsername() }}</p>
+      <p><strong>Child Age:</strong> {{ childAge() }}</p>
+      <p><strong>Child Agreed:</strong> {{ childAgree() }}</p>
     </div>
   </div>
 

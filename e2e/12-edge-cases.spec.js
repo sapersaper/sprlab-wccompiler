@@ -276,4 +276,101 @@ test.describe('test-deep-nesting', () => {
     const count = await level2.count();
     expect(count).toBeGreaterThan(0);
   });
+
+  test('Level 2 shows dynamic components (view-a, view-b)', async ({ page }) => {
+    await page.goto(url);
+    // First Level 1 item is expanded by default → Level 2 should show view-a and view-b
+    const componentA = page.locator('test-deep-nesting view-a');
+    const componentB = page.locator('test-deep-nesting view-b');
+    await expect(componentA.first()).toBeAttached();
+    await expect(componentB.first()).toBeAttached();
+    // Each dynamic component should show its title
+    await expect(componentA.first()).toContainText('Component A');
+    await expect(componentB.first()).toContainText('Component B');
+  });
+
+  test('Level 3 Toggle Visibility hides/shows the dynamic component', async ({ page }) => {
+    await page.goto(url);
+    // Initially level3Visible is true → view-a and view-b should be visible
+    await expect(page.locator('test-deep-nesting view-a').first()).toBeVisible();
+    await expect(page.locator('test-deep-nesting view-b').first()).toBeVisible();
+
+    // Find the first Toggle Visibility button
+    const toggleBtn = page.locator('test-deep-nesting button.btn-theme', { hasText: 'Toggle Visibility' }).first();
+
+    // Click Toggle Visibility → hides the component (show directive sets display:none)
+    await toggleBtn.click();
+    await page.waitForTimeout(500);
+    await expect(page.locator('test-deep-nesting view-a').first()).not.toBeVisible();
+    await expect(page.locator('test-deep-nesting view-b').first()).not.toBeVisible();
+
+    // Click again → shows components again
+    await toggleBtn.click();
+    await page.waitForTimeout(500);
+    await expect(page.locator('test-deep-nesting view-a').first()).toBeVisible();
+    await expect(page.locator('test-deep-nesting view-b').first()).toBeVisible();
+  });
+
+  test('Level 3 Change Theme cycles through light → dark → blue → light', async ({ page }) => {
+    await page.goto(url);
+    const themeBtn = page.locator('test-deep-nesting button.btn-theme', { hasText: 'Change Theme' }).first();
+
+    // Initial theme is 'light' — check text in Level 3 section
+    const themeText = page.locator('test-deep-nesting .level-3-container').first().locator('p').last();
+    await expect(themeText).toContainText('light');
+
+    // Click Change Theme
+    await themeBtn.click();
+    await page.waitForTimeout(500);
+    await expect(themeText).toContainText('dark');
+
+    // Click again
+    await themeBtn.click();
+    await page.waitForTimeout(500);
+    await expect(themeText).toContainText('blue');
+
+    // Click again → back to light
+    await themeBtn.click();
+    await page.waitForTimeout(500);
+    await expect(themeText).toContainText('light');
+  });
+
+  test('Level 3 text updates show current theme after change', async ({ page }) => {
+    await page.goto(url);
+    const themeBtn = page.locator('test-deep-nesting button.btn-theme', { hasText: 'Change Theme' }).first();
+    const themeText = page.locator('test-deep-nesting .level-3-container').first().locator('p').last();
+
+    // Verify initial state
+    await expect(themeText).toContainText('Current theme: light');
+
+    // Click and verify each cycle
+    await themeBtn.click();
+    await page.waitForTimeout(500);
+    await expect(themeText).toContainText('Current theme: dark');
+
+    await themeBtn.click();
+    await page.waitForTimeout(500);
+    await expect(themeText).toContainText('Current theme: blue');
+
+    await themeBtn.click();
+    await page.waitForTimeout(500);
+    await expect(themeText).toContainText('Current theme: light');
+  });
+
+  test('Second Level 1 item Expand button reveals Level 2-6 content', async ({ page }) => {
+    await page.goto(url);
+    // The second Level 1 item is collapsed (Item B)
+    // Find the "Expand" button for the second item
+    const expandBtns = page.locator('test-deep-nesting button.btn-toggle', { hasText: 'Expand' });
+    const count = await expandBtns.count();
+    expect(count).toBe(1); // Only one "Expand" button (Item B is collapsed, Item A shows "Collapse")
+
+    await expandBtns.first().click();
+    await page.waitForTimeout(500);
+
+    // After expanding, Item B should reveal Level 2 content with view-c
+    const componentC = page.locator('test-deep-nesting view-c');
+    await expect(componentC.first()).toBeAttached();
+    await expect(componentC.first()).toContainText('Component C');
+  });
 });

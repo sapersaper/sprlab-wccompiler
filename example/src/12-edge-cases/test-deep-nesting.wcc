@@ -14,11 +14,11 @@ const level1Items = signal([
 // Level 2 data (nested in level 1)
 const level2Data = {
   1: [
-    { id: '1-1', name: 'Level 2A-1', type: 'component-a' },
-    { id: '1-2', name: 'Level 2A-2', type: 'component-b' }
+    { id: '1-1', name: 'Level 2A-1', type: 'view-a' },
+    { id: '1-2', name: 'Level 2A-2', type: 'view-b' }
   ],
   2: [
-    { id: '2-1', name: 'Level 2B-1', type: 'component-c' }
+    { id: '2-1', name: 'Level 2B-1', type: 'view-c' }
   ]
 }
 
@@ -204,76 +204,65 @@ button:hover {
                 <span class="level-indicator level-3">LEVEL 3</span>
                 <h5>Dynamic Component + Conditional</h5>
                 
-                <component :is="subItem.type">
-                  <template #header>
-                    <p>Slot header for {{ subItem.name }}</p>
-                  </template>
+                <div show="level3Visible">
+                  <component :is="subItem.type"></component>
+                </div>
+
+                <!-- LEVEL 4: Nested content outside dynamic component -->
+                <div class="nesting-container level-4-container">
+                  <span class="level-indicator level-4">LEVEL 4</span>
+                  <h6>Nested Loop Inside Slot</h6>
                   
-                  <!-- LEVEL 4: Conditional inside dynamic component slot -->
-                  <div if="level3Visible" slot="body">
-                    <div class="nesting-container level-4-container">
-                      <span class="level-indicator level-4">LEVEL 4</span>
-                      <h6>Nested Loop Inside Slot</h6>
+                  <div each="level4Item in level4Items()" :key="$index">
+                    <div class="item-card" style="margin: 5px 0;">
+                      <p>Level 4 Item: {{ level4Item }}</p>
                       
-                      <div each="level4Item in level4Items()" :key="$index">
-                        <div class="item-card" style="margin: 5px 0;">
-                          <p>Level 4 Item: {{ level4Item }}</p>
+                      <!-- LEVEL 5: Conditional inside nested loop -->
+                      <div if="level5Active" class="nesting-container level-5-container">
+                        <span class="level-indicator level-5">LEVEL 5</span>
+                        <p><strong>Level 5 Active!</strong></p>
+                        <p>Activation count: {{ level5Count() }}</p>
+                        
+                        <!-- LEVEL 6: Class and Style bindings at deepest level -->
+                        <div 
+                          class="nesting-container level-6-container"
+                          :class="level6Class()"
+                          :style="level6Style()"
+                        >
+                          <span class="level-indicator level-6">LEVEL 6</span>
+                          <h6>Deepest Level - Class & Style Bindings</h6>
+                          <p>Current class: <code>{{ level6Class() }}</code></p>
+                          <p>Current style: <code>color: {{ level6Style().color }}, fontSize: {{ level6Style().fontSize }}</code></p>
                           
-                          <!-- LEVEL 5: Conditional inside nested loop -->
-                          <div if="level5Active" class="nesting-container level-5-container">
-                            <span class="level-indicator level-5">LEVEL 5</span>
-                            <p><strong>Level 5 Active!</strong></p>
-                            <p>Activation count: {{ level5Count() }}</p>
-                            
-                            <!-- LEVEL 6: Class and Style bindings at deepest level -->
-                            <div 
-                              class="nesting-container level-6-container"
-                              :class="level6Class()"
-                              :style="level6Style()"
-                            >
-                              <span class="level-indicator level-6">LEVEL 6</span>
-                              <h6>Deepest Level - Class & Style Bindings</h6>
-                              <p>Current class: <code>{{ level6Class() }}</code></p>
-                              <p>Current style: <code>color: {{ level6Style().color }}, fontSize: {{ level6Style().fontSize }}</code></p>
-                              
-                              <div style="margin-top: 10px;">
-                                <button class="btn-style" @click="changeLevel6Style()">
-                                  Change Style
-                                </button>
-                                <button class="btn-theme" @click="changeLevel6Class()">
-                                  Change Class
-                                </button>
-                              </div>
-                            </div>
-                            
-                            <button class="btn-toggle" @click="toggleLevel5()" style="margin-top: 10px;">
-                              Toggle Level 5
+                          <div style="margin-top: 10px;">
+                            <button class="btn-style" @click="changeLevel6Style()">
+                              Change Style
                             </button>
-                          </div>
-                          <div else class="nesting-container level-5-container" style="opacity: 0.5;">
-                            <span class="level-indicator level-5">LEVEL 5</span>
-                            <p>Level 5 is INACTIVE</p>
-                            <button class="btn-toggle" @click="toggleLevel5()">
-                              Activate Level 5
+                            <button class="btn-theme" @click="changeLevel6Class()">
+                              Change Class
                             </button>
                           </div>
                         </div>
+                        
+                        <button class="btn-toggle" @click="toggleLevel5()" style="margin-top: 10px;">
+                          Toggle Level 5
+                        </button>
                       </div>
-                      
-                      <div style="margin-top: 10px;">
-                        <button class="btn-add" @click="addLevel4Item()">Add Level 4 Item</button>
-                        <button class="btn-remove" @click="removeLevel4Item()">Remove Last</button>
+                      <div else class="nesting-container level-5-container" style="opacity: 0.5;">
+                        <span class="level-indicator level-5">LEVEL 5</span>
+                        <p>Level 5 is INACTIVE</p>
+                        <button class="btn-toggle" @click="toggleLevel5()">
+                          Activate Level 5
+                        </button>
                       </div>
                     </div>
                   </div>
-                  <div else slot="body">
-                    <p>Level 3 content is hidden</p>
-                  </div>
                   
-                  <div slot="footer">
-                    <p>Footer for {{ subItem.name }}</p>
+                  <div style="margin-top: 10px;">
+                    <button class="btn-add" @click="addLevel4Item()">Add Level 4 Item</button>
+                    <button class="btn-remove" @click="removeLevel4Item()">Remove Last</button>
                   </div>
-                </component>
+                </div>
                 
                 <div style="margin-top: 10px;">
                   <button class="btn-theme" @click="toggleLevel3()">Toggle Visibility</button>

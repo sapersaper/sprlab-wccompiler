@@ -1,0 +1,57 @@
+<script>
+import { defineComponent, defineProps, defineEmits, onMount, onDestroy } from 'wcc'
+
+export default defineComponent({
+  tag: 'view-c',
+})
+
+const props = defineProps({
+  title: 'Component C',
+  count: 0
+})
+
+const emit = defineEmits(['custom-event'])
+
+onMount(() => {
+  console.log('[View-C] connectedCallback - Component mounted')
+})
+
+onDestroy(() => {
+  console.log('[View-C] disconnectedCallback - Component destroyed')
+})
+
+function emitEvent() {
+  emit('custom-event', { component: 'C', action: 'clicked' })
+}
+</script>
+
+<template>
+  <div class="component-c">
+    <h4>©️ Component C</h4>
+    <p><strong>Title:</strong> {{props.title}}</p>
+    <p><strong>Count:</strong> {{props.count}}</p>
+    <button @click="emitEvent">Emit Event from C</button>
+    <slot name="header"></slot>
+    <slot name="body"></slot>
+    <div class="content-box orange">
+      <p>Contenido específico del Componente C</p>
+    </div>
+    <slot name="footer"></slot>
+  </div>
+</template>
+
+<style>
+.component-c {
+  padding: 15px;
+  background-color: #fff3e0;
+  border-left: 4px solid #ff9800;
+  border-radius: 4px;
+}
+
+.content-box.orange {
+  background-color: #ffe0b2;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 4px;
+}
+</style>
