@@ -204,11 +204,8 @@ button:hover {
                 <span class="level-indicator level-3">LEVEL 3</span>
                 <h5>Dynamic Component + Conditional</h5>
                 
-                <div if="level3Visible">
+                <div show="level3Visible">
                   <component :is="subItem.type"></component>
-                </div>
-                <div else>
-                  <p style="padding: 20px; text-align: center; color: #999;">Component hidden — click Toggle Visibility to show</p>
                 </div>
 
                 <!-- LEVEL 4: Nested content outside dynamic component -->
