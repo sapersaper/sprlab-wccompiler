@@ -1,5 +1,5 @@
 <script>
-import { defineComponent, signal, effect } from 'wcc'
+import { defineComponent, signal, watch } from 'wcc'
 
 export default defineComponent({
   tag: 'test-effects',
@@ -12,10 +12,8 @@ const count = signal(0)
 let logs = []
 const logsDisplay = signal('') // Signal para mostrar logs
 
-// Effect que se ejecuta cuando count cambia
-// Solo lee 'count', NO lee 'logs' ni 'logsDisplay'
-effect(() => {
-  const newValue = count()
+// Watch que se ejecuta cuando count cambia (reemplaza effect())
+watch(count, (newValue) => {
   logs.push(`Count cambió a: ${newValue}`)
   logsDisplay.set(logs.join('\n'))
 })

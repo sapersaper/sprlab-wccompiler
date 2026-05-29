@@ -1,0 +1,57 @@
+<script>
+import { defineComponent, defineProps, defineEmits, onMount, onDestroy } from 'wcc'
+
+export default defineComponent({
+  tag: 'view-a',
+})
+
+const props = defineProps({
+  title: 'Component A',
+  count: 0
+})
+
+const emit = defineEmits(['custom-event'])
+
+onMount(() => {
+  console.log('[View-A] connectedCallback - Component mounted')
+})
+
+onDestroy(() => {
+  console.log('[View-A] disconnectedCallback - Component destroyed')
+})
+
+function emitEvent() {
+  emit('custom-event', { component: 'A', action: 'clicked' })
+}
+</script>
+
+<template>
+  <div class="component-a">
+    <h4>🅰️ Component A</h4>
+    <p><strong>Title:</strong> {{props.title}}</p>
+    <p><strong>Count:</strong> {{props.count}}</p>
+    <button @click="emitEvent">Emit Event from A</button>
+    <slot name="header"></slot>
+    <slot name="body"></slot>
+    <div class="content-box blue">
+      <p>Contenido específico del Componente A</p>
+    </div>
+    <slot name="footer"></slot>
+  </div>
+</template>
+
+<style>
+.component-a {
+  padding: 15px;
+  background-color: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  border-radius: 4px;
+}
+
+.content-box.blue {
+  background-color: #bbdefb;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 4px;
+}
+</style>
