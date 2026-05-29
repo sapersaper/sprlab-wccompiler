@@ -114,4 +114,23 @@ test.describe('test-dynamic-comprehensive', () => {
     // The current view text should show empty
     await expect(page.locator('test-dynamic-comprehensive')).toContainText('(empty)');
   });
+
+  test('Test 9: expresiones complejas — toggle admin switches component via computed', async ({ page }) => {
+    await page.goto(url);
+
+    // Initial: isAdmin=false → routeComponent()='user-panel'
+    await expect(page.locator('test-dynamic-comprehensive')).toContainText('user-panel');
+
+    // Click Toggle Admin
+    await page.locator('test-dynamic-comprehensive button', { hasText: 'Toggle Admin' }).click();
+    await page.waitForTimeout(300);
+
+    // Now isAdmin=true → routeComponent()='admin-panel'
+    await expect(page.locator('test-dynamic-comprehensive')).toContainText('admin-panel');
+
+    // Click again → back to user-panel
+    await page.locator('test-dynamic-comprehensive button', { hasText: 'Toggle Admin' }).click();
+    await page.waitForTimeout(300);
+    await expect(page.locator('test-dynamic-comprehensive')).toContainText('user-panel');
+  });
 });
