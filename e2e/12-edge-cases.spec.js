@@ -289,7 +289,7 @@ test.describe('test-deep-nesting', () => {
     await expect(componentB.first()).toContainText('Component B');
   });
 
-  test('Level 3 Toggle Visibility hides/shows the dynamic component', async ({ page }) => {
+  test('Level 3 Toggle Visibility hides/shows the dynamic component without destroying it', async ({ page }) => {
     await page.goto(url);
     // Initially level3Visible is true → view-a and view-b should be visible
     await expect(page.locator('test-deep-nesting view-a').first()).toBeVisible();
@@ -298,17 +298,29 @@ test.describe('test-deep-nesting', () => {
     // Find the first Toggle Visibility button
     const toggleBtn = page.locator('test-deep-nesting button.btn-theme', { hasText: 'Toggle Visibility' }).first();
 
+    // Capture console messages to verify components are NOT destroyed/recreated
+    const logs = [];
+    page.on('console', msg => logs.push(msg.text()));
+
     // Click Toggle Visibility → hides the component (show directive sets display:none)
     await toggleBtn.click();
     await page.waitForTimeout(500);
     await expect(page.locator('test-deep-nesting view-a').first()).not.toBeVisible();
     await expect(page.locator('test-deep-nesting view-b').first()).not.toBeVisible();
 
+    // Dynamic components should NOT be disconnected (show just hides, doesn't destroy)
+    const disconnectLogs = logs.filter(l => l.includes('disconnectedCallback'));
+    expect(disconnectLogs).toHaveLength(0);
+
     // Click again → shows components again
     await toggleBtn.click();
     await page.waitForTimeout(500);
     await expect(page.locator('test-deep-nesting view-a').first()).toBeVisible();
     await expect(page.locator('test-deep-nesting view-b').first()).toBeVisible();
+
+    // Still no disconnect/reconnect
+    const connectLogs = logs.filter(l => l.includes('connectedCallback'));
+    expect(connectLogs).toHaveLength(0);
   });
 
   test('Level 3 Change Theme cycles through light → dark → blue → light', async ({ page }) => {
