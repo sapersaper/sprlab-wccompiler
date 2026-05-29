@@ -386,3 +386,150 @@ test.describe('test-deep-nesting', () => {
     await expect(componentC.first()).toContainText('Component C');
   });
 });
+
+// ── test-recursive ──────────────────────────────────────────────────
+
+test.describe('test-recursive', () => {
+  test('renders component', async ({ page }) => {
+    await page.goto(url);
+    const el = page.locator('test-recursive').first();
+    await expect(el).toBeAttached();
+  });
+
+  test('shows leaf state initially (no children)', async ({ page }) => {
+    await page.goto(url);
+    // The leaf text should be visible inside test-recursive
+    await expect(page.locator('test-recursive')).toContainText('leaf');
+  });
+
+  test('add child creates nested instance', async ({ page }) => {
+    const logs = [];
+    page.on('console', msg => logs.push(`[${msg.type()}] ${msg.text()}`));
+
+    await page.goto(url);
+
+    await page.locator('test-recursive').first().locator('.btn-add').click();
+    await page.waitForTimeout(500);
+
+    const html = await page.locator('test-recursive').first().innerHTML();
+    console.log('HTML length:', html.length);
+
+    const errors = logs.filter(l => l.includes('[error]') || l.includes('Error'));
+    if (errors.length > 0) console.log('Errors:', errors);
+
+    await expect(page.locator('test-recursive').first().locator('.count').first()).toContainText('(1)');
+    const count = await page.locator('test-recursive').count();
+    expect(count).toBeGreaterThanOrEqual(2);
+  });
+
+  test('remove last child removes nested instance', async ({ page }) => {
+    await page.goto(url);
+    const root = page.locator('test-recursive').first();
+
+    await root.locator('.btn-add').click();
+    await page.waitForTimeout(200);
+    await root.locator('.btn-add').click();
+    await page.waitForTimeout(200);
+
+    await expect(root.locator('.count').first()).toContainText('(2)');
+
+    await root.locator('.btn-remove').click();
+    await page.waitForTimeout(200);
+
+    await expect(root.locator('.count').first()).toContainText('(1)');
+  });
+
+  test('Hide button hides all children via if', async ({ page }) => {
+    await page.goto(url);
+    const root = page.locator('test-recursive').first();
+
+    await root.locator('.btn-add').click();
+    await page.waitForTimeout(200);
+    await expect(root.locator('test-recursive')).toHaveCount(1);
+
+    // Click Hide — children removed from DOM
+    await root.locator('.btn-toggle').first().click();
+    await page.waitForTimeout(300);
+    await expect(root.locator('test-recursive')).toHaveCount(0);
+
+    // Click again to show
+    await root.locator('.btn-toggle').first().click();
+    await page.waitForTimeout(300);
+    await expect(root.locator('test-recursive')).toHaveCount(1);
+  });
+
+  test('theme toggle hides info text via show binding', async ({ page }) => {
+    await page.goto(url);
+    const root = page.locator('test-recursive').first();
+
+    // Add a child so we can test on nested instance
+    await root.locator('.btn-add').click();
+    await page.waitForTimeout(200);
+
+    const nested = root.locator('test-recursive').first();
+    // Initially theme is 'default' → info should contain text (has children info)
+    await expect(nested.locator('.info')).toBeVisible();
+
+    // Click Theme button on the nested instance
+    await nested.locator('.btn-theme').click();
+    await page.waitForTimeout(300);
+    // Theme is now 'dark' → info should be hidden (show binding)
+    await expect(nested.locator('.info')).not.toBeVisible();
+
+    // Click Theme again → 'blue' → info visible again
+    await nested.locator('.btn-theme').click();
+    await page.waitForTimeout(300);
+    await expect(nested.locator('.info')).toBeVisible();
+  });
+
+  test('theme toggle applies dynamic class', async ({ page }) => {
+    await page.goto(url);
+    const root = page.locator('test-recursive').first();
+    await root.locator('.btn-add').click();
+    await page.waitForTimeout(200);
+
+    const nested = root.locator('test-recursive').first();
+
+    // Default theme class
+    await expect(nested.locator('div.default-theme')).toBeAttached();
+
+    // Toggle to dark
+    await nested.locator('.btn-theme').click();
+    await page.waitForTimeout(200);
+    await expect(nested.locator('div.dark-theme')).toBeAttached();
+
+    // Toggle to blue
+    await nested.locator('.btn-theme').click();
+    await page.waitForTimeout(200);
+    await expect(nested.locator('div.blue-theme')).toBeAttached();
+  });
+
+  test('deep nesting: 3 levels of recursion work', async ({ page }) => {
+    await page.goto(url);
+    const root = page.locator('test-recursive').first();
+
+    // Level 1: add child
+    await root.locator('.btn-add').click();
+    await page.waitForTimeout(200);
+
+    // Level 2: add child to the nested instance
+    const level1 = root.locator('test-recursive').first();
+    await level1.locator('.btn-add').click();
+    await page.waitForTimeout(200);
+
+    // Level 3: add child to the grandchild
+    const level2 = level1.locator('test-recursive').first();
+    await level2.locator('.btn-add').click();
+    await page.waitForTimeout(200);
+
+    // All 3 levels should have test-recursive children
+    await expect(root.locator('test-recursive')).toHaveCount(1);
+    await expect(level1.locator('test-recursive')).toHaveCount(1);
+    await expect(level2.locator('test-recursive')).toHaveCount(1);
+
+    // Check counts
+    await expect(root.locator('.count')).toContainText('(1)');
+    await expect(level1.locator('.count')).toContainText('(1)');
+    await expect(level2.locator('.count')).toContainText('(1)');
+  });
+});
