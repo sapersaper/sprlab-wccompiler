@@ -397,8 +397,19 @@ test.describe('test-recursive', () => {
 
   test('add child creates nested instance', async ({ page }) => {
     await page.goto(url);
-    await page.locator('test-recursive').first().locator('.btn-add').click();
-    await page.waitForTimeout(300);
+
+    // Debug: before click
+    const htmlBefore = await page.locator('test-recursive').first().innerHTML();
+    console.log('BEFORE HTML length:', htmlBefore.length);
+    console.log('BEFORE has test-recursive:', htmlBefore.includes('test-recursive'));
+
+    await page.locator('test-recursive').first().locator('.btn-add').first().click();
+    await page.waitForTimeout(500);
+
+    const htmlAfter = await page.locator('test-recursive').first().innerHTML();
+    console.log('AFTER HTML length:', htmlAfter.length);
+    console.log('AFTER has test-recursive:', htmlAfter.includes('test-recursive'));
+    console.log('AFTER first 200:', htmlAfter.substring(0, 200));
 
     await expect(page.locator('test-recursive').first().locator('.count').first()).toContainText('(1)');
     expect(await page.locator('test-recursive').count()).toBeGreaterThanOrEqual(2);
