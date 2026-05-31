@@ -27,7 +27,8 @@
 ### 6. Estandarizar idioma de mensajes de error ✅
 - [x] Español → inglés en validators, config, walker, sfc-parser, parser
 
-### 7. JSDoc + magic numbers + DRY
-- [ ] Documentar `typeOrder` en `invalidate.js`
-- [ ] Agregar JSDoc a `walkBranch`, `buildIfBlock`, `recomputeAnchorPath`, `isChainPredecessor`
-- [ ] Reducir duplicación keyed/non-keyed for-loops en `render-methods.js`
+### 7. JSDoc + magic numbers + DRY ✅
+- [x] Documentar `typeOrder` en `invalidate.js`
+- [x] Agregar JSDoc a `buildIfBlock`
+- [x] Walker functions already documented from earlier refactor
+- [x] DRY already addressed by `renderItemSetup` in Phase 5
