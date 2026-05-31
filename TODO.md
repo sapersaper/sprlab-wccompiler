@@ -2,20 +2,18 @@
 
 ## 🔴 Máxima prioridad: Zero Runtime
 
-### 0. Eliminar `__effect` — migrar `each` dentro de `if` a `__invalidate`
-Actualmente los `each` dentro de `if`-blocks usan `__effect` en el método `_setup` de `render-methods.js`. Esto fuerza `needsEffect=true` en `preamble.js` y genera `__wcc-signals.js` como runtime compartido.
+### 0. Eliminar `__effect` — migrar `each` dentro de `if` a `__invalidate` ✅ COMPLETADO
 
-**Tareas:**
-- [ ] Generar `__renderEach_N` methods para forBlocks anidados dentro de if-blocks (no solo top-level)
-- [ ] Registrar estos forBlocks en el depGraph con `type: 'renderEach'`
-- [ ] Llamar `__renderEach_N` desde `__invalidate` en vez de usar `__effect` reactivo
-- [ ] Eliminar `__effect` de `_setup` method
-- [ ] Eliminar `needsEffect` de `preamble.js` (volver a `false` fijo)
-- [ ] Eliminar get trap del Proxy en `constructor.js`
-- [ ] Eliminar `__disposers` de `connected-callback.js`
-- [ ] Eliminar `hasNestedForInIf` (ya no se necesita)
-- [ ] Verificar que `__wcc-signals.js` desaparece del build
-- [ ] 131 unit + 207 e2e tests pasando
+- [x] Generar `__renderEach_N` methods para forBlocks anidados dentro de if-blocks
+- [x] Registrar en depGraph con `_renderIndex`
+- [x] Llamar `__renderEach_N` desde `__invalidate` en vez de `__effect`
+- [x] Eliminar `__effect` de `_setup` method
+- [x] Eliminar `needsEffect` de `preamble.js` (volver a `false` fijo)
+- [x] Eliminar get trap del Proxy en `constructor.js`
+- [x] Eliminar `__disposers` de `connected-callback.js`
+- [x] Eliminar `hasNestedForInIf`
+- [x] Verificar que `__wcc-signals.js` NO se genera
+- [x] 131 unit + 207 e2e tests pasando
 - [ ] Activar `standalone: true` en `example/wcc.config.js`
 
 ---
