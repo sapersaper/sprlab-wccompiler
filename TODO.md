@@ -7,8 +7,9 @@
 - [x] Eliminar las ~330 líneas duplicadas de walker en `compiler-browser.js` (528→207)
 - [x] Usar `extractEmitsObjectNameFromGeneric` en vez del regex inline en `compiler-browser.js`
 
-### 2. Limpiar runtime muerto en `preamble.js`
-- [ ] Eliminar código muerto: `if (needsEffect)`, `if (needsEffect || needsComputed || needsBatch)`, `needsComputed`, `needsUntrack`, `needsBatch`
+### 2. Limpiar runtime muerto en `preamble.js` ✅
+- [x] Eliminar código muerto: `if (needsEffect)`, `if (needsEffect || needsComputed || needsBatch)`, `needsComputed`, `needsUntrack`, `needsBatch`
+- [x] Eliminar import y llamada a `buildInlineRuntime` (siempre vacío)
 
 ### 3. Crear `lib/utils.js` — helpers compartidos
 - [ ] Mover `escapeRegex` de `render-context.js` y `expr-transformer.js` a `lib/utils.js`
