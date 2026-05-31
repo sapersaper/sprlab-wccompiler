@@ -48,7 +48,7 @@ async function build(config, cwd) {
   }
 
   // Generate framework stubs (React + Vue) from compiled component metadata
-  generateFrameworkStubs(outputDir);
+  generateFrameworkStubs(outputDir, config);
 
   return errors;
 }
@@ -59,7 +59,7 @@ async function build(config, cwd) {
  *   - wcc-react.js + wcc-react.d.ts (importable stubs for React)
  *   - wcc-vue.js + wcc-vue.d.ts (importable stubs for Vue)
  */
-function generateFrameworkStubs(outputDir) {
+function generateFrameworkStubs(outputDir, config) {
 
   const files = [];
   function collectJsFiles(dir) {
@@ -231,34 +231,36 @@ function generateFrameworkStubs(outputDir) {
   writeFileSync(join(outputDir, 'wcc-vue.js'), vueJs);
   writeFileSync(join(outputDir, 'wcc-vue.d.ts'), vueDts);
 
-  // ── HTML Custom Data (for VS Code / Kiro HTML intellisense) ──
-  const htmlData = {
-    version: 1.1,
-    tags: components.map(comp => {
-      const props = comp.meta.props || [];
-      const events = comp.meta.events || [];
-      const models = comp.meta.models || [];
+  // ── HTML Custom Data (for VS Code HTML intellisense) ──
+  if (config.htmlData !== false) {
+    const htmlData = {
+      version: 1.1,
+      tags: components.map(comp => {
+        const props = comp.meta.props || [];
+        const events = comp.meta.events || [];
+        const models = comp.meta.models || [];
 
-      const attributes = [
-        ...props.map(p => {
-          const def = String(p.default);
-          const type = def === 'true' || def === 'false' ? 'boolean'
-            : /^-?\d+(\.\d+)?$/.test(def) ? 'number' : 'string';
-          return { name: `:${p.name}`, description: `(prop) ${type}` };
-        }),
-        ...models.map(m => ({ name: `:${m}`, description: `(model) two-way binding` })),
-        ...events.map(e => ({ name: `@${e}`, description: `(event)` })),
-      ];
+        const attributes = [
+          ...props.map(p => {
+            const def = String(p.default);
+            const type = def === 'true' || def === 'false' ? 'boolean'
+              : /^-?\d+(\.\d+)?$/.test(def) ? 'number' : 'string';
+            return { name: `:${p.name}`, description: `(prop) ${type}` };
+          }),
+          ...models.map(m => ({ name: `:${m}`, description: `(model) two-way binding` })),
+          ...events.map(e => ({ name: `@${e}`, description: `(event)` })),
+        ];
 
-      return {
-        name: comp.meta.tag,
-        description: `WCC Component: ${comp.meta.tag}`,
-        attributes,
-      };
-    }),
-  };
+        return {
+          name: comp.meta.tag,
+          description: `WCC Component: ${comp.meta.tag}`,
+          attributes,
+        };
+      }),
+    };
 
-  writeFileSync(join(outputDir, 'wcc-html-data.json'), JSON.stringify(htmlData, null, 2));
+    writeFileSync(join(outputDir, 'wcc-html-data.json'), JSON.stringify(htmlData, null, 2));
+  }
 }
 
 function discoverFiles(dir) {

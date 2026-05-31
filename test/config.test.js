@@ -27,7 +27,7 @@ describe('loadConfig', () => {
     dirsToClean.push(tmpDir);
 
     const config = await loadConfig(tmpDir);
-    expect(config).toEqual({ port: 4100, input: 'src', output: 'dist', minify: false, comments: false, runtime: false });
+    expect(config).toEqual({ port: 4100, input: 'src', output: 'dist', minify: false, comments: false, runtime: false, htmlData: true });
   });
 
   it('loads custom port, input, and output from wcc.config.js', async () => {
