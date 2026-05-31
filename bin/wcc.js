@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readdirSync, writeFileSync, mkdirSync, existsSync, watch, copyFileSync, readFileSync } from 'node:fs';
+import { readdirSync, writeFileSync, mkdirSync, existsSync, watch, copyFileSync, readFileSync, rmSync } from 'node:fs';
 import { resolve, relative, extname, basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadConfig } from '../lib/config.js';
@@ -16,7 +16,9 @@ async function build(config, cwd) {
   const inputDir = resolve(cwd, config.input);
   const outputDir = resolve(cwd, config.output);
 
-  if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
+  // Clean output directory before building (removes stale files from previous configs)
+  if (existsSync(outputDir)) rmSync(outputDir, { recursive: true });
+  mkdirSync(outputDir, { recursive: true });
 
   const files = discoverFiles(inputDir);
   let errors = 0;
