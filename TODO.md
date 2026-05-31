@@ -1,48 +1,71 @@
-# TODO — Phase 5 Refactor (continuación)
+# TODO — Phase 5 Refactor
 
-## 🔴 Máxima prioridad: completar estructura de directorios
+## ✅ Completado
 
-### 1. `lib/parser/` — Split de `parser-extractors.js` (1313 líneas)
+- [x] `lib/codegen/` — 10 módulos (index, render-context, constructor, connected-callback, invalidate, render-methods, item-renderer, event-generator, preamble, class-methods)
+- [x] `lib/transform/` — 3 módulos (expr-transformer, for-transformer, dep-graph)
+- [x] `lib/parser/` — 3 módulos (extractors, validators, sfc-descriptor)
+- [x] `lib/walker/` — 4 módulos (tree-walker, if-processor, each-processor, dynamic-processor)
+- [x] `lib/find-anchor.js` — runtime anchor resolution
+- [x] `lib/codegen.js` — 4-line re-export shim (era 3335 líneas)
+- [x] `lib/parser-extractors.js` — re-export shim
+- [x] `lib/tree-walker.js` — 4-line re-export shim
+- [x] `example/src/12-edge-cases/test-recursive.wcc`
+- [x] 131 unit + 207 e2e tests
 
-Crear 3 archivos:
-```
-lib/parser/
-├── extractors.js        ← funciones de extracción puras (extractSignals, extractComputeds, extractProps, etc.)
-├── validators.js        ← funciones de validación (validatePropsAssignment, validateNameCollisions, etc.)
-└── sfc-descriptor.js    ← buildParseResult desde compiler.js (construye el ParseResult)
-```
-
-- `lib/parser-extractors.js` → re-export shim (backward compat)
-- Extraer `buildParseResult` de `compiler.js` → `lib/parser/sfc-descriptor.js`
-
-### 2. `lib/walker/` — Split de `tree-walker.js` (1086 líneas)
-
-Crear 4 archivos:
-```
-lib/walker/
-├── tree-walker.js       ← walkTree, walkBranch (solo walking)
-├── if-processor.js      ← processIfChains, buildIfBlock
-├── each-processor.js    ← processForBlocks, parseEachExpression
-└── dynamic-processor.js ← processDynamicComponents, detectRefs
-```
-
-- `lib/tree-walker.js` → re-export shim (backward compat)
-- Mover `recomputeAnchorPath` a utilities si todavía se usa
-
-### 3. Limpieza final
+## 🔵 Limpieza final
 
 - [ ] Eliminar `lib/codegen-v01611-base.js` (archivo legacy)
-- [ ] Verificar que `lib/codegen.js` shim de 4 líneas re-exporta todo
-- [ ] `npm test` — 131 unit + 207 e2e pasando
 - [ ] Mergear `phase5-6-wire-final` a `main`
 
 ---
 
-## ✅ Ya completado (Phase 5-1 a 5-6)
+## Estructura final
 
-- [x] `lib/find-anchor.js` — runtime anchor resolution
-- [x] `lib/codegen/render-context.js` — contexto recursivo
-- [x] `lib/transform/` — expr-transformer, for-transformer, dep-graph
-- [x] `lib/codegen/` — index, constructor, connected-callback, invalidate, render-methods, item-renderer, event-generator, preamble, class-methods
-- [x] `example/src/12-edge-cases/test-recursive.wcc` — componente recursivo
-- [x] 131 unit + 207 e2e tests
+```
+lib/
+├── compiler.js
+├── compiler-browser.js
+├── sfc-parser.js
+├── template-normalizer.js
+├── css-scoper.js
+├── import-resolver.js
+├── config.js
+├── types.js
+├── wcc-runtime.js
+├── dev-server.js
+├── reactive-runtime.js
+├── parser.js
+├── find-anchor.js
+├── codegen.js              ← 4-line shim
+├── tree-walker.js           ← 4-line shim
+├── parser-extractors.js     ← re-export shim
+│
+├── codegen/
+│   ├── index.js
+│   ├── render-context.js
+│   ├── constructor.js
+│   ├── connected-callback.js
+│   ├── invalidate.js
+│   ├── render-methods.js
+│   ├── item-renderer.js
+│   ├── event-generator.js
+│   ├── preamble.js
+│   └── class-methods.js
+│
+├── transform/
+│   ├── expr-transformer.js
+│   ├── for-transformer.js
+│   └── dep-graph.js
+│
+├── parser/
+│   ├── extractors.js
+│   ├── validators.js
+│   └── sfc-descriptor.js
+│
+└── walker/
+    ├── tree-walker.js
+    ├── if-processor.js
+    ├── each-processor.js
+    └── dynamic-processor.js
+```
