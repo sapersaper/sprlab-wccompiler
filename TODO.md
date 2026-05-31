@@ -20,6 +20,52 @@
 
 ---
 
+## 🔧 Mejoras de código (Code Review)
+
+### 1. Unificar walker — eliminar duplicación en `compiler-browser.js`
+- [ ] Hacer `lib/walker/` browser-compatible (reemplazar `parseHTML` de linkedom con factory)
+- [ ] Eliminar las ~330 líneas duplicadas de walker en `compiler-browser.js` (walkTree, walkBranch, processIfChains, buildIfBlock, processForBlocks, detectRefs)
+- [ ] Usar `extractEmitsObjectNameFromGeneric` en vez del regex inline en `compiler-browser.js:422`
+
+### 2. Limpiar runtime muerto y `__effect` residual
+- [ ] `preamble.js`: eliminar `needsComputed`, `needsUntrack`, `needsBatch` (siempre `false`)
+- [ ] `preamble.js`: simplificar `buildInlineRuntime` — solo recibe `needsEffect`
+- [ ] `render-methods.js`: eliminar o documentar las 2 llamadas a `__effect()` que quedan (model bindings + nested for-loops en if-branches)
+
+### 3. Crear `lib/utils.js` — helpers compartidos
+- [ ] Mover `escapeRegex` de `render-context.js` y `expr-transformer.js` a `lib/utils.js`
+- [ ] Mover `camelToKebab` de `parser-extractors.js` a `lib/utils.js`
+- [ ] Extraer `hasNestedForInIf` (triplicado en constructor, preamble, connected-callback) a `lib/utils.js`
+- [ ] Actualizar todos los imports
+
+### 4. Mover `generateUpdateOp` a `lib/codegen/update-op.js`
+- [ ] Extraer `generateUpdateOp` (240 líneas) de `lib/transform/dep-graph.js`
+- [ ] `dep-graph.js` queda como módulo puro de análisis de dependencias
+
+### 5. Split `lib/parser/extractors.js` (1076 líneas)
+- [ ] `lib/parser/extractors/signals.js` — extractSignals, extractComputeds, extractEffects
+- [ ] `lib/parser/extractors/props.js` — extractProps*
+- [ ] `lib/parser/extractors/emits.js` — extractEmits*
+- [ ] `lib/parser/extractors/lifecycle.js` — extractLifecycleHooks, extractFunctions
+- [ ] `lib/parser/extractors/models.js` — extractModels, extractRefs, extractExpose, detectBatchUsage
+
+### 6. Limpieza miscelánea
+- [ ] Eliminar `lib/codegen-v01611-base.js` (2180 líneas, código muerto)
+- [ ] Estandarizar idioma de mensajes de error (español → inglés)
+
+### 7. Mover tests a `test/`
+- [ ] Crear `test/` con estructura espejo de `lib/`
+- [ ] Mover ~50 archivos `*.test.js` fuera de `lib/`
+- [ ] Actualizar `vitest.config.js` includes
+
+### 8. JSDoc + magic numbers + DRY
+- [ ] Documentar `typeOrder` en `invalidate.js:47` (qué implica cada prioridad)
+- [ ] Agregar JSDoc a `walkBranch`, `buildIfBlock`, `recomputeAnchorPath`, `isChainPredecessor`
+- [ ] Reducir duplicación entre keyed/non-keyed for-loops en `render-methods.js` (~100 líneas) extrayendo helpers de bindings/events/attr
+- [ ] Definir API boundary: documentar qué exports son públicos vs internos en cada shim
+
+---
+
 ## Estructura final
 
 ```
