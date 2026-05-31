@@ -11,10 +11,10 @@
 - [x] Eliminar código muerto: `if (needsEffect)`, `if (needsEffect || needsComputed || needsBatch)`, `needsComputed`, `needsUntrack`, `needsBatch`
 - [x] Eliminar import y llamada a `buildInlineRuntime` (siempre vacío)
 
-### 3. Crear `lib/utils.js` — helpers compartidos
-- [ ] Mover `escapeRegex` de `render-context.js` y `expr-transformer.js` a `lib/utils.js`
-- [ ] Mover `camelToKebab` de `parser-extractors.js` a `lib/utils.js`
-- [ ] Actualizar todos los imports
+### 3. Crear `lib/utils.js` — helpers compartidos ✅
+- [x] Mover `escapeRegex` de `render-context.js` y `expr-transformer.js` a `lib/utils.js`
+- [x] Mover `camelToKebab` de `parser-extractors.js` a `lib/utils.js`
+- [x] Actualizar todos los imports (12 archivos)
 
 ### 4. Mover `generateUpdateOp` a `lib/codegen/update-op.js`
 - [ ] Extraer `generateUpdateOp` (240 líneas) de `lib/transform/dep-graph.js`
