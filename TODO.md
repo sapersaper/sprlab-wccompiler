@@ -14,7 +14,6 @@
 - [x] Eliminar `hasNestedForInIf`
 - [x] Verificar que `__wcc-signals.js` NO se genera
 - [x] 131 unit + 207 e2e tests pasando
-- [ ] Activar `standalone: true` en `example/wcc.config.js`
 
 ---
 
