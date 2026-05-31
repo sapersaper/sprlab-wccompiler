@@ -24,8 +24,8 @@
 - [x] `extractors/props.js`, `emits.js`, `reactivity.js`, `lifecycle.js`, `refs.js`
 - [x] `extractors.js` → 28-line re-export shim
 
-### 6. Estandarizar idioma de mensajes de error
-- [ ] Español → inglés en validators
+### 6. Estandarizar idioma de mensajes de error ✅
+- [x] Español → inglés en validators, config, walker, sfc-parser, parser
 
 ### 7. JSDoc + magic numbers + DRY
 - [ ] Documentar `typeOrder` en `invalidate.js`
