@@ -16,8 +16,9 @@
 - [x] Mover `camelToKebab` de `parser-extractors.js` a `lib/utils.js`
 - [x] Actualizar todos los imports (12 archivos)
 
-### 4. Mover `generateUpdateOp` a `lib/codegen/update-op.js`
-- [ ] Extraer `generateUpdateOp` (240 líneas) de `lib/transform/dep-graph.js`
+### 4. Mover `generateUpdateOp` a `lib/codegen/update-op.js` ✅
+- [x] Extraer `generateUpdateOp` (252 líneas) de `lib/transform/dep-graph.js`
+- [x] `dep-graph.js`: 990 → 738 líneas (solo análisis de dependencias)
 
 ### 5. Split `lib/parser/extractors.js` (1076 líneas)
 - [ ] `signals.js`, `props.js`, `emits.js`, `lifecycle.js`, `models.js`
