@@ -2,10 +2,10 @@
 
 ## 🔧 Mejoras de código (Code Review)
 
-### 1. Unificar walker — eliminar duplicación en `compiler-browser.js`
-- [ ] Hacer `lib/walker/` browser-compatible (reemplazar `parseHTML` de linkedom con factory)
-- [ ] Eliminar las ~330 líneas duplicadas de walker en `compiler-browser.js`
-- [ ] Usar `extractEmitsObjectNameFromGeneric` en vez del regex inline en `compiler-browser.js:422`
+### 1. Unificar walker — eliminar duplicación en `compiler-browser.js` ✅
+- [x] Hacer `lib/walker/` browser-compatible (setParseHTML para inyectar parser)
+- [x] Eliminar las ~330 líneas duplicadas de walker en `compiler-browser.js` (528→207)
+- [x] Usar `extractEmitsObjectNameFromGeneric` en vez del regex inline en `compiler-browser.js`
 
 ### 2. Limpiar runtime muerto en `preamble.js`
 - [ ] Eliminar código muerto: `if (needsEffect)`, `if (needsEffect || needsComputed || needsBatch)`, `needsComputed`, `needsUntrack`, `needsBatch`
