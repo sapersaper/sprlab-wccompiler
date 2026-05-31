@@ -57,7 +57,7 @@ describe('validateNameCollisions', () => {
 
       expect(() => {
         validateNameCollisions(signalNames, computedNames, propNames, methods, fileName);
-      }).toThrow(/Colisión de nombres.*'greeting'.*signal.*function/);
+      }).toThrow(/Name collision.*'greeting'.*signal.*function/);
     });
 
     it('should detect collision when function name matches signal name', () => {
@@ -70,7 +70,7 @@ describe('validateNameCollisions', () => {
 
       expect(() => {
         validateNameCollisions(signalNames, computedNames, propNames, methods, fileName);
-      }).toThrow(/Colisión de nombres.*'count'/);
+      }).toThrow(/Name collision.*'count'/);
     });
 
     it('should suggest renaming function in error message', () => {
@@ -98,7 +98,7 @@ describe('validateNameCollisions', () => {
 
       expect(() => {
         validateNameCollisions(signalNames, computedNames, propNames, methods, fileName);
-      }).toThrow(/Colisión de nombres.*'fullName'.*computed.*function/);
+      }).toThrow(/Name collision.*'fullName'.*computed.*function/);
     });
   });
 
@@ -113,7 +113,7 @@ describe('validateNameCollisions', () => {
 
       expect(() => {
         validateNameCollisions(signalNames, computedNames, propNames, methods, fileName);
-      }).toThrow(/Colisión de nombres.*'title'.*prop.*function/);
+      }).toThrow(/Name collision.*'title'.*prop.*function/);
     });
   });
 
@@ -129,7 +129,7 @@ describe('validateNameCollisions', () => {
 
       expect(() => {
         validateNameCollisions(signalNames, computedNames, propNames, methods, fileName);
-      }).toThrow(/Colisión de nombres/);
+      }).toThrow(/Name collision/);
     });
   });
 
@@ -196,7 +196,7 @@ describe('validateNameCollisions', () => {
       // This test verifies that behavior
       expect(() => {
         validateNameCollisions(signalNames, computedNames, propNames, methods, fileName);
-      }).toThrow(/Función duplicada.*'update'/);
+      }).toThrow(/Duplicate function.*'update'/);
     });
 
     it('should not confuse similar names', () => {

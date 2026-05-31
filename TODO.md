@@ -20,8 +20,9 @@
 - [x] Extraer `generateUpdateOp` (252 líneas) de `lib/transform/dep-graph.js`
 - [x] `dep-graph.js`: 990 → 738 líneas (solo análisis de dependencias)
 
-### 5. Split `lib/parser/extractors.js` (1076 líneas)
-- [ ] `signals.js`, `props.js`, `emits.js`, `lifecycle.js`, `models.js`
+### 5. Split `lib/parser/extractors.js` (1076 líneas) ✅
+- [x] `extractors/props.js`, `emits.js`, `reactivity.js`, `lifecycle.js`, `refs.js`
+- [x] `extractors.js` → 28-line re-export shim
 
 ### 6. Estandarizar idioma de mensajes de error
 - [ ] Español → inglés en validators
