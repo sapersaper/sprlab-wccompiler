@@ -1,0 +1,74 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-recursive',
+})
+
+const children = signal([])
+const theme = signal('default')
+const showChildren = signal(true)
+
+function addChild() {
+  children.set([...children(), { id: Date.now() }])
+}
+
+function removeLast() {
+  children.set(children().slice(0, -1))
+}
+
+function toggleTheme() {
+  const themes = ['default', 'dark', 'blue']
+  const idx = themes.indexOf(theme())
+  theme.set(themes[(idx + 1) % themes.length])
+}
+</script>
+
+<style>
+:host {
+  display: block;
+  margin-left: 20px;
+  border-left: 2px solid #cbd5e0;
+  padding-left: 12px;
+}
+.container { padding: 4px 0; }
+.header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+button { padding: 3px 8px; border: none; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; color: white; }
+.btn-add { background: #48bb78; }
+.btn-remove { background: #f56565; }
+.btn-theme { background: #ed8936; }
+.btn-toggle { background: #667eea; }
+.count { font-size: 11px; color: #a0aec0; margin-left: 4px; }
+.info { font-size: 10px; color: #718096; margin: 2px 0; }
+.default-theme { background: #f7fafc; }
+.dark-theme { background: #2d3748; color: #e2e8f0; }
+.blue-theme { background: #ebf8ff; }
+</style>
+
+<template>
+<div class="container" :class="theme() + '-theme'">
+  <div class="header">
+    <button class="btn-add" @click="addChild">+</button>
+    <button class="btn-remove" @click="removeLast">-</button>
+    <button class="btn-theme" @click="toggleTheme">T</button>
+    <button class="btn-toggle" @click="showChildren.set(!showChildren())">
+      {{ showChildren() ? 'Hide' : 'Show' }}
+    </button>
+    <span class="count">({{ children().length }})</span>
+  </div>
+
+  <div show="theme() !== 'dark'" class="info">
+    Theme: {{ theme() }}
+  </div>
+
+  <!-- IF: show/hide children -->
+  <div if="showChildren()">
+    <!-- EACH: recursive children -->
+    <div each="child in children()" :key="child.id">
+      <div style="padding-left: 16px;">
+        <test-recursive></test-recursive>
+      </div>
+    </div>
+  </div>
+</div>
+</template>

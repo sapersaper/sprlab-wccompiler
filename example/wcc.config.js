@@ -2,5 +2,7 @@ export default {
   port: 4200,
   input: 'src',
   output: 'dist',
-  // standalone: true,  // Inline reactive runtime in each component (default: false)
+  // runtime: true,                    // Copy wcc-runtime.js to output for :prop/@event bindings (default: false)
+  // htmlData: false,                   // Disable wcc-html-data.json for HTML intellisense (default: true)
+  // integrations: ['vue', 'react', 'angular'],   // Generate framework stubs + plugins (default: [])
 };

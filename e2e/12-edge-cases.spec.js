@@ -289,7 +289,7 @@ test.describe('test-deep-nesting', () => {
     await expect(componentB.first()).toContainText('Component B');
   });
 
-  test('Level 3 Toggle Visibility hides/shows the dynamic component', async ({ page }) => {
+  test('Level 3 Toggle Visibility hides/shows the dynamic component without destroying it', async ({ page }) => {
     await page.goto(url);
     // Initially level3Visible is true → view-a and view-b should be visible
     await expect(page.locator('test-deep-nesting view-a').first()).toBeVisible();
@@ -298,17 +298,29 @@ test.describe('test-deep-nesting', () => {
     // Find the first Toggle Visibility button
     const toggleBtn = page.locator('test-deep-nesting button.btn-theme', { hasText: 'Toggle Visibility' }).first();
 
+    // Capture console messages to verify components are NOT destroyed/recreated
+    const logs = [];
+    page.on('console', msg => logs.push(msg.text()));
+
     // Click Toggle Visibility → hides the component (show directive sets display:none)
     await toggleBtn.click();
     await page.waitForTimeout(500);
     await expect(page.locator('test-deep-nesting view-a').first()).not.toBeVisible();
     await expect(page.locator('test-deep-nesting view-b').first()).not.toBeVisible();
 
+    // Dynamic components should NOT be disconnected (show just hides, doesn't destroy)
+    const disconnectLogs = logs.filter(l => l.includes('disconnectedCallback'));
+    expect(disconnectLogs).toHaveLength(0);
+
     // Click again → shows components again
     await toggleBtn.click();
     await page.waitForTimeout(500);
     await expect(page.locator('test-deep-nesting view-a').first()).toBeVisible();
     await expect(page.locator('test-deep-nesting view-b').first()).toBeVisible();
+
+    // Still no disconnect/reconnect
+    const connectLogs = logs.filter(l => l.includes('connectedCallback'));
+    expect(connectLogs).toHaveLength(0);
   });
 
   test('Level 3 Change Theme cycles through light → dark → blue → light', async ({ page }) => {
@@ -372,5 +384,91 @@ test.describe('test-deep-nesting', () => {
     const componentC = page.locator('test-deep-nesting view-c');
     await expect(componentC.first()).toBeAttached();
     await expect(componentC.first()).toContainText('Component C');
+  });
+});
+
+// ── test-recursive ──────────────────────────────────────────────────
+
+test.describe('test-recursive', () => {
+  test('renders component', async ({ page }) => {
+    await page.goto(url);
+    await expect(page.locator('test-recursive').first()).toBeAttached();
+  });
+
+  test('add child creates nested instance', async ({ page }) => {
+    await page.goto(url);
+    await page.locator('test-recursive').first().locator('.btn-add').first().click();
+    await page.waitForTimeout(500);
+
+    await expect(page.locator('test-recursive').first().locator('.count').first()).toContainText('(1)');
+    expect(await page.locator('test-recursive').count()).toBeGreaterThanOrEqual(2);
+  });
+
+  test('remove last child', async ({ page }) => {
+    await page.goto(url);
+    const root = page.locator('test-recursive').first();
+    await root.locator('.btn-add').first().click();
+    await page.waitForTimeout(200);
+    await root.locator('.btn-add').first().click();
+    await page.waitForTimeout(200);
+    await expect(root.locator('.count').first()).toContainText('(2)');
+
+    await root.locator('.btn-remove').first().click();
+    await page.waitForTimeout(200);
+    await expect(root.locator('.count').first()).toContainText('(1)');
+  });
+
+  test('theme toggle hides info text via show', async ({ page }) => {
+    await page.goto(url);
+    const root = page.locator('test-recursive').first();
+    await root.locator('.btn-add').click();
+    await page.waitForTimeout(200);
+
+    const nested = root.locator('test-recursive').first();
+    const info = nested.locator('.info').first();
+    await expect(info).toBeVisible();
+
+    await nested.locator('.btn-theme').first().click();
+    await page.waitForTimeout(300);
+    await expect(info).not.toBeVisible();
+  });
+
+  test('theme toggle applies dynamic class', async ({ page }) => {
+    await page.goto(url);
+    const root = page.locator('test-recursive').first();
+    await root.locator('.btn-add').click();
+    await page.waitForTimeout(200);
+
+    const nested = root.locator('test-recursive').first();
+    await expect(nested.locator('.default-theme').first()).toBeAttached();
+
+    await nested.locator('.btn-theme').first().click();
+    await page.waitForTimeout(200);
+    await expect(nested.locator('.dark-theme').first()).toBeAttached();
+  });
+
+  test('deep nesting: 3 levels', async ({ page }) => {
+    await page.goto(url);
+    const root = page.locator('test-recursive').first();
+
+    await root.locator('.btn-add').first().click();
+    await page.waitForTimeout(200);
+
+    const level1 = root.locator('test-recursive').first();
+    await level1.locator('.btn-add').first().click();
+    await page.waitForTimeout(200);
+
+    const level2 = level1.locator('test-recursive').first();
+    await level2.locator('.btn-add').first().click();
+    await page.waitForTimeout(200);
+
+    // Root has level1 as only direct child, plus level2 as descendant, etc.
+    await expect(page.locator('test-recursive')).toHaveCount(4); // root + 3 descendants
+
+    // Level1 has its own child (level2)
+    await expect(level1.locator('test-recursive')).toHaveCount(2); // level2 + level3 as descendants
+
+    // Level2 has level3
+    await expect(level2.locator('test-recursive')).toHaveCount(1);
   });
 });
