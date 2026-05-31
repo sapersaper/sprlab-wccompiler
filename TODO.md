@@ -32,7 +32,7 @@
 
 ## 🔵 Limpieza final
 
-- [ ] Eliminar `lib/codegen-v01611-base.js` (archivo legacy)
+- [x] Eliminar `lib/codegen-v01611-base.js` (archivo legacy)
 - [ ] Mergear `phase5-6-wire-final` a `main`
 
 ---
@@ -67,7 +67,7 @@
 - [ ] `lib/parser/extractors/models.js` — extractModels, extractRefs, extractExpose, detectBatchUsage
 
 ### 6. Limpieza miscelánea
-- [ ] Eliminar `lib/codegen-v01611-base.js` (2180 líneas, código muerto)
+- [x] Eliminar `lib/codegen-v01611-base.js` (2180 líneas, código muerto)
 - [ ] Estandarizar idioma de mensajes de error (español → inglés)
 
 ### 7. Mover tests a `test/`
