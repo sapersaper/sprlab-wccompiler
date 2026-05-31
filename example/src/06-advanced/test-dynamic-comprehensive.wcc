@@ -89,7 +89,7 @@ async function rapidSwap() {
 
     <!-- TEST 4: Prop forwarding -->
     <section class="test-section">
-      <h4>Test 4: Prop Forwarding (:attr="expr")</h4>
+      <h4>Test 4: Prop Forwarding (:attr='expr')</h4>
       <div class="controls">
         <button @click="updateTitle">Update Title</button>
         <button @click="incrementCount">Increment Count ({{count()}})</button>
@@ -101,7 +101,7 @@ async function rapidSwap() {
 
     <!-- TEST 5: Event forwarding -->
     <section class="test-section">
-      <h4>Test 5: Event Forwarding (@event="handler")</h4>
+      <h4>Test 5: Event Forwarding (@event='handler')</h4>
       <div class="controls">
         <button @click="clearLog">Clear Log</button>
       </div>

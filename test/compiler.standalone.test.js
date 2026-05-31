@@ -1,26 +1,18 @@
 /**
- * Tests for standalone resolution in the Compiler.
+ * Tests for compiler after standalone removal.
  *
- * Feature: standalone-mode
- * Validates: Requirements 3.1, 3.2, 3.3, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 7.1
- *
- * Includes:
- * - Unit tests for resolveStandalone (Task 3.5)
- * - Property-based test for Property 3: precedence resolution (Task 3.6)
- * - Integration tests for Property 4 and Property 5 (Task 3.7)
+ * Feature: zero-runtime
+ * Validates that compile() always returns self-contained code with inline runtime.
  */
 
 import { describe, it, expect } from 'vitest';
-import fc from 'fast-check';
 import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { compile, resolveStandalone } from '../lib/compiler.js';
-
-// ── Helpers ─────────────────────────────────────────────────────────
+import { compile } from '../lib/compiler.js';
 
 function createTempDir() {
-  const dir = join(tmpdir(), `wcc-standalone-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  const dir = join(tmpdir(), `wcc-zero-runtime-${Date.now()}-${Math.random().toString(36).slice(2)}`);
   mkdirSync(dir, { recursive: true });
   return dir;
 }
@@ -29,18 +21,11 @@ function cleanupDir(dir) {
   rmSync(dir, { recursive: true, force: true });
 }
 
-/**
- * Build a minimal valid SFC with optional standalone option.
- */
-function buildSFC(tag, standaloneOption) {
-  const defineBody = standaloneOption !== undefined
-    ? `tag: '${tag}', standalone: ${standaloneOption}`
-    : `tag: '${tag}'`;
-
+function buildSFC(tag) {
   return `<script>
 import { defineComponent, signal } from 'wcc'
 
-export default defineComponent({ ${defineBody} })
+export default defineComponent({ tag: '${tag}' })
 
 const count = signal(0)
 
@@ -55,253 +40,44 @@ function increment() {
 `;
 }
 
-// ── Unit Tests: resolveStandalone (Task 3.5) ────────────────────────
-
-describe('resolveStandalone — unit tests', () => {
-  it('returns true when component specifies standalone: true (global: false)', () => {
-    expect(resolveStandalone(true, false)).toBe(true);
-  });
-
-  it('returns true when component specifies standalone: true (global: true)', () => {
-    expect(resolveStandalone(true, true)).toBe(true);
-  });
-
-  it('returns false when component specifies standalone: false (global: true)', () => {
-    expect(resolveStandalone(false, true)).toBe(false);
-  });
-
-  it('returns false when component specifies standalone: false (global: false)', () => {
-    expect(resolveStandalone(false, false)).toBe(false);
-  });
-
-  it('returns global value (false) when component does not specify standalone', () => {
-    expect(resolveStandalone(undefined, false)).toBe(false);
-  });
-
-  it('returns global value (true) when component does not specify standalone', () => {
-    expect(resolveStandalone(undefined, true)).toBe(true);
-  });
-});
-
-// ── Property-Based Test: Property 3 (Task 3.6) ─────────────────────
-
-describe('Compiler — Property 3: resolución de precedencia standalone', () => {
-  /**
-   * **Validates: Requirements 3.1, 3.2, 3.3, 7.1**
-   *
-   * For any combination of component-level standalone value (true, false, or undefined)
-   * and global standalone value (true or false), the resolution function SHALL return
-   * the component value when defined, or the global value when the component does not specify it.
-   *
-   * Formally: resolve(componentVal, globalVal) === (componentVal !== undefined ? componentVal : globalVal)
-   */
-  it('component value takes precedence over global when defined, otherwise global is used', () => {
-    const componentValueArb = fc.oneof(
-      fc.constant(true),
-      fc.constant(false),
-      fc.constant(undefined)
-    );
-    const globalValueArb = fc.boolean();
-
-    fc.assert(
-      fc.property(componentValueArb, globalValueArb, (componentValue, globalValue) => {
-        const result = resolveStandalone(componentValue, globalValue);
-        const expected = componentValue !== undefined ? componentValue : globalValue;
-        return result === expected;
-      }),
-      { numRuns: 100 }
-    );
-  });
-});
-
-// ── Integration Tests: Property 4 (Task 3.7) ───────────────────────
-
-describe('Compiler — Property 4: standalone=true produces self-contained output', () => {
-  /**
-   * **Validates: Requirements 4.1, 4.2, 4.3**
-   *
-   * For any component compiled with standalone resolved to true, the output SHALL
-   * contain the inline runtime definitions and SHALL NOT contain any import from
-   * __wcc-signals.js or other runtime module.
-   */
-  it('component with standalone: true in defineComponent inlines the runtime', async () => {
+describe('Compiler — zero-runtime: always produces self-contained output', () => {
+  it('returns an object with code (not a string directly)', async () => {
     const dir = createTempDir();
     try {
-      const sfcContent = buildSFC('wcc-standalone', 'true');
+      const sfcContent = buildSFC('wcc-zero');
       writeFileSync(join(dir, 'component.wcc'), sfcContent);
 
-      const { code, usesSharedRuntime } = await compile(join(dir, 'component.wcc'), {
-        standalone: false,
-        runtimeImportPath: './__wcc-signals.js',
-      });
+      const result = await compile(join(dir, 'component.wcc'), {});
 
-      // Should contain Proxy-based state (no __signal or __effect needed for simple components)
+      expect(typeof result).toBe('object');
+      expect(typeof result.code).toBe('string');
+      expect(result.code).toContain('_state = new Proxy(');
+      expect(result.code).toContain('__invalidate');
+      expect(result.code).not.toMatch(/import\s*\{[^}]*\}\s*from\s*['"][^'"]*__wcc-signals/);
+    } finally {
+      cleanupDir(dir);
+    }
+  });
+
+  it('component with standalone option in defineComponent still compiles (option ignored)', async () => {
+    const dir = createTempDir();
+    try {
+      const sfc = `<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({ tag: 'wcc-ignored', standalone: true })
+
+const count = signal(0)
+</script>
+
+<template><div>{{count()}}</div></template>
+`;
+      writeFileSync(join(dir, 'component.wcc'), sfc);
+
+      const { code } = await compile(join(dir, 'component.wcc'), {});
+
       expect(code).toContain('_state = new Proxy(');
-      expect(code).toContain('__invalidate');
-
-      // Should NOT contain import from shared runtime
-      expect(code).not.toContain("from './__wcc-signals.js'");
       expect(code).not.toMatch(/import\s*\{[^}]*\}\s*from\s*['"][^'"]*__wcc-signals/);
-
-      // Metadata
-      expect(usesSharedRuntime).toBe(false);
-    } finally {
-      cleanupDir(dir);
-    }
-  });
-
-  it('component without standalone but global standalone: true inlines the runtime', async () => {
-    const dir = createTempDir();
-    try {
-      const sfcContent = buildSFC('wcc-global-standalone', undefined);
-      writeFileSync(join(dir, 'component.wcc'), sfcContent);
-
-      const { code, usesSharedRuntime } = await compile(join(dir, 'component.wcc'), {
-        standalone: true,
-        runtimeImportPath: './__wcc-signals.js',
-      });
-
-      // Should contain Proxy-based state
-      expect(code).toContain('_state = new Proxy(');
-      expect(code).toContain('__invalidate');
-
-      // Should NOT contain import from shared runtime
-      expect(code).not.toMatch(/import\s*\{[^}]*\}\s*from\s*['"][^'"]*__wcc-signals/);
-
-      // Metadata
-      expect(usesSharedRuntime).toBe(false);
-    } finally {
-      cleanupDir(dir);
-    }
-  });
-
-  it('component with standalone: true overrides global standalone: false', async () => {
-    const dir = createTempDir();
-    try {
-      const sfcContent = buildSFC('wcc-override', 'true');
-      writeFileSync(join(dir, 'component.wcc'), sfcContent);
-
-      const { code, usesSharedRuntime } = await compile(join(dir, 'component.wcc'), {
-        standalone: false,
-        runtimeImportPath: './__wcc-signals.js',
-      });
-
-      // Standalone overrides: should inline
-      expect(code).not.toMatch(/import\s*\{[^}]*\}\s*from/);
-      expect(usesSharedRuntime).toBe(false);
-    } finally {
-      cleanupDir(dir);
-    }
-  });
-});
-
-// ── Integration Tests: Property 5 (Task 3.7) ───────────────────────
-
-describe('Compiler — Property 5: standalone=false produces imports with tree-shaking', () => {
-  /**
-   * **Validates: Requirements 5.1, 5.2, 5.3**
-   *
-   * For any component compiled with standalone resolved to false and a runtimeImportPath
-   * provided, the output SHALL contain an import statement with only the used runtime
-   * functions and SHALL NOT contain inline runtime definitions.
-   */
-  it('component with standalone: false imports from shared runtime', async () => {
-    const dir = createTempDir();
-    try {
-      const sfcContent = buildSFC('wcc-shared', 'false');
-      writeFileSync(join(dir, 'component.wcc'), sfcContent);
-
-      const { code, usesSharedRuntime } = await compile(join(dir, 'component.wcc'), {
-        standalone: true,
-        runtimeImportPath: './__wcc-signals.js',
-      });
-
-      // Simple components don't need runtime imports (no __effect needed)
-      // They use Proxy-based __invalidate instead
-      expect(code).not.toContain('function __signal');
-      expect(code).not.toContain('function __computed');
-      expect(code).not.toContain('function __effect');
-
-      // Metadata
-      expect(usesSharedRuntime).toBe(true);
-    } finally {
-      cleanupDir(dir);
-    }
-  });
-
-  it('component without standalone and global standalone: false imports from shared runtime', async () => {
-    const dir = createTempDir();
-    try {
-      const sfcContent = buildSFC('wcc-default-shared', undefined);
-      writeFileSync(join(dir, 'component.wcc'), sfcContent);
-
-      const { code, usesSharedRuntime } = await compile(join(dir, 'component.wcc'), {
-        standalone: false,
-        runtimeImportPath: './__wcc-signals.js',
-      });
-
-      // Simple components don't need runtime imports
-      expect(code).not.toContain('function __signal');
-
-      // Metadata
-      expect(usesSharedRuntime).toBe(true);
-    } finally {
-      cleanupDir(dir);
-    }
-  });
-
-  it('tree-shakes: simple signal+binding component does not need __effect or __signal', async () => {
-    const dir = createTempDir();
-    try {
-      const sfcContent = buildSFC('wcc-treeshake', 'false');
-      writeFileSync(join(dir, 'component.wcc'), sfcContent);
-
-      const { code } = await compile(join(dir, 'component.wcc'), {
-        standalone: false,
-        runtimeImportPath: './__wcc-signals.js',
-      });
-
-      // Simple components use Proxy + __invalidate, no __signal or __effect needed
-      expect(code).not.toContain('__signal');
-      expect(code).toContain('__invalidate');
-      expect(code).toContain('_state = new Proxy(');
-    } finally {
-      cleanupDir(dir);
-    }
-  });
-
-  it('component with standalone: false overrides global standalone: true', async () => {
-    const dir = createTempDir();
-    try {
-      const sfcContent = buildSFC('wcc-override-shared', 'false');
-      writeFileSync(join(dir, 'component.wcc'), sfcContent);
-
-      const { code, usesSharedRuntime } = await compile(join(dir, 'component.wcc'), {
-        standalone: true,
-        runtimeImportPath: './__wcc-signals.js',
-      });
-
-      // Component override: should not inline runtime functions
-      expect(code).not.toContain('function __signal');
-      expect(usesSharedRuntime).toBe(true);
-    } finally {
-      cleanupDir(dir);
-    }
-  });
-
-  it('usesSharedRuntime is false when standalone: false but no runtimeImportPath provided', async () => {
-    const dir = createTempDir();
-    try {
-      const sfcContent = buildSFC('wcc-no-path', 'false');
-      writeFileSync(join(dir, 'component.wcc'), sfcContent);
-
-      const { code, usesSharedRuntime } = await compile(join(dir, 'component.wcc'), {
-        standalone: false,
-      });
-
-      // Without runtimeImportPath, falls back to inline (backward compat)
-      expect(code).not.toContain('function __signal');
-      expect(usesSharedRuntime).toBe(false);
     } finally {
       cleanupDir(dir);
     }

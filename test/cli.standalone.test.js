@@ -1,8 +1,8 @@
 /**
- * Integration tests for CLI standalone mode behavior.
+ * Tests for CLI behavior after standalone removal: __wcc-signals.js is never generated.
  *
- * Feature: standalone-mode
- * Validates: Requirements 6.1, 6.2, 6.3
+ * Feature: zero-runtime
+ * Validates that the CLI no longer generates __wcc-signals.js regardless of standalone config.
  */
 
 import { describe, it, expect, afterEach } from 'vitest';
@@ -18,15 +18,12 @@ const __dirname = dirname(__filename);
 const projectRoot = join(__dirname, '..');
 const wcccli = join(projectRoot, 'bin', 'wcc.js');
 
-// ── Helpers ─────────────────────────────────────────────────────────
-
-/** @type {string[]} */
 const tempDirs = [];
 
 function createTempDir() {
   const dir = join(
     tmpdir(),
-    `wcc-cli-standalone-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    `wcc-cli-zero-runtime-${Date.now()}-${Math.random().toString(36).slice(2)}`
   );
   mkdirSync(dir, { recursive: true });
   tempDirs.push(dir);
@@ -40,10 +37,8 @@ afterEach(() => {
   tempDirs.length = 0;
 });
 
-// ── Scenario 1: standalone: false (default) → __wcc-signals.js IS generated ──
-
-describe('CLI standalone — Requirement 6.1: standalone false generates shared runtime', () => {
-  it('with default config (standalone: false), __wcc-signals.js is generated', () => {
+describe('CLI — zero-runtime: __wcc-signals.js is never generated', () => {
+  it('with default config, __wcc-signals.js is NOT generated', () => {
     const dir = createTempDir();
     const srcDir = join(dir, 'src');
     const distDir = join(dir, 'dist');
@@ -63,7 +58,6 @@ const count = signal(0)
 `;
     writeFileSync(join(srcDir, 'wcc-shared.wcc'), sfcSource);
 
-    // Config without standalone (defaults to false)
     writeFileSync(
       join(dir, 'wcc.config.js'),
       `export default { input: 'src', output: 'dist' };\n`
@@ -71,16 +65,15 @@ const count = signal(0)
 
     execFileSync('node', [wcccli, 'build'], { cwd: dir, timeout: 30000 });
 
-    // With simple bindings only (no computed/effect), the component uses
-    // Proxy-based state + __invalidate and does NOT need the shared runtime
     const output = readFileSync(join(distDir, 'wcc-shared.js'), 'utf-8');
     expect(output).toContain('this._state = new Proxy(');
     expect(output).toContain('__invalidate');
-    // Should NOT contain inline runtime definitions (no effect/computed needed)
     expect(output).not.toContain('let __currentEffect');
+    // __wcc-signals.js should NOT be generated (zero-runtime)
+    expect(existsSync(join(distDir, '__wcc-signals.js'))).toBe(false);
   });
 
-  it('with explicit standalone: false, __wcc-signals.js is generated', () => {
+  it('with standalone: false config, __wcc-signals.js is NOT generated', () => {
     const dir = createTempDir();
     const srcDir = join(dir, 'src');
     const distDir = join(dir, 'dist');
@@ -108,19 +101,14 @@ effect(() => console.log(name()))
 
     execFileSync('node', [wcccli, 'build'], { cwd: dir, timeout: 30000 });
 
-    // With simple bindings only, the component uses Proxy-based state + __invalidate
-    // and does NOT need the shared runtime even with standalone: false
     const output = readFileSync(join(distDir, 'wcc-explicit-shared.js'), 'utf-8');
     expect(output).toContain('this._state = new Proxy(');
     expect(output).toContain('__invalidate');
     expect(output).not.toContain('let __currentEffect');
+    expect(existsSync(join(distDir, '__wcc-signals.js'))).toBe(false);
   });
-});
 
-// ── Scenario 2: standalone: true, no overrides → __wcc-signals.js NOT generated ──
-
-describe('CLI standalone — Requirement 6.2: standalone true without overrides skips shared runtime', () => {
-  it('with standalone: true and no component overrides, __wcc-signals.js is NOT generated', () => {
+  it('with standalone: true config, __wcc-signals.js is NOT generated', () => {
     const dir = createTempDir();
     const srcDir = join(dir, 'src');
     const distDir = join(dir, 'dist');
@@ -147,74 +135,21 @@ const value = signal(42)
 
     execFileSync('node', [wcccli, 'build'], { cwd: dir, timeout: 30000 });
 
-    // __wcc-signals.js should NOT be generated
     expect(existsSync(join(distDir, '__wcc-signals.js'))).toBe(false);
 
-    // The compiled component uses Proxy-based state + __invalidate (no effect needed)
     const output = readFileSync(join(distDir, 'wcc-standalone.js'), 'utf-8');
     expect(output).toContain('this._state = new Proxy(');
     expect(output).toContain('__invalidate');
-    // Verify it doesn't import from __wcc-signals.js
     expect(output).not.toContain('__wcc-signals.js');
     expect(output).not.toMatch(/import\s*\{[^}]*\}\s*from/);
   });
 
-  it('with standalone: true and multiple components without overrides, __wcc-signals.js is NOT generated', () => {
+  it('with standalone: true globally and component-level standalone: false, __wcc-signals.js is NOT generated', () => {
     const dir = createTempDir();
     const srcDir = join(dir, 'src');
     const distDir = join(dir, 'dist');
     mkdirSync(srcDir, { recursive: true });
 
-    const sfcSource1 = `<script>
-import { defineComponent, signal } from 'wcc'
-
-export default defineComponent({ tag: 'wcc-one' })
-
-const a = signal(1)
-</script>
-
-<template>
-  <span>{{a()}}</span>
-</template>
-`;
-    const sfcSource2 = `<script>
-import { defineComponent, signal } from 'wcc'
-
-export default defineComponent({ tag: 'wcc-two' })
-
-const b = signal(2)
-</script>
-
-<template>
-  <span>{{b()}}</span>
-</template>
-`;
-    writeFileSync(join(srcDir, 'wcc-one.wcc'), sfcSource1);
-    writeFileSync(join(srcDir, 'wcc-two.wcc'), sfcSource2);
-
-    writeFileSync(
-      join(dir, 'wcc.config.js'),
-      `export default { input: 'src', output: 'dist', standalone: true };\n`
-    );
-
-    execFileSync('node', [wcccli, 'build'], { cwd: dir, timeout: 30000 });
-
-    expect(existsSync(join(distDir, '__wcc-signals.js'))).toBe(false);
-    expect(existsSync(join(distDir, 'wcc-one.js'))).toBe(true);
-    expect(existsSync(join(distDir, 'wcc-two.js'))).toBe(true);
-  });
-});
-
-// ── Scenario 3: standalone: true globally, one component overrides to false → __wcc-signals.js IS generated ──
-
-describe('CLI standalone — Requirement 6.3: component override to false generates shared runtime', () => {
-  it('with standalone: true globally but one component has standalone: false, __wcc-signals.js IS generated', () => {
-    const dir = createTempDir();
-    const srcDir = join(dir, 'src');
-    const distDir = join(dir, 'dist');
-    mkdirSync(srcDir, { recursive: true });
-
-    // Component that stays standalone (no override)
     const sfcStandalone = `<script>
 import { defineComponent, signal } from 'wcc'
 
@@ -228,7 +163,6 @@ const x = signal(10)
 </template>
 `;
 
-    // Component that overrides to shared mode
     const sfcShared = `<script>
 import { defineComponent, signal } from 'wcc'
 
@@ -252,16 +186,14 @@ const y = signal(20)
 
     execFileSync('node', [wcccli, 'build'], { cwd: dir, timeout: 30000 });
 
-    // __wcc-signals.js SHOULD be generated because one component needs it
-    expect(existsSync(join(distDir, '__wcc-signals.js'))).toBe(true);
+    // __wcc-signals.js should NEVER be generated (zero-runtime)
+    expect(existsSync(join(distDir, '__wcc-signals.js'))).toBe(false);
 
-    // The standalone component uses Proxy-based state + __invalidate
     const inlineOutput = readFileSync(join(distDir, 'wcc-inline.js'), 'utf-8');
     expect(inlineOutput).toContain('this._state = new Proxy(');
     expect(inlineOutput).toContain('__invalidate');
     expect(inlineOutput).not.toContain('__wcc-signals.js');
 
-    // The shared component also uses Proxy-based state + __invalidate
     const sharedOutput = readFileSync(join(distDir, 'wcc-shared-override.js'), 'utf-8');
     expect(sharedOutput).toContain('this._state = new Proxy(');
     expect(sharedOutput).toContain('__invalidate');

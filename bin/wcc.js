@@ -20,7 +20,6 @@ async function build(config, cwd) {
 
   const files = discoverFiles(inputDir);
   let errors = 0;
-  let needsSharedRuntime = false;
 
   for (const file of files) {
     try {
@@ -28,19 +27,10 @@ async function build(config, cwd) {
       const outPath = resolve(outputDir, relPath.replace(/\.wcc$/, '.js'));
       const outDir = dirname(outPath);
 
-      // Calculate runtimeImportPath (always calculate it — the compiler decides whether to use it)
-      const signalsDest = join(outputDir, '__wcc-signals.js');
-      const runtimeRelPath = relative(outDir, signalsDest).replace(/\\/g, '/');
-      const runtimeImportPath = runtimeRelPath.startsWith('.') ? runtimeRelPath : './' + runtimeRelPath;
-
-      const { code, usesSharedRuntime } = await compile(file, {
-        standalone: config.standalone,
+      const { code } = await compile(file, {
         minify: config.minify,
         comments: config.comments,
-        runtimeImportPath,
       });
-
-      if (usesSharedRuntime) needsSharedRuntime = true;
 
       if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
       writeFileSync(outPath, code);
@@ -48,14 +38,6 @@ async function build(config, cwd) {
       console.error(`Error compiling ${file}: ${err.message}`);
       errors++;
     }
-  }
-
-  // Generate shared runtime ONLY if needed
-  if (needsSharedRuntime) {
-    const { reactiveRuntime } = await import('../lib/reactive-runtime.js');
-    const signalsContent = reactiveRuntime.trim() + '\nexport { __signal, __computed, __effect, __batch, __untrack, __currentEffect, __batchDepth, __pendingEffects };\n';
-    const signalsDest = join(outputDir, '__wcc-signals.js');
-    writeFileSync(signalsDest, signalsContent);
   }
 
   // Copy wcc-runtime.js to output directory
@@ -419,27 +401,13 @@ async function main() {
         const outPath = resolve(outputDir, relPath.replace(/\.ts$/, '.js').replace(/\.wcc$/, '.js'));
         const outDir = dirname(outPath);
 
-        // Calculate runtimeImportPath for this file
-        const signalsDest = join(outputDir, '__wcc-signals.js');
-        const runtimeRelPath = relative(outDir, signalsDest).replace(/\\/g, '/');
-        const runtimeImportPath = runtimeRelPath.startsWith('.') ? runtimeRelPath : './' + runtimeRelPath;
-
-        const { code, usesSharedRuntime } = await compile(filePath, {
-          standalone: config.standalone,
+        const { code } = await compile(filePath, {
           minify: config.minify,
           comments: config.comments,
-          runtimeImportPath,
         });
 
         if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
         writeFileSync(outPath, code);
-
-        // If this component uses shared runtime and the file doesn't exist yet, generate it
-        if (usesSharedRuntime && !existsSync(signalsDest)) {
-          const { reactiveRuntime } = await import('../lib/reactive-runtime.js');
-          const signalsContent = reactiveRuntime.trim() + '\nexport { __signal, __computed, __effect, __batch, __untrack, __currentEffect, __batchDepth, __pendingEffects };\n';
-          writeFileSync(signalsDest, signalsContent);
-        }
 
         console.log(`Compiled: ${filename}`);
       } catch (err) {
