@@ -40,10 +40,12 @@ async function build(config, cwd) {
     }
   }
 
-  // Copy wcc-runtime.js to output directory
-  const runtimeSrc = resolve(__dirname, '../lib/wcc-runtime.js');
-  const runtimeDest = join(outputDir, 'wcc-runtime.js');
-  copyFileSync(runtimeSrc, runtimeDest);
+  // Copy wcc-runtime.js to output directory (only if runtime option is enabled)
+  if (config.runtime) {
+    const runtimeSrc = resolve(__dirname, '../lib/wcc-runtime.js');
+    const runtimeDest = join(outputDir, 'wcc-runtime.js');
+    copyFileSync(runtimeSrc, runtimeDest);
+  }
 
   // Generate framework stubs (React + Vue) from compiled component metadata
   generateFrameworkStubs(outputDir);
