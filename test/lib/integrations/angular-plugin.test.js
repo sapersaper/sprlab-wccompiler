@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { transformBananaBox } from '../integrations/angular-plugin.js'
+import { transformBananaBox } from '../../../integrations/angular-plugin.js'
 
 describe('transformBananaBox', () => {
   // 2.2 Test: transforms simple banana-box on custom element

@@ -14,11 +14,10 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
-      include: ['lib/**/*.js', 'lib/**/*.ts'],
+      include: ['lib/**/*.js', 'integrations/**/*.js'],
       exclude: [
         '**/*.test.js',
         'lib/wcc-runtime.js',
-        'lib/find-anchor.js',
       ],
       thresholds: {
         statements: 80,
