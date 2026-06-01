@@ -1,5 +1,25 @@
 # TODO
 
+## 🚀 SSR — Static `renderToString` (Task-0021)
+
+Spec: `.agent/specs/ssr/`
+
+### SSR-1: Render básico (props, texto, CSS, atributos)
+- [ ] Crear `lib/codegen/ssr.js` con `generateSSR(parseResult)`
+- [ ] Generar `renderToString(props, state)` con defaults de `propDefs` y `signals`
+- [ ] Interpolación `{{expr}}` + `__esc()` + CSS inline
+- [ ] `:attr`, `:class`, `:style` como atributos HTML estáticos
+
+### SSR-2: Directivas (if, each, show)
+- [ ] `if/else-if/else` → ternarios
+- [ ] `each` → `.map()` con escape
+- [ ] `show` → `style="display:none"` inline
+
+### SSR-3: Hidratación + CLI
+- [ ] `connectedCallback` adopta DOM servido en vez de clonar template
+- [ ] Opción `ssr: true` en `compile()` + flag `--ssr` en CLI
+- [ ] Tests: SSR round-trip + hidratación
+
 ## 🚨 CSS Scoper — `@scope` con límites automáticos (Prioridad Máxima) ✅
 
 Spec: `.agent/specs/css-scoper/`
