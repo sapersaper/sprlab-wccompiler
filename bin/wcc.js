@@ -29,13 +29,18 @@ async function build(config, cwd) {
       const outPath = resolve(outputDir, relPath.replace(/\.wcc$/, '.js'));
       const outDir = dirname(outPath);
 
-      const { code } = await compile(file, {
+      const result = await compile(file, {
         minify: config.minify,
         comments: config.comments,
+        ssr: config.ssr,
       });
 
       if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
-      writeFileSync(outPath, code);
+      writeFileSync(outPath, result.code);
+      if (result.ssrCode) {
+        const ssrPath = outPath.replace(/\.js$/, '.ssr.js');
+        writeFileSync(ssrPath, result.ssrCode);
+      }
     } catch (err) {
       console.error(`Error compiling ${file}: ${err.message}`);
       errors++;
@@ -349,6 +354,7 @@ async function main() {
   // CLI flags override config
   if (process.argv.includes('--minify')) config.minify = true;
   if (process.argv.includes('--comments')) config.comments = true;
+  if (process.argv.includes('--ssr')) config.ssr = true;
   const shouldBundle = process.argv.includes('--bundle');
 
   if (command === 'build') {

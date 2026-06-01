@@ -199,3 +199,34 @@ const y = signal(0)
     expect(existsSync(join(distDir, 'nested', 'wcc-nested.js'))).toBe(true);
   });
 });
+
+describe('CLI --ssr flag', () => {
+  it('wcc build --ssr generates .ssr.js files alongside .js', () => {
+    const dir = createTempDir();
+    const srcDir = join(dir, 'src');
+    const distDir = join(dir, 'dist');
+    mkdirSync(srcDir, { recursive: true });
+
+    writeFileSync(join(srcDir, 'wcc-ssr.wcc'), `<script>
+import { defineComponent } from 'wcc'
+export default defineComponent({ tag: 'wcc-ssr-cli' })
+</script>
+<template><p>SSR test</p></template>`);
+
+    writeFileSync(
+      join(dir, 'wcc.config.js'),
+      `export default { input: 'src', output: 'dist' };\n`
+    );
+
+    execFileSync('node', [wcccli, 'build', '--ssr'], { cwd: dir, timeout: 30000 });
+
+    // Both .js and .ssr.js should exist
+    expect(existsSync(join(distDir, 'wcc-ssr.js'))).toBe(true);
+    expect(existsSync(join(distDir, 'wcc-ssr.ssr.js'))).toBe(true);
+
+    // .ssr.js should contain renderToString
+    const ssrOutput = readFileSync(join(distDir, 'wcc-ssr.ssr.js'), 'utf-8');
+    expect(ssrOutput).toContain('renderToString');
+    expect(ssrOutput).toContain('wcc-ssr-cli');
+  });
+});
