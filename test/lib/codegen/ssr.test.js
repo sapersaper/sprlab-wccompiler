@@ -210,4 +210,117 @@ describe('generateSSR', () => {
     expect(result).toContain('.map((');
     expect(result).toContain('item, index');
   });
+
+  // ── SSR-3: Compilation + hydratation ──
+
+  it('compile() with ssr:true returns ssrCode', async () => {
+    const { compile } = await import('../../../lib/compiler.js');
+    const { writeFileSync, mkdirSync, rmSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { tmpdir } = await import('node:os');
+    const dir = join(tmpdir(), `wcc-ssr-compile-${Date.now()}`);
+    mkdirSync(dir, { recursive: true });
+    try {
+      writeFileSync(join(dir, 'c.wcc'), `<script>
+import { defineComponent } from 'wcc'
+export default defineComponent({ tag: 'wcc-ssr-test' })
+</script>
+<template><p>SSR works</p></template>`);
+      const result = await compile(join(dir, 'c.wcc'), { ssr: true });
+      expect(result.code).toBeDefined();
+      expect(result.code.length).toBeGreaterThan(100);
+      expect(result.ssrCode).toBeDefined();
+      expect(result.ssrCode).toContain('renderToString');
+      expect(result.ssrCode).toContain('wcc-ssr-test');
+      // Without ssr, ssrCode should be null
+      const result2 = await compile(join(dir, 'c.wcc'), {});
+      expect(result2.ssrCode).toBeNull();
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('generated SSR code runs and produces valid HTML', async () => {
+    const { compile } = await import('../../../lib/compiler.js');
+    const { writeFileSync, mkdirSync, rmSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { tmpdir } = await import('node:os');
+    const dir = join(tmpdir(), `wcc-ssr-run-${Date.now()}`);
+    mkdirSync(dir, { recursive: true });
+    try {
+      writeFileSync(join(dir, 'c.wcc'), `<script>
+import { defineComponent, signal } from 'wcc'
+export default defineComponent({ tag: 'wcc-ssr-run' })
+const name = signal('World')
+</script>
+<template><p>Hello {{name}}!</p></template>`);
+      const result = await compile(join(dir, 'c.wcc'), { ssr: true });
+      const ssrPath = join(dir, 'c.ssr.js');
+      writeFileSync(ssrPath, result.ssrCode);
+      const { renderToString } = await import(ssrPath);
+      const html = renderToString({}, { name: 'SSR Test' });
+      expect(html).toContain('Hello SSR Test');
+      expect(html).toContain('wcc-ssr-run');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('hydrated connectedCallback has __ssr guard for SSR children', async () => {
+    const { compile } = await import('../../../lib/compiler.js');
+    const { writeFileSync, mkdirSync, rmSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { tmpdir } = await import('node:os');
+    const dir = join(tmpdir(), `wcc-ssr-hydrate-${Date.now()}`);
+    mkdirSync(dir, { recursive: true });
+    try {
+      writeFileSync(join(dir, 'c.wcc'), `<script>
+import { defineComponent, signal } from 'wcc'
+export default defineComponent({ tag: 'wcc-hydrate' })
+const count = signal(0)
+</script>
+<template><span>{{count}}</span></template>`);
+      const result = await compile(join(dir, 'c.wcc'), { ssr: true });
+
+      // The generated browser code should have __ssr hydration logic
+      expect(result.code).toContain('__ssr');
+      expect(result.code).toMatch(/children\.length\s*>\s*0/);
+
+      // The generated code should not clear innerHTML when SSR content exists
+      expect(result.code).toMatch(/if\s*\(!this\.__ssr\)\s*\{\s*this\.innerHTML\s*=\s*''/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('hydrated connectedCallback skips anchor setup for if/each', async () => {
+    const { compile } = await import('../../../lib/compiler.js');
+    const { writeFileSync, mkdirSync, rmSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { tmpdir } = await import('node:os');
+    const dir = join(tmpdir(), `wcc-ssr-anchor-${Date.now()}`);
+    mkdirSync(dir, { recursive: true });
+    try {
+      writeFileSync(join(dir, 'c.wcc'), `<script>
+import { defineComponent, signal } from 'wcc'
+export default defineComponent({ tag: 'wcc-if-ssr' })
+const show = signal(true)
+</script>
+<template>
+<div if="show()"><p>Visible</p></div>
+<div else><p>Hidden</p></div>
+</template>`);
+      const result = await compile(join(dir, 'c.wcc'), { ssr: true });
+
+      // The SSR codegen should generate a render function
+      expect(result.ssrCode).toContain('renderToString');
+      expect(result.ssrCode).toContain('if (show)');
+      expect(result.ssrCode).toContain('else {');
+
+      // The browser code should skip anchor setup in SSR mode
+      expect(result.code).toMatch(/if\s*\(!this\.__ssr\)\s*\{/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
 });
