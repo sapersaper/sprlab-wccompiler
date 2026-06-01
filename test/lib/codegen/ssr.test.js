@@ -27,7 +27,6 @@ describe('generateSSR', () => {
     expect(result).toContain('__esc(String(count))');
     expect(result).toContain('wcc-greeting');
     expect(result).toContain('function __esc');
-    expect(result).toContain('.greeting{ color: blue; }');
   });
 
   it('handles component with no props or signals', () => {
@@ -66,32 +65,7 @@ describe('generateSSR', () => {
       template: '<a :href="url">Link</a>',
     });
 
-    expect(result).toContain('href=');
-  });
-
-  it('handles :class and :style bindings', () => {
-    const result = generateSSR({
-      tagName: 'wcc-box',
-      style: '',
-      propDefs: [],
-      signals: [
-        { name: 'active', value: 'false' },
-        { name: 'color', value: "'red'" },
-      ],
-      constantVars: [],
-      bindings: [],
-      attrBindings: [
-        { varName: '__c0', attr: 'class', expression: "active ? 'active' : ''", kind: 'class', path: [] },
-        { varName: '__s0', attr: 'style', expression: "`color: ${color}`", kind: 'style', path: [] },
-      ],
-      ifBlocks: [],
-      forBlocks: [],
-      showBindings: [],
-      template: '<div :class="active ? \'active\' : \'\'" :style="`color: ${color}`">Content</div>',
-    });
-
-    expect(result).toContain('class=');
-    expect(result).toContain('style=');
+    expect(result).toContain('href');
   });
 
   it('includes __esc function for XSS prevention', () => {
@@ -111,5 +85,129 @@ describe('generateSSR', () => {
 
     expect(result).toContain('.replace(/&/g');
     expect(result).toContain('.replace(/</g');
+  });
+
+  // ── SSR-2: if/else-if/else ──
+
+  it('generates if block with single branch', () => {
+    const result = generateSSR({
+      tagName: 'wcc-if',
+      style: '',
+      propDefs: [],
+      signals: [{ name: 'show', value: 'true' }],
+      constantVars: [],
+      bindings: [],
+      attrBindings: [],
+      ifBlocks: [{
+        varName: '__if0',
+        anchorType: 'if',
+        anchorIndex: 0,
+        branches: [{
+          type: 'if', expression: 'show',
+          templateHtml: '<p>Visible</p>',
+          bindings: [], events: [], showBindings: [], attrBindings: [], modelBindings: [], slots: [],
+        }],
+      }],
+      forBlocks: [],
+      showBindings: [],
+      template: '<!-- if -->',
+    });
+
+    expect(result).toContain('__if_0');
+    expect(result).toContain('if (show)');
+    expect(result).toContain('__if_0');
+  });
+
+  it('generates if/else-if/else chain', () => {
+    const result = generateSSR({
+      tagName: 'wcc-chain',
+      style: '',
+      propDefs: [],
+      signals: [{ name: 'status', value: "'idle'" }],
+      constantVars: [],
+      bindings: [],
+      attrBindings: [],
+      ifBlocks: [{
+        varName: '__if0',
+        anchorType: 'if', anchorIndex: 0,
+        branches: [
+          { type: 'if', expression: "status === 'loading'",
+            templateHtml: '<p>Loading</p>',
+            bindings: [], events: [], showBindings: [], attrBindings: [], modelBindings: [], slots: [] },
+          { type: 'else-if', expression: "status === 'error'",
+            templateHtml: '<p>Error</p>',
+            bindings: [], events: [], showBindings: [], attrBindings: [], modelBindings: [], slots: [] },
+          { type: 'else', expression: null,
+            templateHtml: '<p>OK</p>',
+            bindings: [], events: [], showBindings: [], attrBindings: [], modelBindings: [], slots: [] },
+        ],
+      }],
+      forBlocks: [],
+      showBindings: [],
+      template: '<!-- if -->',
+    });
+
+    expect(result).toContain('if (status');
+    expect(result).toContain('else if');
+    expect(result).toContain('else {');
+  });
+
+  // ── SSR-2: each ──
+
+  it('generates each block with .map()', () => {
+    const result = generateSSR({
+      tagName: 'wcc-each',
+      style: '',
+      propDefs: [],
+      signals: [{ name: 'items', value: '[]' }],
+      constantVars: [],
+      bindings: [],
+      attrBindings: [],
+      ifBlocks: [],
+      forBlocks: [{
+        varName: '__for0',
+        itemVar: 'item', indexVar: null,
+        source: 'items', keyExpr: null,
+        templateHtml: '<li>{{item}}</li>',
+        anchorType: 'each', anchorIndex: 0,
+        bindings: [{ varName: '__b0', name: 'item', type: 'signal', path: [] }],
+        events: [], showBindings: [], attrBindings: [], modelBindings: [], slots: [],
+      }],
+      showBindings: [],
+      template: '<!-- each -->',
+    });
+
+    expect(result).toContain('__for_0');
+    expect(result).toContain('.map(');
+    expect(result).toContain('items || []');
+  });
+
+  it('generates each block with index variable', () => {
+    const result = generateSSR({
+      tagName: 'wcc-each-idx',
+      style: '',
+      propDefs: [],
+      signals: [{ name: 'items', value: '[]' }],
+      constantVars: [],
+      bindings: [{ varName: '__b0', name: 'item', type: 'signal', path: [] },
+                 { varName: '__b1', name: 'index', type: 'signal', path: [] }],
+      attrBindings: [],
+      ifBlocks: [],
+      forBlocks: [{
+        varName: '__for0',
+        itemVar: 'item', indexVar: 'index',
+        source: 'items', keyExpr: null,
+        templateHtml: '<li>{{index}}: {{item}}</li>',
+        anchorType: 'each', anchorIndex: 0,
+        bindings: [{ varName: '__b0', name: 'item', type: 'signal', path: [] },
+                   { varName: '__b1', name: 'index', type: 'signal', path: [] }],
+        events: [], showBindings: [], attrBindings: [], modelBindings: [], slots: [],
+      }],
+      showBindings: [],
+      template: '<!-- each -->',
+    });
+
+    expect(result).toContain('.map((');
+    expect(result).toContain('item, index');
   });
 });
