@@ -322,6 +322,24 @@ describe('Feature: explicit-component-imports, Property 11: Invalid import form 
     );
   });
 
+  it('invalid import with optional semicolons throws INVALID_WCC_IMPORT', () => {
+    fc.assert(
+      fc.property(
+        invalidWccImportStatement,
+        (importLine) => {
+          // Add semicolon variants
+          for (const semi of ['', ';']) {
+            const line = importLine.replace(/\n$/, '') + semi;
+            expect(() => extractWccImports(line, 'test.wcc')).toThrow();
+            try { extractWccImports(line, 'test.wcc'); }
+            catch (e) { expect(e.code).toBe('INVALID_WCC_IMPORT'); }
+          }
+        }
+      ),
+      { numRuns: 20 }
+    );
+  });
+
   it('any invalid .wcc import form throws INVALID_WCC_IMPORT regardless of path or identifier', () => {
     fc.assert(
       fc.property(

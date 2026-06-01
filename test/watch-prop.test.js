@@ -130,6 +130,39 @@ watch(() => props.value, (newVal, oldVal) => {
     }
   });
 
+  it('generates getter watch with __prev_watch0 (QA repro)', async () => {
+    const dir = createTempDir();
+    try {
+      const sfc = `<script>
+import { defineComponent, defineProps, defineEmits, signal, watch } from 'wcc'
+
+export default defineComponent({ tag: 'wcc-input-test' })
+
+const props = defineProps({ value: '' })
+const emit = defineEmits(['input', 'change'])
+const internal = signal('')
+
+watch(() => props.value, (newVal) => { internal.set(newVal) })
+watch(internal, (newVal, oldVal) => { emit('input', newVal); emit('change', newVal) })
+</script>
+
+<template>
+<div class="input-test">
+  <input type="text" model="internal">
+  <p>Value: "{{internal()}}"</p>
+</div>
+</template>`;
+      writeFileSync(join(dir, 'test.wcc'), sfc);
+      const { code } = await compile(join(dir, 'test.wcc'));
+
+      expect(code).toContain('__prev_watch0');
+      expect(code).toContain('this._state.value');
+      expect(code).toContain('__prev_internal');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it('watch(signal, cb) on a prop also detects pre-connection changes', async () => {
     const dir = createTempDir();
     try {
