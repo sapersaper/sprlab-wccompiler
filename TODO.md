@@ -1,5 +1,31 @@
 # TODO
 
+## 🚨 CSS Scoper — `@scope` con límites automáticos (Prioridad Máxima) ✅
+
+Spec: `.agent/specs/css-scoper/`
+
+### Pipeline de boundaries ✅
+- [x] Recolectar boundaries de imports `.wcc` en `preamble.js`
+- [x] Pasar boundaries a `scopeCSS()`
+
+### Implementación de `@scope` ✅
+- [x] `scopeCSS()` genera `@scope (tag) to (boundaries...)` cuando hay boundaries
+- [x] Bug 1 (comentarios) — no aplica con `@scope` wrapping
+- [x] Bug 2 (`:is()`, `:where()`) — no aplica con `@scope`; `splitTopLevelCommas()` fijo en legacy
+- [x] `:host` / `:host(...)` → `:scope` / `:scope(...)` en @scope mode (Bug 3)
+- [x] `:host` / `:host(...)` → `tagName` / `tagName(...)` en legacy mode
+- [x] CSS nesting (`&`) funciona naturalmente dentro de `@scope` (Bug 4)
+- [x] `@import`/`@charset` extraídos fuera de `@scope`
+- [x] `@media`/`@keyframes`/`@supports` pasan tal cual dentro de `@scope`
+
+### Fallback ✅
+- [x] Tag-name prefixing preservado cuando no hay boundaries (componentes sin hijos)
+
+### Tests ✅
+- [x] 24 tests unitarios en `test/css-scoper.test.js` (@scope, boundaries, :host, @media, @keyframes, nesting, legacy, bug 2 fix)
+- [x] 9 componentes de ejemplo en `example/src/13-css-scope/`
+- [x] 131 test files, 1301 tests pasando
+
 ## 🔧 Mejoras de código (Code Review)
 
 ### 1. Unificar walker — eliminar duplicación en `compiler-browser.js` ✅

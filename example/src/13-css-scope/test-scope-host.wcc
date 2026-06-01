@@ -1,0 +1,32 @@
+<script>
+import { defineComponent } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-scope-host',
+})
+</script>
+
+<template>
+  <div class="body">
+    <h3>:host / :scope Test</h3>
+    <p>The component root itself has styles via :host.</p>
+    <p class="highlight">This should be purple.</p>
+  </div>
+</template>
+
+<style>
+:host {
+  display: block;
+  border: 2px solid purple;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.body p {
+  color: purple;
+}
+
+:host(.e2e-active) {
+  background-color: #f3e5f5;
+}
+</style>

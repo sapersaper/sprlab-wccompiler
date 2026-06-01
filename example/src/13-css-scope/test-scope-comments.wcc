@@ -1,0 +1,28 @@
+<script>
+import { defineComponent } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-scope-comments',
+})
+</script>
+
+<template>
+  <div class="comments-test">
+    <h3>CSS Comments in @scope</h3>
+    <p class="commented-style">This text should be teal.</p>
+  </div>
+</template>
+
+<style>
+/* This comment should not break scoping */
+.comments-test {
+  border: 2px solid #26a69a;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+/* color teal */ .commented-style {
+  color: teal;
+  font-weight: bold;
+}
+</style>

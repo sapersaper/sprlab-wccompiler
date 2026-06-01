@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>E2E: 13-css-scope</title>
+  <style>
+    /* Global styles — should NOT be overridden by component scoping */
+    body { font-family: system-ui, sans-serif; padding: 20px; }
+    p { color: black; }
+    section { margin-bottom: 24px; border: 1px solid #ccc; padding: 16px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>CSS @scope E2E Tests</h1>
+
+  <section id="test-basic">
+    <h2>Basic @scope</h2>
+    <test-scope-basic></test-scope-basic>
+  </section>
+
+  <section id="test-boundary">
+    <h2>Scope Boundary</h2>
+    <test-scope-boundary-parent></test-scope-boundary-parent>
+  </section>
+
+  <section id="test-host">
+    <h2>:host / :scope</h2>
+    <test-scope-host></test-scope-host>
+  </section>
+
+  <section id="test-atrules">
+    <h2>At-rules inside @scope</h2>
+    <test-scope-atrules></test-scope-atrules>
+  </section>
+
+  <section id="test-modern">
+    <h2>Modern Selectors</h2>
+    <test-scope-modern></test-scope-modern>
+  </section>
+
+  <section id="test-nesting">
+    <h2>CSS Nesting</h2>
+    <test-scope-nesting></test-scope-nesting>
+  </section>
+
+  <section id="test-import">
+    <h2>@import + @scope</h2>
+    <test-scope-import></test-scope-import>
+  </section>
+
+  <section id="test-comments">
+    <h2>CSS Comments</h2>
+    <test-scope-comments></test-scope-comments>
+  </section>
+
+  <!-- compiled scripts injected by test setup -->
+</body>
+</html>

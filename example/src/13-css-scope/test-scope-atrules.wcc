@@ -1,0 +1,64 @@
+<script>
+import { defineComponent } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-scope-atrules',
+})
+</script>
+
+<template>
+  <div class="atrules-test">
+    <h3>@media / @keyframes / @supports inside @scope</h3>
+    <div class="responsive-box">
+      <p>This box changes color based on viewport width (@media).</p>
+    </div>
+    <div class="animation-box">
+      <p>This text has an animation (@keyframes).</p>
+    </div>
+    <div class="supports-box">
+      <p>This box only shows if grid is supported (@supports).</p>
+    </div>
+  </div>
+</template>
+
+<style>
+.atrules-test {
+  border: 2px solid #ff9800;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.responsive-box {
+  padding: 12px;
+  background-color: #fff3e0;
+  margin: 8px 0;
+}
+
+@media (max-width: 600px) {
+  .responsive-box {
+    background-color: #ffe0b2;
+    font-size: 14px;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animation-box {
+  animation: fadeIn 2s ease-in;
+  padding: 12px;
+  background-color: #e8f5e9;
+  margin: 8px 0;
+}
+
+@supports (display: grid) {
+  .supports-box {
+    display: block;
+    padding: 12px;
+    background-color: #e3f2fd;
+    margin: 8px 0;
+  }
+}
+</style>

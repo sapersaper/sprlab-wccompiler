@@ -1,0 +1,29 @@
+<script>
+import { defineComponent } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-scope-import',
+})
+</script>
+
+<template>
+  <div class="import-test">
+    <h3>@import + @scope</h3>
+    <p>@import is extracted outside @scope block.</p>
+  </div>
+</template>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+.import-test {
+  border: 2px solid #e91e63;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.import-test p {
+  font-family: 'Roboto', sans-serif;
+  color: #c2185b;
+}
+</style>

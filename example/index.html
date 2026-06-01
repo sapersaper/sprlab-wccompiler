@@ -311,5 +311,55 @@
     </section>
     <script type="module" src="./dist/12-edge-cases/test-recursive.js"></script>
 
+    <!-- TEST 13: CSS @scope -->
+    <section>
+        <h2>Test 13.1: Basic @scope</h2>
+        <test-scope-basic/>
+    </section>
+    <script type="module" src="./dist/13-css-scope/test-scope-basic.js"></script>
+
+    <section>
+        <h2>Test 13.2: @scope Boundary (Parent-Child Isolation)</h2>
+        <test-scope-boundary-parent/>
+    </section>
+    <script type="module" src="./dist/13-css-scope/test-scope-boundary-child.js"></script>
+    <script type="module" src="./dist/13-css-scope/test-scope-boundary-parent.js"></script>
+
+    <section>
+        <h2>Test 13.3: :host / :scope</h2>
+        <test-scope-host/>
+    </section>
+    <script type="module" src="./dist/13-css-scope/test-scope-host.js"></script>
+
+    <section>
+        <h2>Test 13.4: @media / @keyframes / @supports inside @scope</h2>
+        <test-scope-atrules/>
+    </section>
+    <script type="module" src="./dist/13-css-scope/test-scope-atrules.js"></script>
+
+    <section>
+        <h2>Test 13.5: Modern Selectors (:is, :where, commas)</h2>
+        <test-scope-modern/>
+    </section>
+    <script type="module" src="./dist/13-css-scope/test-scope-modern.js"></script>
+
+    <section>
+        <h2>Test 13.6: CSS Nesting (&) inside @scope</h2>
+        <test-scope-nesting/>
+    </section>
+    <script type="module" src="./dist/13-css-scope/test-scope-nesting.js"></script>
+
+    <section>
+        <h2>Test 13.7: @import + @scope</h2>
+        <test-scope-import/>
+    </section>
+    <script type="module" src="./dist/13-css-scope/test-scope-import.js"></script>
+
+    <section>
+        <h2>Test 13.8: CSS Comments in @scope</h2>
+        <test-scope-comments/>
+    </section>
+    <script type="module" src="./dist/13-css-scope/test-scope-comments.js"></script>
+
 </body>
 </html>

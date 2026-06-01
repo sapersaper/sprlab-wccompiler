@@ -1,0 +1,46 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+import WccScopeChild from './test-scope-boundary-child.wcc'
+
+export default defineComponent({
+  tag: 'test-scope-boundary-parent',
+})
+
+const showChild = signal(true)
+
+function toggleChild() {
+  showChild.set(!showChild())
+}
+</script>
+
+<template>
+  <div class="parent">
+    <h3>Scope Boundary Test (Parent)</h3>
+    <p class="parent-text">This text should be RED (parent scoped).</p>
+
+    <div show="showChild()">
+      <WccScopeChild></WccScopeChild>
+    </div>
+
+    <p class="parent-text">The child's ".child-text" should NOT be red.</p>
+    <button @click="toggleChild">Toggle Child</button>
+  </div>
+</template>
+
+<style>
+.parent {
+  border: 2px solid red;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.parent-text {
+  color: red;
+  font-weight: bold;
+}
+
+button {
+  margin-top: 8px;
+  padding: 8px 16px;
+}
+</style>
