@@ -3,15 +3,29 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     exclude: [
-      '**/frameworks-integrations/**', // Excluir proyectos de frameworks
+      '**/frameworks-integrations/**',
       '**/e2e/**',
       '**/node_modules/**',
       '**/dist/**',
-      '**/lib.backup-phase4/**', // Phase 5 refactor backup
+      '**/lib.backup-phase4/**',
     ],
     testTimeout: 30000,
-    // Configure fast-check for deterministic property-based tests
-    // This prevents flaky tests by using a fixed seed
     setupFiles: ['./vitest.setup.js'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
+      include: ['lib/**/*.js', 'lib/**/*.ts'],
+      exclude: [
+        '**/*.test.js',
+        'lib/wcc-runtime.js',
+        'lib/find-anchor.js',
+      ],
+      thresholds: {
+        statements: 80,
+        branches: 75,
+        functions: 80,
+        lines: 80,
+      },
+    },
   },
 });
