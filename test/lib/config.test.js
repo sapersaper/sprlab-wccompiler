@@ -104,4 +104,55 @@ describe('loadConfig', () => {
       expect(err.code).toBe('INVALID_CONFIG');
     }
   });
+
+  it('throws INVALID_CONFIG when minify is not boolean', async () => {
+    const tmpDir = makeTmpDir();
+    dirsToClean.push(tmpDir);
+    writeFileSync(join(tmpDir, 'wcc.config.js'), `export default { minify: 'yes' };\n`);
+    await expect(loadConfig(tmpDir)).rejects.toThrow(/minify/);
+  });
+
+  it('throws INVALID_CONFIG when comments is not boolean', async () => {
+    const tmpDir = makeTmpDir();
+    dirsToClean.push(tmpDir);
+    writeFileSync(join(tmpDir, 'wcc.config.js'), `export default { comments: 'true' };\n`);
+    await expect(loadConfig(tmpDir)).rejects.toThrow(/comments/);
+  });
+
+  it('throws INVALID_CONFIG when runtime is not boolean', async () => {
+    const tmpDir = makeTmpDir();
+    dirsToClean.push(tmpDir);
+    writeFileSync(join(tmpDir, 'wcc.config.js'), `export default { runtime: 1 };\n`);
+    await expect(loadConfig(tmpDir)).rejects.toThrow(/runtime/);
+  });
+
+  it('throws INVALID_CONFIG when htmlData is not boolean', async () => {
+    const tmpDir = makeTmpDir();
+    dirsToClean.push(tmpDir);
+    writeFileSync(join(tmpDir, 'wcc.config.js'), `export default { htmlData: 0 };\n`);
+    await expect(loadConfig(tmpDir)).rejects.toThrow(/htmlData/);
+  });
+
+  it('throws INVALID_CONFIG when integrations is not an array', async () => {
+    const tmpDir = makeTmpDir();
+    dirsToClean.push(tmpDir);
+    writeFileSync(join(tmpDir, 'wcc.config.js'), `export default { integrations: 'vue' };\n`);
+    await expect(loadConfig(tmpDir)).rejects.toThrow(/integrations/);
+  });
+
+  it('throws INVALID_CONFIG for invalid integration name', async () => {
+    const tmpDir = makeTmpDir();
+    dirsToClean.push(tmpDir);
+    writeFileSync(join(tmpDir, 'wcc.config.js'), `export default { integrations: ['svelte'] };\n`);
+    await expect(loadConfig(tmpDir)).rejects.toThrow(/svelte/);
+  });
+
+  it('loads config from custom path', async () => {
+    const tmpDir = makeTmpDir();
+    dirsToClean.push(tmpDir);
+    writeFileSync(join(tmpDir, 'custom.config.js'), `export default { port: 7777, integrations: ['vue', 'react'] };\n`);
+    const config = await loadConfig(tmpDir, 'custom.config.js');
+    expect(config.port).toBe(7777);
+    expect(config.integrations).toEqual(['vue', 'react']);
+  });
 });
