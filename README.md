@@ -1094,6 +1094,13 @@ An optional `wcc-runtime.js` is copied to your output directory for declarative 
 </script>
 ```
 
+## Coverage
+
+![Coverage: statements](https://img.shields.io/badge/statements-89%25-brightgreen)
+![Coverage: branches](https://img.shields.io/badge/branches-87%25-brightgreen)
+![Coverage: functions](https://img.shields.io/badge/functions-94%25-brightgreen)
+![Coverage: lines](https://img.shields.io/badge/lines-89%25-brightgreen)
+
 ## License
 
 MIT
