@@ -1,0 +1,33 @@
+<script>
+import { defineComponent } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-scope-basic',
+})
+</script>
+
+<template>
+  <div class="card">
+    <h3>Basic @scope</h3>
+    <p class="scoped-text">This text should be blue (scoped).</p>
+    <p class="scoped-border">This has a border.</p>
+  </div>
+</template>
+
+<style>
+.card {
+  border: 1px solid #ccc;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.scoped-text {
+  color: blue;
+  font-weight: bold;
+}
+
+.scoped-border {
+  border: 2px dashed green;
+  padding: 8px;
+}
+</style>

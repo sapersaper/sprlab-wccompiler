@@ -190,3 +190,113 @@ describe('css-scoper — edge cases', () => {
     expect(scopeCSS('   \n\t  ', 'x-tag')).toBe('');
   });
 });
+
+describe('css-scoper — @scope mode', () => {
+  describe('basic @scope output', () => {
+    it('wraps CSS in @scope with boundaries', () => {
+      const result = scopeCSS('.title { color: red }', 'wcc-card', ['wcc-button', 'wcc-badge']);
+      expect(result).toBe('@scope (wcc-card) to (wcc-button, wcc-badge) {\n.title { color: red }\n}');
+    });
+
+    it('works with a single boundary', () => {
+      const result = scopeCSS('.foo { color: red }', 'wcc-card', ['wcc-button']);
+      expect(result).toBe('@scope (wcc-card) to (wcc-button) {\n.foo { color: red }\n}');
+    });
+  });
+
+  describe(':host transformation', () => {
+    it('transforms :host to :scope', () => {
+      const result = scopeCSS(':host { display: block }', 'wcc-card', ['wcc-button']);
+      expect(result).toContain(':scope { display: block }');
+      expect(result).not.toContain(':host');
+    });
+
+    it('transforms :host(.class) to :scope(.class)', () => {
+      const result = scopeCSS(':host(.active) { border: 2px }', 'wcc-card', ['wcc-button']);
+      expect(result).toContain(':scope(.active)');
+      expect(result).not.toContain(':host');
+    });
+  });
+
+  describe('statement at-rules extracted outside @scope', () => {
+    it('@import is extracted before @scope', () => {
+      const result = scopeCSS("@import url('reset.css');\n.foo { color: red }", 'wcc-card', ['wcc-button']);
+      expect(result).toContain("@import url('reset.css');");
+      expect(result).toContain('@scope (wcc-card)');
+    });
+
+    it('@charset is extracted before @scope', () => {
+      const result = scopeCSS('@charset "UTF-8";\n.foo { color: red }', 'wcc-card', ['wcc-button']);
+      expect(result).toContain('@charset "UTF-8";');
+      expect(result).toContain('@scope (wcc-card)');
+    });
+  });
+
+  describe('@media and @keyframes inside @scope', () => {
+    it('@media stays inside @scope', () => {
+      const css = '.foo { color: red }\n@media (max-width: 600px) {\n  .foo { font-size: 14px }\n}';
+      const result = scopeCSS(css, 'wcc-card', ['wcc-button']);
+      expect(result).toContain('@media (max-width: 600px)');
+      expect(result).toContain('@scope (wcc-card)');
+    });
+
+    it('@keyframes stays inside @scope', () => {
+      const css = '@keyframes spin {\n  from { transform: rotate(0deg) }\n  to { transform: rotate(360deg) }\n}';
+      const result = scopeCSS(css, 'wcc-card', ['wcc-button']);
+      expect(result).toContain('@keyframes spin');
+      expect(result).toContain('@scope (wcc-card)');
+    });
+
+    it('@supports stays inside @scope', () => {
+      const css = '@supports (display: grid) {\n  .grid { display: grid }\n}';
+      const result = scopeCSS(css, 'wcc-card', ['wcc-button']);
+      expect(result).toContain('@supports (display: grid)');
+      expect(result).toContain('@scope (wcc-card)');
+    });
+  });
+
+  describe('CSS nesting', () => {
+    it('nested & works inside @scope', () => {
+      const css = '.parent {\n  color: red;\n  & .child { color: blue }\n}';
+      const result = scopeCSS(css, 'wcc-card', ['wcc-button']);
+      expect(result).toContain('& .child');
+      expect(result).toContain('@scope (wcc-card)');
+    });
+  });
+
+  describe('no boundaries — legacy fallback', () => {
+    it('falls back to tag prefixing when no boundaries', () => {
+      const result = scopeCSS('.foo { color: red }', 'wcc-card');
+      expect(result).toBe('wcc-card .foo{ color: red }');
+    });
+
+    it('legacy fallback handles comma-separated selectors', () => {
+      const result = scopeCSS('h1, h2 { color: blue }', 'wcc-card');
+      expect(result).toBe('wcc-card h1, wcc-card h2{ color: blue }');
+    });
+
+    it('legacy fallback preserves @import', () => {
+      const css = "@import url('reset.css');\n.foo { color: red }";
+      const result = scopeCSS(css, 'wcc-card');
+      expect(result).toContain("@import url('reset.css');");
+      expect(result).toContain('wcc-card .foo');
+    });
+  });
+
+  describe(':is() and :where() with commas (Bug 2 fixed)', () => {
+    it(':is() no longer splits by internal commas in legacy mode', () => {
+      const result = scopeCSS(':is(h1, h2) { color: blue }', 'wcc-card');
+      expect(result).toBe('wcc-card :is(h1, h2){ color: blue }');
+    });
+
+    it(':where() no longer splits by internal commas in legacy mode', () => {
+      const result = scopeCSS(':where(.a, .b) { margin: 0 }', 'wcc-card');
+      expect(result).toBe('wcc-card :where(.a, .b){ margin: 0 }');
+    });
+
+    it(':not() with multiple args no longer splits by internal commas in legacy mode', () => {
+      const result = scopeCSS(':not(.a, .b) { color: red }', 'wcc-card');
+      expect(result).toBe('wcc-card :not(.a, .b){ color: red }');
+    });
+  });
+});

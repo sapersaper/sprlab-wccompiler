@@ -1,0 +1,28 @@
+<script>
+import { defineComponent } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-scope-child',
+})
+</script>
+
+<template>
+  <div class="child">
+    <h4>Child Component</h4>
+    <p class="child-text">This text should be GREEN (child scoped).</p>
+    <p class="child-text">If this is RED, parent styles leaked through!</p>
+  </div>
+</template>
+
+<style>
+.child {
+  border: 2px solid green;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+.child-text {
+  color: green;
+}
+</style>

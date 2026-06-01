@@ -1,0 +1,43 @@
+<script>
+import { defineComponent } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-scope-nesting',
+})
+</script>
+
+<template>
+  <div class="nesting-test">
+    <h3>CSS Nesting (&) inside @scope</h3>
+    <div class="card">
+      <p class="title">Card Title</p>
+      <div class="body">
+        <p>Card body content.</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style>
+.nesting-test {
+  border: 2px solid #0097a7;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.card {
+  background-color: #e0f7fa;
+  padding: 12px;
+  border-radius: 6px;
+
+  & .title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #006064;
+  }
+
+  & .body {
+    color: #37474f;
+  }
+}
+</style>
