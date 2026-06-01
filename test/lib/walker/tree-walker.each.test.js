@@ -399,4 +399,50 @@ describe('tree-walker each — unit tests', () => {
     expect(result.indexVar).toBeNull();
     expect(result.source).toBe('items');
   });
+
+  describe('parseEachExpression error paths', () => {
+    it('throws INVALID_V_FOR for destructured form with empty item variable', () => {
+      try { parseEachExpression('(, index) in source'); }
+      catch (e) { expect(e.code).toBe('INVALID_V_FOR'); }
+    });
+
+    it('throws INVALID_V_FOR for destructured form with empty source', () => {
+      try { parseEachExpression('(item, index) in '); }
+      catch (e) { expect(e.code).toBe('INVALID_V_FOR'); }
+    });
+
+    it('throws INVALID_V_FOR for simple form with empty item (whitespace only)', () => {
+      try { parseEachExpression('  in source'); }
+      catch (e) { expect(e.code).toBe('INVALID_V_FOR'); }
+    });
+
+    it('throws INVALID_V_FOR for malformed destructured form with extra parens', () => {
+      try { parseEachExpression('(item, ) in source'); }
+      catch (e) { expect(e.code).toBe('INVALID_V_FOR'); }
+    });
+
+    it('throws INVALID_V_FOR for fallback invalid syntax', () => {
+      try { parseEachExpression('item source'); }
+      catch (e) { expect(e.code).toBe('INVALID_V_FOR'); }
+    });
+
+    it('throws INVALID_V_FOR when expression is just whitespace', () => {
+      try { parseEachExpression('   '); }
+      catch (e) { expect(e.code).toBe('INVALID_V_FOR'); }
+    });
+  });
+
+  describe('key expression edge cases', () => {
+    it('transforms $index shorthand to index variable with :key', () => {
+      const root = makeRoot('<div each="(item, i) in items" :key="$index"></div>');
+      const blocks = processForBlocks(root, [], new Set(), new Set(), new Set());
+      expect(blocks[0].keyExpr).toBe('i');
+    });
+
+    it('transforms $index shorthand to __idx when no index var with :key', () => {
+      const root = makeRoot('<div each="item in items" :key="$index"></div>');
+      const blocks = processForBlocks(root, [], new Set(), new Set(), new Set());
+      expect(blocks[0].keyExpr).toBe('__idx');
+    });
+  });
 });
