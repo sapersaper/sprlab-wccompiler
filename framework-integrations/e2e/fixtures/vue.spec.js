@@ -100,7 +100,7 @@ test.describe('Vue + WCC integration', () => {
   test.describe('Test 4b: Multiple v-model on same element', () => {
     test('both v-model bound props render correctly', async ({ page }) => {
       await page.goto(BASE);
-      await expect(page.locator('#test4b')).toContainText('Clicks');
+      await expect(page.locator('#test4b')).toContainText('hello');
       await expect(page.locator('#test4b')).toBeAttached();
     });
 
