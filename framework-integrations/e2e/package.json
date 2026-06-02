@@ -1,0 +1,20 @@
+{
+  "name": "wcc-framework-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:vue": "playwright test fixtures/vue.spec.js",
+    "test:react": "playwright test fixtures/react.spec.js",
+    "test:angular": "playwright test fixtures/angular.spec.js",
+    "test:all": "playwright test",
+    "dev:vue": "cd ../vue && yarn dev",
+    "dev:react": "cd ../react && yarn dev",
+    "dev:angular": "cd ../angular && yarn start",
+    "build:wcc": "cd ../wcc && yarn build",
+    "ci": "yarn build:wcc && yarn test:all"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}

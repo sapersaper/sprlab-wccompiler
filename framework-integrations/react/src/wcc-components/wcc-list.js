@@ -63,6 +63,41 @@ class WccList extends HTMLElement {
   connectedCallback() {
     if (this.__connected) return;
     this.__connected = true;
+    const __slotMap = {};
+    const __defaultSlotNodes = [];
+    const __templatesToRemove = [];
+    for (const child of Array.from(this.childNodes)) {
+      if (child.nodeName === 'TEMPLATE') {
+        let handled = false;
+        for (const attr of child.attributes) {
+          if (attr.name.startsWith('#')) {
+            const slotName = attr.name.slice(1);
+            __slotMap[slotName] = { content: child.innerHTML, propsExpr: attr.value };
+            handled = true;
+          } else if (attr.name === "slot") {
+            const slotName = attr.value;
+            const propsExpr = child.getAttribute('slot-props') || '';
+            child.removeAttribute('slot-props');
+            __slotMap[slotName] = { content: child.innerHTML, propsExpr };
+            handled = true;
+          }
+        }
+        if (handled) __templatesToRemove.push(child);
+      } else if (child.nodeType === 1 && child.getAttribute('slot')) {
+        const slotName = child.getAttribute('slot');
+        const propsExpr = child.getAttribute('slot-props') || '';
+        child.removeAttribute('slot');
+        child.removeAttribute('slot-props');
+        __slotMap[slotName] = { content: propsExpr ? child.innerHTML : child.outerHTML, propsExpr };
+      } else if (child.nodeType === 1) {
+        __defaultSlotNodes.push(child);
+      } else if (child.nodeType === 3 && child.textContent.trim()) {
+        __defaultSlotNodes.push(child);
+      }
+    }
+    for (const tpl of __templatesToRemove) {
+      if (tpl.parentNode) tpl.parentNode.removeChild(tpl);
+    }
     const __root = this.__ssr ? this : __t_WccList.content.cloneNode(true);
     if (!this.__ssr) {
       this.__for0_tpl = document.createElement('template');
@@ -75,6 +110,11 @@ class WccList extends HTMLElement {
     }
     if (!this.__ssr) { this.innerHTML = ''; }
     if (!this.__ssr) { this.appendChild(__root); }
+    for (const [__sn, __sc] of Object.entries(__slotMap)) {
+      if (__sc.propsExpr && !this['__slotTpl_' + __sn]) {
+        this['__slotTpl_' + __sn] = __sc.content;
+      }
+    }
     this.__ac = new AbortController();
 
     this.__invalidate('*');
@@ -93,6 +133,15 @@ class WccList extends HTMLElement {
     __iter.forEach((item, index) => {
       const clone = this.__for0_tpl.content.cloneNode(true);
       const node = clone.firstChild;
+          if (this.__slotTpl_item) {
+            let __slotHtml = this.__slotTpl_item;
+            __slotHtml = __slotHtml.replace(/{%\s*item\s*%}/g, item);
+            __slotHtml = __slotHtml.replace(/{%\s*index\s*%}/g, index);
+            const __slotNode = node.querySelector('[data-slot="item"]');
+            if (__slotNode) {
+              __slotNode.innerHTML = __slotHtml;
+            }
+          }
       this.__for0_anchor.parentNode.insertBefore(node, this.__for0_anchor);
       customElements.upgrade(node);
       this.__for0_nodes.push(node);
