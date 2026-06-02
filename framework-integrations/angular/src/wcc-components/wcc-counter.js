@@ -1,57 +1,4 @@
 // Generated from: wcc-counter.wcc (wcCompiler)
-let __currentEffect = null;
-let __batchDepth = 0;
-const __pendingEffects = new Set();
-let __runningEffect = null;
-
-function __signal(initial) {
-  let _value = initial;
-  const _subs = new Set();
-  return (...args) => {
-    if (args.length === 0) {
-      if (__currentEffect) _subs.add(__currentEffect);
-      return _value;
-    }
-    const old = _value;
-    _value = args[0];
-    if (old !== _value) {
-      if (__runningEffect) _subs.delete(__runningEffect);
-      if (__batchDepth > 0) {
-        for (const fn of _subs) __pendingEffects.add(fn);
-      } else {
-        for (const fn of [..._subs]) fn();
-      }
-    }
-  };
-}
-
-function __effect(fn) {
-  let _cleanup = null;
-  let _active = true;
-  let _running = false;
-  const run = () => {
-    if (!_active || _running) return;
-    _running = true;
-    const prevRunning = __runningEffect;
-    __runningEffect = run;
-    try {
-      if (typeof _cleanup === 'function') _cleanup();
-      const prev = __currentEffect;
-      __currentEffect = run;
-      _cleanup = fn();
-      __currentEffect = prev;
-    } catch (e) {
-      console.error('[wcc] Effect error:', e);
-      _active = false;
-    } finally {
-      __runningEffect = prevRunning;
-      _running = false;
-    }
-  };
-  run();
-  return () => { _active = false; if (typeof _cleanup === 'function') _cleanup(); };
-}
-
 if (!document.getElementById('__css_WccCounter')) {
   const __css_WccCounter = document.createElement('style');
   __css_WccCounter.id = '__css_WccCounter';
@@ -87,47 +34,69 @@ class WccCounter extends HTMLElement {
 
   constructor() {
     super();
-    this._s_label = __signal('Clicks');
-    this._m_count = __signal(0);
+    const self = this;
+    this._state = new Proxy(
+      { label: 'Clicks', count: 0 },
+      {
+        set(target, key, value) {
+          if (target[key] === value) return true;
+          target[key] = value;
+          self.__invalidate(key);
+          return true;
+        }
+      }
+    );
   }
 
   connectedCallback() {
     if (this.__connected) return;
     this.__connected = true;
-    const __root = __t_WccCounter.content.cloneNode(true);
+    const __root = this.__ssr ? this : __t_WccCounter.content.cloneNode(true);
     this.__text_props_label_0 = __root.childNodes[1].childNodes[1].childNodes[0];
     this.__text_count_1 = __root.childNodes[1].childNodes[1].childNodes[2];
     this.__evt_click_increment_0 = __root.childNodes[1].childNodes[3];
-    this.innerHTML = '';
-    this.appendChild(__root);
+    if (!this.__ssr) { this.innerHTML = ''; }
+    if (!this.__ssr) { this.appendChild(__root); }
     this.__ac = new AbortController();
-    this.__disposers = [];
 
-    this.__disposers.push(__effect(() => {
-      this.__text_props_label_0.textContent = this._s_label() ?? '';
-    }));
-    this.__disposers.push(__effect(() => {
-      this.__text_count_1.textContent = this._m_count() ?? '';
-    }));
     if (this.__evt_click_increment_0) this.__evt_click_increment_0.addEventListener('click', this._increment.bind(this), { signal: this.__ac.signal });
+    this.__invalidate('*');
+  }
+
+  __invalidate(key) {
+    switch(key) {
+      case 'label':
+        if (this.__connected) {
+          this.__text_props_label_0.textContent = this._state.label ?? '';
+        }
+        break;
+      case 'count':
+        if (this.__connected) {
+          this.__text_count_1.textContent = this._state.count ?? '';
+        }
+        break;
+      case '*':
+        this.__text_props_label_0.textContent = this._state.label ?? '';
+        this.__text_count_1.textContent = this._state.count ?? '';
+        break;
+    }
   }
 
   disconnectedCallback() {
     this.__connected = false;
     this.__ac.abort();
-    this.__disposers.forEach(d => d());
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
-    if (name === 'label') this._s_label(newVal ?? 'Clicks');
-    if (name === 'count') this._m_count(newVal != null ? Number(newVal) : 0);
+    if (name === 'label') this._state.label = newVal ?? 'Clicks';
+    if (name === 'count') this._state.count = newVal != null ? Number(newVal) : 0;
   }
 
-  get label() { return this._s_label(); }
-  set label(val) { this._s_label(val); this.setAttribute('label', String(val)); }
+  get label() { return this._state.label; }
+  set label(val) { this._state.label = val; this.setAttribute('label', String(val)); }
 
-  get count() { return this._m_count(); }
-  set count(val) { this._m_count(val); this.setAttribute('count', String(val)); }
+  get count() { return this._state.count; }
+  set count(val) { this._state.count = val; this.setAttribute('count', String(val)); }
 
   _emit(name, detail) {
     const evt = { detail, bubbles: true, composed: true };
@@ -137,8 +106,8 @@ class WccCounter extends HTMLElement {
   }
 
   _modelSet_count(newVal) {
-    const oldVal = this._m_count();
-    this._m_count(newVal);
+    const oldVal = this._state.count;
+    this._state.count = newVal;
     this.dispatchEvent(new CustomEvent('wcc:model', {
       detail: { prop: 'count', value: newVal, oldValue: oldVal },
       bubbles: true,
@@ -151,15 +120,15 @@ class WccCounter extends HTMLElement {
   // --- Model wrapper methods ---
   _count(val) {
     if (arguments.length === 0) {
-      return this._m_count();
+      return this._state.count;
     } else {
       this._modelSet_count(val);
     }
   }
 
   _increment() {
-    this._modelSet_count(this._m_count() + 1)
-      this._emit('count-changed', this._m_count())
+    this._modelSet_count(this._state.count + 1)
+      this._emit('count-changed', this._state.count)
   }
 
 }

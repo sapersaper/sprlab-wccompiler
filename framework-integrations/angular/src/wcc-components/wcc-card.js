@@ -1,30 +1,4 @@
 // Generated from: wcc-card.wcc (wcCompiler)
-let __currentEffect = null;
-let __batchDepth = 0;
-const __pendingEffects = new Set();
-let __runningEffect = null;
-
-function __signal(initial) {
-  let _value = initial;
-  const _subs = new Set();
-  return (...args) => {
-    if (args.length === 0) {
-      if (__currentEffect) _subs.add(__currentEffect);
-      return _value;
-    }
-    const old = _value;
-    _value = args[0];
-    if (old !== _value) {
-      if (__runningEffect) _subs.delete(__runningEffect);
-      if (__batchDepth > 0) {
-        for (const fn of _subs) __pendingEffects.add(fn);
-      } else {
-        for (const fn of [..._subs]) fn();
-      }
-    }
-  };
-}
-
 if (!document.getElementById('__css_WccCard')) {
   const __css_WccCard = document.createElement('style');
   __css_WccCard.id = '__css_WccCard';
@@ -115,12 +89,12 @@ class WccCard extends HTMLElement {
     for (const tpl of __templatesToRemove) {
       if (tpl.parentNode) tpl.parentNode.removeChild(tpl);
     }
-    const __root = __t_WccCard.content.cloneNode(true);
+    const __root = this.__ssr ? this : __t_WccCard.content.cloneNode(true);
     this.__slot_header_0 = __root.childNodes[1].childNodes[1].childNodes[1];
     this.__slot_default_1 = __root.childNodes[1].childNodes[3].childNodes[1];
     this.__slot_footer_2 = __root.childNodes[1].childNodes[5].childNodes[1];
-    this.innerHTML = '';
-    this.appendChild(__root);
+    if (!this.__ssr) { this.innerHTML = ''; }
+    if (!this.__ssr) { this.appendChild(__root); }
     if (__slotMap['header']) { this.__slot_header_0.innerHTML = __slotMap['header'].content; }
     if (__defaultSlotNodes.length) { this.__slot_default_1.textContent = ''; __defaultSlotNodes.forEach(n => this.__slot_default_1.appendChild(n.cloneNode(true))); }
     if (__slotMap['footer']) { this.__slot_footer_2.innerHTML = __slotMap['footer'].content; }
@@ -159,14 +133,12 @@ class WccCard extends HTMLElement {
       });
     }
     this.__ac = new AbortController();
-    this.__disposers = [];
 
   }
 
   disconnectedCallback() {
     this.__connected = false;
     this.__ac.abort();
-    this.__disposers.forEach(d => d());
   }
 
 }
