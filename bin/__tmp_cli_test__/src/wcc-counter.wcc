@@ -1,0 +1,15 @@
+<script>
+import { defineComponent, signal } from 'wcc'
+
+export default defineComponent({ tag: 'wcc-counter' })
+
+const count = signal(0)
+
+function increment() {
+  count.set(count() + 1)
+}
+</script>
+
+<template>
+<div>{{count()}}</div>
+</template>

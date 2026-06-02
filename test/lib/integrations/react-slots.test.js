@@ -1597,12 +1597,12 @@ describe('React Plugin Slots - Warning Behavior (Tasks 7.2, 7.3, 7.4)', () => {
       expect(ctx.warn.mock.calls[0][0]).toContain('renderStats')
     })
 
-    it('leaves the prop unchanged when render prop body has unsupported expressions', () => {
+    it('generates slot even when render prop body has unsupported expressions', () => {
       const code = `import React from 'react';\nexport default function App() { return <wcc-card renderStats={(likes) => <span>{formatNumber(likes)}</span>}></wcc-card> }`
       const { result } = callTransformWithCtx(plugin, code, 'src/App.jsx')
 
-      // No transformation should happen since the render prop was skipped
-      expect(result).toBeNull()
+      // Warning is emitted but transformation still produces slot element
+      expect(result).not.toBeNull()
     })
 
     it('does NOT warn when render prop body only references its parameters', () => {

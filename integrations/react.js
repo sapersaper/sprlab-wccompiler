@@ -798,15 +798,12 @@ export function wccReactPlugin(options = {}) {
               }
               transformed = true
             } else if (classification.type === 'renderProp') {
-              // Task 7.3: Warn on unsupported expressions in render prop bodies — leave prop unchanged
               const renderWarnings = []
               serializeJsxToHtml(classification.body, classification.params, renderWarnings)
               if (renderWarnings.length > 0) {
                 pluginCtx.warn(`[wcc-react] ${id} — ${propName}: ${renderWarnings[0]}`)
-                remainingAttributes.push(attr)
-                continue
+                // Still generate the slot — external vars become empty but at least items render
               }
-              // Generate scoped slot element
               slotChildren.push(generateScopedSlotElement(
                 classification.slotName,
                 classification.params,
