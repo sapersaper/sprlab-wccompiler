@@ -1,8 +1,6 @@
 export default {
   input: 'src',
   output: '../angular/src/wcc-components',
-  standalone: true,
-  comments: true,
-  htmlData: true,
+  htmlData: false,
   integrations: ['angular'],
 };

@@ -3,156 +3,136 @@ inclusion: auto
 description: Project context and architecture overview for wcCompiler
 ---
 
-# wcCompiler v2 — Project Context
+# @sprlab/wccompiler — wcCompiler v2
 
-## What is this project?
+## What is this?
 
-A zero-runtime compiler that transforms `.ts`/`.js` component files into 100% native Web Components. No framework dependencies in the output — just vanilla JavaScript using Custom Elements API.
+Zero-runtime compiler que transforma single-file components `.wcc` en Web Components nativos con reactividad basada en signals. No framework dependencies in the output — just vanilla JavaScript using Custom Elements API. No Shadow DOM — Light DOM con CSS scoped via tag-name prefixing o `@scope` nativo.
 
-## Key Design Decisions
+## Stack
 
-### Entry Point: `.ts`/`.js` (not `.html`)
+- Node 24 (Volta), Yarn 4 (nodeLinker: node-modules)
+- Vitest v3, jsdom, fast-check (property-based testing)
+- esbuild (type stripping, minificación, bundling)
+- linkedom (parseo HTML server-side)
+- Babel (plugin de React)
+- @vitest/coverage-v8 (coverage, thresholds: 85/80/88/85)
 
-Components are authored as TypeScript/JavaScript files. The template and styles are referenced externally or inlined. This gives full IDE IntelliSense, type checking, and refactoring support without custom extensions.
-
-### API: Signals-based (industry standard)
+## Signals API
 
 | Function | Purpose | Read | Write |
-|---|---|---|---|
+|----------|---------|------|-------|
 | `signal(value)` | Reactive state | `count()` | `count.set(value)` |
 | `computed(() => expr)` | Derived value | `doubled()` | (read-only) |
-| `effect(() => { ... })` | Side effect (auto-tracking) | — | — |
-| `defineComponent({...})` | Component metadata (tag, template, styles) | — | — |
-| `defineProps<T>(defaults?)` | Typed props declaration with optional defaults | `props.name` | (read-only) |
-| `defineEmits<T>()` | Typed events declaration | — | `emit('event', data)` |
+| `defineComponent({...})` | Component metadata | — | — |
+| `defineProps<T>(defaults?)` | Typed props | `props.name` | (read-only) |
+| `defineEmits<T>()` | Typed events | — | `emit('event', data)` |
 | `onMount(() => {...})` | Lifecycle: connected | — | — |
 | `onDestroy(() => {...})` | Lifecycle: disconnected | — | — |
-| `templateRef('name')` | Template element reference | — | — |
+| `templateRef('name')` | Template ref | — | — |
 
-### Component Structure
+## Template Syntax (directives sin prefijo `v-`)
 
-```ts
-// src/wcc-counter.ts — entry point
-import { defineComponent, defineProps, defineEmits, signal, computed, effect, onMount, onDestroy, templateRef } from 'wcc'
-
-export default defineComponent({
-  tag: 'wcc-counter',
-  template: './wcc-counter.html',
-  styles: './wcc-counter.css',
-})
-
-const props = defineProps<{ label: string, initial: number }>({
-  label: 'Count',
-  initial: 0
-})
-const emit = defineEmits<{ (e: 'change', value: number): void }>()
-
-const count = signal(props.initial)
-const doubled = computed(() => count() * 2)
-
-effect(() => {
-  console.log('count changed:', count())
-})
-
-onMount(() => {
-  console.log('mounted')
-})
-
-function increment() {
-  count.set(count() + 1)
-  emit('change', count())
-}
-```
-
-```html
-<!-- src/wcc-counter.html — template -->
-<div class="counter">
-  <span>{{label}}</span>
-  <span>{{count}}</span>
-  <button @click="increment">+</button>
-</div>
-```
-
-```css
-/* src/wcc-counter.css — styles */
-.counter { display: flex; gap: 8px; }
-```
-
-### Template Syntax
-
-- `{{variable}}` — text interpolation (auto-unwraps signals)
+- `{{expr}}` — text interpolation (signals requieren `()`)
 - `@event="handler"` — DOM event binding
-- `if` / `else-if` / `else` — conditional rendering (no prefix)
-- `each="item in list"` — list rendering (no prefix, avoids collision with HTML `for`)
-- `show="expr"` — visibility toggle (no prefix)
-- `model="variable"` — two-way binding (no prefix)
+- `if` / `else-if` / `else` — conditional rendering
+- `each="item in list"` — list rendering
+- `show="expr"` — visibility toggle
+- `model="variable"` — two-way binding
 - `:attr="expr"` — attribute binding
-- `:class="expr"` — class binding
-- `:style="expr"` — style binding
+- `:class="expr"` / `:style="expr"` — class/style binding
 - `ref="name"` — template element reference
-- `<slot>` — content distribution
+- `<slot>` / `<slot name="x" :prop="val">` — content distribution + scoped slots
 
-### Compiler Pipeline
+## Compiler Pipeline
 
-```
-.ts/.js source
-     │
-     ├── Read defineComponent() → resolve template path, styles path
-     │
-     ├── Read .html template → tree-walker (bindings, events, directives)
-     │
-     ├── Read .css styles → css-scoper (prefix selectors with tag name)
-     │
-     ├── Analyze script → parser (detect signal, computed, defineProps, etc.)
-     │
-     └── codegen → self-contained .js Web Component (zero imports)
-```
+`.wcc` SFC → 1. sfc-parser → 2. import-resolver → 3. parser/extractors/ (señales, props, emits, ciclos de vida) → 4. template-normalizer → 5. walker/ (if, each, dynamic) → 6. tree-walker (bindings, eventos, slots) → 7. transform/dep-graph → 8. codegen/ → `.js`
 
-### Output Characteristics
+## Output Characteristics
 
 - Zero runtime dependencies
 - Self-contained `.js` file per component
-- Inline reactive runtime (~40 lines: __signal, __computed, __effect)
-- Scoped CSS injected into document.head
+- Inline reactive runtime (signals, computed, batch)
+- Scoped CSS via `@scope` nativo o tag-name prefixing
 - Native HTMLElement class with Custom Elements API
+- Event system: `_emit(name, detail)` dispatches kebab + lowercase (React 19 compat)
 
-### Tech Stack
+## Tests
 
-- Node.js 24+
-- TypeScript 6+ (for type checking)
-- esbuild (for TS type stripping)
-- jsdom (for template DOM parsing)
-- vitest (testing)
-- fast-check (property-based testing)
-- Yarn 4 with PnP
+- `npm test` — Vitest (1300+ tests)
+- `npm run test:coverage` — Vitest + coverage
+- `test/lib/` — Unit tests mirror de lib/
+- `test/features/` — Integration tests full pipeline
+- `e2e/` — Playwright (opcional, no automático)
+- CI: GitHub Actions (`yarn test:coverage` en cada PR)
 
-### Spec Organization
+## SSR
 
-Specs are organized as:
-1. **Core spec** — base compiler pipeline, signal/computed/effect, defineComponent, template engine base, CSS scoping, CLI
-2. **Feature specs** — one per feature, built on top of core (defineProps, defineEmits, if/else-if/else, each, show, model, :attr/:class/:style, slots, templateRef, onMount/onDestroy, TypeScript)
+- `wcc build --ssr` genera `.js` + `.ssr.js`
+- `renderToString(props, state)` → HTML estático, zero deps
+- Hydration: `connectedCallback` adopta DOM servido
+- Cubre: props, signals, computed, each, if, show, CSS, XSS (`__esc`)
 
-### Reference: v1 Source Files
+## CSS Scoping
 
-The following files from the v1 project (`../` relative to this v2 directory) can be used as reference:
-- `lib/reactive-runtime.js` — inline reactive runtime (reuse as-is)
-- `lib/css-scoper.js` — CSS selector prefixing (reuse as-is)
-- `lib/tree-walker.js` — template DOM walking (reuse as-is)
-- `lib/config.js` — wcc.config.js loading (minor changes: glob *.ts instead of *.html)
-- `lib/dev-server.js` — HTTP server with live-reload (reuse as-is)
-- `lib/wcc-runtime.js` — optional consumer helper (reuse as-is)
-- `lib/codegen.js` — code generation (partial rewrite: new transform patterns)
-- `lib/parser.js` — script analysis (partial rewrite: reads .ts directly, new API names)
-- `lib/compiler.js` — pipeline orchestration (partial rewrite: new entry point resolution)
+- `@scope (tag) to (child1, child2)` — aislamiento real entre componentes
+- Tag-name prefixing (fallback) — cuando no hay hijos
+- Fixes: `:host` → `:scope`, `:is()` commas, `@import` fuera de `@scope`
 
+## Framework Integrations (`framework-integrations/`)
 
-### VSCode Extension (vscode-wcc) — IMPORTANT
+Proyectos de QA manual para verificar componentes WCC en cada framework.
 
-The WCC language extension provides IntelliSense for `.wcc` files via a Volar-based language server.
+```
+wcc/           3 .wcc fuente (counter, card, list)
+vue/           Vue 3.5 + Vite (port 4001)
+react/         React 19 + Vite (port 4002)
+angular/       Angular 19 standalone (port 4003)
+```
 
-**CRITICAL: Packaging the .vsix**
+### Build pipeline
+1. `wcc/` compila `.wcc` → `.js` via `wcc build --config <framework>.js`
+2. Output va a cada framework en `src/wcc-components/`
+3. Cada framework tiene su propio dev server
 
-When building the `.vsix`, **NEVER use `--no-dependencies`**. The language server requires all its dependencies bundled inside the vsix (TypeScript, @volar/*, vscode-languageserver, etc.). Without them, the server crashes silently and provides no types or suggestions.
+### Feature matrix
+
+| Feature | Vue | React | Angular |
+|---------|:---:|:-----:|:-------:|
+| Props | `:count="ref"` | `count={state}` | `[count]="val"` |
+| Events | `@count-changed` | `oncountchanged` | `(count-changed)` |
+| Two-way | `v-model:count` (plugin) | ❌ | `[(count)]` (adapter) |
+| Slots named | `<template #name>` | `slot="name"` | `ng-template[slot]` |
+| Scoped slots | `#name="{ item }"` | `renderItem={fn}` | `let-item` |
+
+### Integrations (Vite plugins)
+
+- `integrations/vue.js` — wccVuePlugin: v-model, scoped slots, isCustomElement
+- `integrations/react.js` — wccReactPlugin: JSX→HTML slot transform
+- `integrations/angular.js` + `angular-plugin.js` — guía + banana-box transform
+
+### Known issues
+
+- **Scoped slots dentro de each** — BUG-0012: no se resuelven, pendiente de fix
+- Vue: `<template #name>` necesita pre-transform del plugin
+- Angular: Slot timing — workaround con `queueMicrotask` en connectedCallback
+- Angular: `main.ts` importa de `wcc-components_back` que no existe
+- React 19: usa `oncountchanged` (lowercase)
+- **Config:** `integrations: ['vue']` (plural array), NO `integration: 'vue'` (singular string)
+
+## Spec Organization (.agent/specs/)
+
+- `core/` — base compiler pipeline, signals, defineComponent, template engine, CSS scoping, CLI
+- `feature specs/` — defineProps, defineEmits, if/else, each, show, model, :attr, slots, templateRef, lifecycle, TypeScript, scoped slots, etc.
+- `ssr/` — Static renderToString design
+- `css-scoper/` — @scope implementation
+- `scoped-slots-each/` — BUG-0012
+
+## VSCode Extension (vscode-wcc) — IMPORTANT
+
+La extension de lenguaje WCC provee IntelliSense para `.wcc` via Volar.
+
+**CRITICAL — Packaging .vsix:** NEVER use `--no-dependencies`. El language server requiere todas sus dependencias incluidas (TypeScript, @volar/*, vscode-languageserver). Sin ellas el server crashea silenciosamente.
 
 ```bash
 cd vscode-wcc
@@ -160,8 +140,13 @@ npm run build
 npx @vscode/vsce package   # ← NO --no-dependencies flag!
 ```
 
-The resulting `.vsix` will be ~6 MB (includes TypeScript compiler, Volar core, etc.). This is expected.
+**Location:** `vscode-wcc/` — v0.1.9
+**Install:** Cmd+Shift+P → "Extensions: Install from VSIX..." → select the `.vsix`
 
-**Location:** `vscode-wcc/`
-**Current version:** 0.1.9
-**Install:** Cmd+Shift+P → "Extensions: Install from VSIX..." → select the `.vsix` file
+## Archivos clave
+
+- `lib/codegen/ssr.js` — Generación de renderToString
+- `lib/codegen/connected-callback.js` — Hydration SSR + slot resolution
+- `lib/codegen/item-renderer.js` — Render de each loops
+- `lib/css-scoper.js` — @scope wrapping + legacy prefixing
+- `bin/wcc.js` — CLI (build/dev/--ssr/--minify/--bundle)

@@ -1,57 +1,4 @@
 // Generated from: wcc-list.wcc (wcCompiler)
-let __currentEffect = null;
-let __batchDepth = 0;
-const __pendingEffects = new Set();
-let __runningEffect = null;
-
-function __signal(initial) {
-  let _value = initial;
-  const _subs = new Set();
-  return (...args) => {
-    if (args.length === 0) {
-      if (__currentEffect) _subs.add(__currentEffect);
-      return _value;
-    }
-    const old = _value;
-    _value = args[0];
-    if (old !== _value) {
-      if (__runningEffect) _subs.delete(__runningEffect);
-      if (__batchDepth > 0) {
-        for (const fn of _subs) __pendingEffects.add(fn);
-      } else {
-        for (const fn of [..._subs]) fn();
-      }
-    }
-  };
-}
-
-function __effect(fn) {
-  let _cleanup = null;
-  let _active = true;
-  let _running = false;
-  const run = () => {
-    if (!_active || _running) return;
-    _running = true;
-    const prevRunning = __runningEffect;
-    __runningEffect = run;
-    try {
-      if (typeof _cleanup === 'function') _cleanup();
-      const prev = __currentEffect;
-      __currentEffect = run;
-      _cleanup = fn();
-      __currentEffect = prev;
-    } catch (e) {
-      console.error('[wcc] Effect error:', e);
-      _active = false;
-    } finally {
-      __runningEffect = prevRunning;
-      _running = false;
-    }
-  };
-  run();
-  return () => { _active = false; if (typeof _cleanup === 'function') _cleanup(); };
-}
-
 if (!document.getElementById('__css_WccList')) {
   const __css_WccList = document.createElement('style');
   __css_WccList.id = '__css_WccList';
@@ -79,61 +26,94 @@ __t_WccList.innerHTML = `
 </ul>
 `;
 
+function findAnchor(root, type, index) {
+  const needle = ' ' + type + ' ';
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_COMMENT);
+  let count = 0;
+  let node;
+  while ((node = walker.nextNode())) {
+    if (node.textContent === needle) {
+      if (count === index) return node;
+      count++;
+    }
+  }
+  return null;
+}
+
 class WccList extends HTMLElement {
   static __meta = { tag: 'wcc-list', props: [], events: [], models: [], slots: [] };
 
   constructor() {
     super();
-    this._items = __signal(['Apple', 'Banana', 'Cherry']);
+    this.__show_elements = {};
+    const self = this;
+    this._state = new Proxy(
+      { items: ['Apple', 'Banana', 'Cherry'] },
+      {
+        set(target, key, value) {
+          if (target[key] === value) return true;
+          target[key] = value;
+          self.__invalidate(key);
+          return true;
+        }
+      }
+    );
   }
 
   connectedCallback() {
     if (this.__connected) return;
     this.__connected = true;
-    const __root = __t_WccList.content.cloneNode(true);
-    this.__for0_tpl = document.createElement('template');
-    this.__for0_tpl.innerHTML = `<li>
+    const __root = this.__ssr ? this : __t_WccList.content.cloneNode(true);
+    if (!this.__ssr) {
+      this.__for0_tpl = document.createElement('template');
+      this.__for0_tpl.innerHTML = `<li>
     <span data-slot="item">{{item}}</span>
   </li>`;
-    this.__for0_anchor = __root.childNodes[1].childNodes[1];
-    this.__for0_nodes = [];
-    this.innerHTML = '';
-    this.appendChild(__root);
-    this.__ac = new AbortController();
-    this.__disposers = [];
-
-    this.__disposers.push(__effect(() => {
-      const __source = this._items();
-
-      const __iter = typeof __source === 'number'
-        ? Array.from({ length: __source }, (_, i) => i + 1)
-        : (__source || []);
-
-      for (const n of this.__for0_nodes) n.remove();
+      this.__for0_anchor = findAnchor(__root, 'each', 0);
       this.__for0_nodes = [];
+      this.__for0_items = [];
+    }
+    if (!this.__ssr) { this.innerHTML = ''; }
+    if (!this.__ssr) { this.appendChild(__root); }
+    this.__ac = new AbortController();
 
-      __iter.forEach((item, index) => {
-        const clone = this.__for0_tpl.content.cloneNode(true);
-        const node = clone.firstChild;
-          { const __slotEl = node.childNodes[1];
-            const __sp = { 'item': item, 'index': index };
-            let __h = __slotEl.innerHTML;
-            for (const [k, v] of Object.entries(__sp)) {
-              __h = __h.replace(new RegExp('\\{\\{\\s*' + k + '(\\(\\))?\\s*\\}\\}', 'g'), v ?? '');
-            }
-            __slotEl.innerHTML = __h;
-          }
-        this.__for0_anchor.parentNode.insertBefore(node, this.__for0_anchor);
-        customElements.upgrade(node);
-        this.__for0_nodes.push(node);
-      });
-    }));
+    this.__invalidate('*');
+  }
+
+  __renderEach_0() {
+    const __source = this._state.items;
+    const __iter = typeof __source === 'number'
+      ? Array.from({ length: __source }, (_, i) => i + 1)
+      : (__source || []);
+
+    for (const n of this.__for0_nodes) n.remove();
+    this.__for0_nodes = [];
+    this.__for0_items = [];
+
+    __iter.forEach((item, index) => {
+      const clone = this.__for0_tpl.content.cloneNode(true);
+      const node = clone.firstChild;
+      this.__for0_anchor.parentNode.insertBefore(node, this.__for0_anchor);
+      customElements.upgrade(node);
+      this.__for0_nodes.push(node);
+      this.__for0_items.push(item);
+    });
+  }
+
+  __invalidate(key) {
+    switch(key) {
+      case 'items':
+        this.__renderEach_0();
+        break;
+      case '*':
+        this.__renderEach_0();
+        break;
+    }
   }
 
   disconnectedCallback() {
     this.__connected = false;
     this.__ac.abort();
-    this.__disposers.forEach(d => d());
   }
 
 }
