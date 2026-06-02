@@ -418,18 +418,22 @@ export function classifyProp(propName, propValue, options = {}) {
     return { type: 'passthrough' }
   }
 
-  // Rule 7: Named slot prop (respecting slotProps option if set)
-  if (slotProps) {
-    // When slotProps is set, only props in that list become slots
+  // Rule 7: Named slot prop — only when explicitly listed in slotProps
+  if (slotProps && slotProps.length > 0) {
     if (slotProps.includes(propName)) {
       return { type: 'slot', name: propName, value: propValue }
     }
-    // Not in the explicit list → passthrough
-    return { type: 'passthrough' }
   }
 
-  // Default heuristic: any remaining prop with JSX or string value is a slot
-  return { type: 'slot', name: propName, value: propValue }
+  // Default: JSX/fragment values become slots (can't be DOM attributes),
+  // string literals pass through as regular attributes
+  if (propValue) {
+    const valueType = propValue.type
+    if (valueType === 'JSXElement' || valueType === 'JSXFragment') {
+      return { type: 'slot', name: propName, value: propValue }
+    }
+  }
+  return { type: 'passthrough' }
 }
 
 
