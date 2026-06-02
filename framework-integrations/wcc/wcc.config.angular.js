@@ -2,5 +2,7 @@ export default {
   input: 'src',
   output: '../angular/src/wcc-components',
   standalone: true,
-  integration: 'angular',
+  comments: true,
+  htmlData: true,
+  integrations: ['angular'],
 };
