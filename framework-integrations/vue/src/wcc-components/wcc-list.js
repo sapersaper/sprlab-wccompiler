@@ -139,7 +139,19 @@ class WccList extends HTMLElement {
             __slotHtml = __slotHtml.replace(/{%\s*index\s*%}/g, index);
             const __slotNode = node.querySelector('[data-slot="item"]');
             if (__slotNode) {
-              __slotNode.innerHTML = __slotHtml;
+              // Apply consumer element's attributes to the wrapper,
+              // and use consumer's inner content for the slot (avoiding nesting)
+              const __tmp = document.createElement('template');
+              __tmp.innerHTML = __slotHtml;
+              const __cel = __tmp.content.firstChild;
+              if (__cel && __cel.nodeType === 1 && __cel.tagName === node.tagName) {
+                for (const __attr of __cel.attributes) {
+                  node.setAttribute(__attr.name, __attr.value);
+                }
+                __slotNode.innerHTML = __cel.innerHTML;
+              } else {
+                __slotNode.outerHTML = __slotHtml;
+              }
             }
           }
       this.__for0_anchor.parentNode.insertBefore(node, this.__for0_anchor);
