@@ -1,5 +1,48 @@
 # TODO
 
+## 🚨 Angular adapter — alinear con runtime de scoped slots (Prioridad Máxima)
+
+Spec: `.agent/specs/angular-adapter/`
+
+**Estado:** Diseño completado, pendiente de implementación.
+
+**Problema:** El Angular adapter usa `registerSlotRenderer()` pero el runtime actual
+usa `__slotTpl_name` + `__slotMap`. Los scoped slots en each loops no funcionan.
+
+**Fix propuesto:** Reemplazar `registerSlotRenderer` por almacenamiento directo en
+`__slotTpl_name` + `queueMicrotask` para re-render.
+
+### Tasks
+- [ ] Crear `initScopedSlotNew()` en angular-adapter.js
+- [ ] Renderizar template ng-template a HTML string
+- [ ] Almacenar en `__slotTpl_name` y re-render each loops
+- [ ] Tests: Angular e2e Tests 8-10 pasando
+
+**Problema:** El Angular adapter (`WccSlotsDirective`) usa `registerSlotRenderer()` para scoped slots, pero el WCC runtime actual implementa scoped slots vía `__slotTpl` + `__slotMap` (ver BUG-0012). Hay un mismatch arquitectónico.
+
+**Archivos involucrados:**
+
+| Archivo | Rol |
+|---------|-----|
+| `framework-integrations/angular/src/wcc-components/angular-adapter.js` | WccSlotsDirective — asume `registerSlotRenderer` |
+| `lib/codegen/connected-callback.js` | `queueMicrotask` retry no cubre forBlock slots |
+| `lib/codegen/item-renderer.js` | `renderScopedSlots()` usa `__slotTpl`, no renderer |
+
+**Causa:** El adapter se construyó contra una versión anterior del runtime que usaba `registerSlotRenderer`. El runtime actual (BUG-0012) usa `__slotTpl_name` + `__slotMap`. El adapter nunca se actualizó.
+
+**Síntomas:**
+- Tests Angular 8-10 (scoped slots) muestran `{{item}}` literal o tokens vacíos
+- `connectedCallback` se ejecuta antes de que Angular proyecte hijos → `__slotMap` vacío
+- El `queueMicrotask` existe para slots top-level pero no para forBlock slots
+- El adapter intenta `registerSlotRenderer` pero el componente WCC no tiene ese método
+
+**Fix propuesto:**
+1. Alinear `angular-adapter.js` con el nuevo sistema `__slotTpl` + `__slotMap`
+2. Extender `queueMicrotask` retry en `connected-callback.js` para forBlock slots
+3. Hacer que el adapter almacene templates en `__slotTpl_name` en vez de usar renderers
+
+**E2E tests afectados:** `framework-integrations/e2e/fixtures/angular.spec.js` (Tests 8-10)
+
 ## 🚀 SSR — Static `renderToString` (Task-0021)
 
 Spec: `.agent/specs/ssr/`
