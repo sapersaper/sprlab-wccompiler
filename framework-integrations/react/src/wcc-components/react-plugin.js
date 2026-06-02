@@ -423,6 +423,8 @@ export function classifyProp(propName, propValue, options = {}) {
     if (slotProps.includes(propName)) {
       return { type: 'slot', name: propName, value: propValue }
     }
+    // Not in the explicit list → passthrough
+    return { type: 'passthrough' }
   }
 
   // Default: JSX/fragment values become slots (can't be DOM attributes),

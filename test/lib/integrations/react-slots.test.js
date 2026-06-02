@@ -38,14 +38,13 @@ describe('React Plugin Slots - classifyProp', () => {
     })
 
     it('does NOT treat "on" (no uppercase after) as event handler', () => {
-      // "on" alone is only 2 chars, doesn't match on+uppercase pattern
       const result = classifyProp('on', { type: 'StringLiteral', value: 'test' }, {})
-      expect(result).toEqual({ type: 'slot', name: 'on', value: { type: 'StringLiteral', value: 'test' } })
+      expect(result).toEqual({ type: 'passthrough' })
     })
 
     it('does NOT treat "once" as event handler (lowercase after "on")', () => {
       const result = classifyProp('once', { type: 'StringLiteral', value: 'test' }, {})
-      expect(result).toEqual({ type: 'slot', name: 'once', value: { type: 'StringLiteral', value: 'test' } })
+      expect(result).toEqual({ type: 'passthrough' })
     })
   })
 
@@ -107,9 +106,9 @@ describe('React Plugin Slots - classifyProp', () => {
     })
 
     it('does NOT classify renderStats as renderProp if value is not ArrowFunctionExpression', () => {
-      // If value is a string literal, it falls through to Rule 6/7
+      // String literal values not in slotProps → passthrough (not slots)
       const result = classifyProp('renderStats', { type: 'StringLiteral', value: 'test' }, {})
-      expect(result).toEqual({ type: 'slot', name: 'renderStats', value: { type: 'StringLiteral', value: 'test' } })
+      expect(result).toEqual({ type: 'passthrough' })
     })
 
     it('does NOT classify "render" (no uppercase after) as renderProp', () => {
@@ -175,10 +174,10 @@ describe('React Plugin Slots - classifyProp', () => {
       expect(result).toEqual({ type: 'slot', name: 'footer', value: propValue })
     })
 
-    it('classifies StringLiteral value as slot', () => {
+    it('classifies StringLiteral value as passthrough (not slot)', () => {
       const propValue = { type: 'StringLiteral', value: 'Hello' }
       const result = classifyProp('title', propValue, {})
-      expect(result).toEqual({ type: 'slot', name: 'title', value: propValue })
+      expect(result).toEqual({ type: 'passthrough' })
     })
 
     it('respects slotProps option — only listed props become slots', () => {
@@ -1325,7 +1324,7 @@ describe('React Plugin Slots - Property-Based Tests for Main Transform', () => {
           slotPropNameArb,
           childTextArb,
           (tag, existingChild, slotProp, slotValue) => {
-            const code = `import React from 'react';\nexport default function App() { return <${tag} ${slotProp}="${slotValue}"><p>${existingChild}</p></${tag}> }`
+            const code = `import React from 'react';\nexport default function App() { return <${tag} ${slotProp}={<>${slotValue}</>}><p>${existingChild}</p></${tag}> }`
             const result = callTransform(plugin, code, 'src/App.jsx')
 
             expect(result).not.toBeNull()
@@ -1412,7 +1411,7 @@ describe('React Plugin Slots - Property-Based Tests for Main Transform', () => {
           slotPropNameArb,
           eventHandlerPropArb,
           (tag, slotProp, eventProp) => {
-            const code = `import React from 'react';\nexport default function App() { return <${tag} ${slotProp}="slot content" ${eventProp}={() => {}}></${tag}> }`
+            const code = `import React from 'react';\nexport default function App() { return <${tag} ${slotProp}={<>slot content</>} ${eventProp}={() => {}}></${tag}> }`
             const result = callTransform(plugin, code, 'src/App.jsx')
 
             expect(result).not.toBeNull()
@@ -1442,7 +1441,7 @@ describe('React Plugin Slots - Property-Based Tests for Main Transform', () => {
           slotPropNameArb,
           childTextArb,
           (tag, slotProp, slotValue) => {
-            const code = `import React from 'react';\nexport default function App() { return <${tag} ${slotProp}="${slotValue}"></${tag}> }`
+            const code = `import React from 'react';\nexport default function App() { return <${tag} ${slotProp}={<>${slotValue}</>}></${tag}> }`
             const result = callTransform(plugin, code, 'src/App.jsx')
 
             expect(result).not.toBeNull()
@@ -1469,7 +1468,7 @@ describe('React Plugin Slots - Property-Based Tests for Main Transform', () => {
           childTextArb,
           (tag, slotProp, slotValue) => {
             const defaultPlugin = wccReactPlugin()
-            const code = `import React from 'react';\nexport default function App() { return <${tag} ${slotProp}="${slotValue}"></${tag}> }`
+            const code = `import React from 'react';\nexport default function App() { return <${tag} ${slotProp}={<>${slotValue}</>}></${tag}> }`
             const result = callTransform(defaultPlugin, code, 'src/App.jsx')
 
             expect(result).not.toBeNull()
@@ -1496,7 +1495,7 @@ describe('React Plugin Slots - Property-Based Tests for Main Transform', () => {
 
             // Element that matches the prefix — should be processed
             const matchingTag = `${prefix}card`
-            const matchingCode = `import React from 'react';\nexport default function App() { return <${matchingTag} ${slotProp}="${slotValue}"></${matchingTag}> }`
+            const matchingCode = `import React from 'react';\nexport default function App() { return <${matchingTag} ${slotProp}={<>${slotValue}</>}></${matchingTag}> }`
             const matchingResult = callTransform(prefixPlugin, matchingCode, 'src/App.jsx')
 
             expect(matchingResult).not.toBeNull()
@@ -1504,7 +1503,7 @@ describe('React Plugin Slots - Property-Based Tests for Main Transform', () => {
 
             // Element that does NOT match the prefix — should NOT be processed
             const nonMatchingTag = `other-element`
-            const nonMatchingCode = `import React from 'react';\nexport default function App() { return <${nonMatchingTag} ${slotProp}="${slotValue}"></${nonMatchingTag}> }`
+            const nonMatchingCode = `import React from 'react';\nexport default function App() { return <${nonMatchingTag} ${slotProp}={<>${slotValue}</>}></${nonMatchingTag}> }`
             const nonMatchingResult = callTransform(prefixPlugin, nonMatchingCode, 'src/App.jsx')
 
             expect(nonMatchingResult).toBeNull()
@@ -1654,7 +1653,7 @@ describe('React Plugin Slots - Warning Behavior (Tasks 7.2, 7.3, 7.4)', () => {
       const { result, ctx } = callTransformWithCtx(plugin, code, 'src/App.jsx')
 
       expect(ctx.warn).not.toHaveBeenCalled()
-      expect(result).not.toBeNull()
+      // String literals are now passthrough — transform may return null if no slots to process
     })
   })
 
