@@ -1,5 +1,5 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { WccSlotsDirective, WccSlotDef } from '../wcc-components_back/angular-adapter';
+import { WccSlotsDirective, WccSlotDef } from '../wcc-components/angular-adapter';
 
 @Component({
   selector: 'app-root',
