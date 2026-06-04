@@ -1,0 +1,56 @@
+<script>
+import { defineComponent, defineProps, defineEmits, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-parent',
+})
+
+const props = defineProps({ initialCount: 0, label: 'Count' })
+const emit = defineEmits(['count-changed'])
+
+const count = signal(props.initialCount)
+
+function onCountChanged(e) {
+  const newVal = e.detail
+  count.set(newVal)
+  emit('count-changed', newVal)
+}
+
+function increment() {
+  const newVal = count() + 1
+  count.set(newVal)
+  emit('count-changed', newVal)
+}
+</script>
+
+<template>
+<div class="parent">
+  <p class="parent-label">{{props.label}}: {{count()}}</p>
+  <wcc-counter :count="count()" :label="props.label" @count-changed="onCountChanged"></wcc-counter>
+  <button @click="increment" class="parent-btn">Parent +</button>
+</div>
+</template>
+
+<style>
+.parent {
+  padding: 12px;
+  border: 2px solid #6c5ce7;
+  border-radius: 8px;
+  margin: 8px 0;
+  background: #f8f7ff;
+}
+.parent-label {
+  margin: 0 0 8px 0;
+  font-weight: bold;
+  color: #6c5ce7;
+}
+.parent-btn {
+  margin-top: 8px;
+  padding: 4px 12px;
+  cursor: pointer;
+  border: 1px solid #6c5ce7;
+  border-radius: 4px;
+  background: #6c5ce7;
+  color: white;
+}
+</style>

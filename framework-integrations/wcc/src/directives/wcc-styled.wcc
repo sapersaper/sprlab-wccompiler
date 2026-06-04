@@ -1,0 +1,37 @@
+<script>
+import { defineComponent, defineProps } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-styled',
+})
+
+const props = defineProps({ variant: 'primary', color: '#333' })
+</script>
+
+<template>
+<div class="styled" :class="props.variant" :style="'color: ' + props.color">
+  <p>Styled component</p>
+  <p>Variant: {{props.variant}}, Color: {{props.color}}</p>
+</div>
+</template>
+
+<style>
+.styled {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin: 8px 0;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+.styled.primary {
+  border: 2px solid #4a90d9;
+  background: #e8f0fe;
+}
+.styled.secondary {
+  border: 2px solid #888;
+  background: #f5f5f5;
+}
+.styled p {
+  margin: 4px 0;
+}
+</style>

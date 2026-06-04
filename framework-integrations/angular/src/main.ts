@@ -4,9 +4,9 @@ import { provideZoneChangeDetection } from '@angular/core';
 import { AppComponent } from './app/app.component';
 
 // Import WCC compiled components
-import './wcc-components/wcc-card';
-import './wcc-components/wcc-counter';
-import './wcc-components/wcc-list';
+import './wcc-components/basics/wcc-card';
+import './wcc-components/basics/wcc-counter';
+import './wcc-components/basics/wcc-list';
 
 bootstrapApplication(AppComponent, {
   providers: [provideZoneChangeDetection({ eventCoalescing: true })]

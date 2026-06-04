@@ -59,6 +59,37 @@ Sin prefijo `v-`: `if`, `else-if`, `else`, `each`, `show`, `model`, `:attr`, `@e
 - `wcc build --standalone` — Runtime inline en cada componente
 - `wcc build --standalone` con `standalone: true` en defineComponent para override por componente
 
+## Principio de integración con frameworks
+
+Los componentes WCC deben **usarse con sintaxis nativa del framework anfitrión**, no con HTML nativo de custom elements.
+
+El test de integración exitosa es: un desarrollador escribe el componente WCC como si fuera un componente más del framework, usando sus construcciones idiomáticas:
+
+| Concepto | Vue | React | Angular |
+|----------|-----|-------|---------|
+| Props | `:count="ref"` | `count={state}` | `[count]="val"` |
+| Eventos | `@count-changed` | `oncountchanged` | `(count-changed)` |
+| Two-way | `v-model:count` | prop + event manual | `[(count)]` |
+| Slot default | children | children | children |
+| Slot named | `<template #name>` | `slot="name"` / JSX prop | `<ng-template slot="name">` |
+| Slot scoped | `<template #name="{ item }">` | `renderItem={(item) => <JSX/>}` | `<ng-template slot="name" let-item>` |
+
+Cada framework tiene su plugin/adapter (`wccVuePlugin`, `wccReactPlugin`, `angular-adapter.js`) que traduce la sintaxis del framework a la API de Custom Elements v1. Si un componente WCC solo puede usarse con `<wcc-counter count="10">` (HTML plano) y no con la sintaxis del framework, la integración **no está completa**.
+
+## Principio de testing en framework-integrations
+
+1. Los componentes `.wcc` se crean en `framework-integrations/wcc/src/`
+2. Se compilan con `wcc build --config wcc.config.<framework>.js` → se distribuyen a cada framework
+3. Se importan y usan en el template del framework (`.vue`, `.jsx`, `.html`) con sintaxis nativa
+4. Se verifican con tests E2E (Playwright)
+
+Un WCC está correctamente integrado cuando:
+- Las props se pasan con la sintaxis de binding del framework
+- Los eventos se escuchan con la sintaxis de eventos del framework
+- Los slots (named/scoped) funcionan con la sintaxis de slots del framework
+- El estado del framework puede fluir hacia el WCC y los eventos del WCC pueden actualizar estado del framework
+- No hay template syntax leaks (`{{`, `{%`, `${`) visibles en el DOM renderizado
+
 ## Stack técnico
 
 - Node 24 (Volta)

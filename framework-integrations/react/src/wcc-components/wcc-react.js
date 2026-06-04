@@ -4,3 +4,9 @@
 export const WccCard = Object.assign('wcc-card', { __tag: 'wcc-card', Header: 'header', Footer: 'footer' });
 export const WccCounter = Object.assign('wcc-counter', { __tag: 'wcc-counter' });
 export const WccList = Object.assign('wcc-list', { __tag: 'wcc-list' });
+export const WccParent = Object.assign('wcc-parent', { __tag: 'wcc-parent' });
+export const WccWrapper = Object.assign('wcc-wrapper', { __tag: 'wcc-wrapper' });
+export const WccConditional = Object.assign('wcc-conditional', { __tag: 'wcc-conditional' });
+export const WccInput = Object.assign('wcc-input', { __tag: 'wcc-input' });
+export const WccStyled = Object.assign('wcc-styled', { __tag: 'wcc-styled' });
+export const WccToggle = Object.assign('wcc-toggle', { __tag: 'wcc-toggle' });

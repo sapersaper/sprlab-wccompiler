@@ -16,3 +16,33 @@ export declare const WccList: string & {
 
 };
 
+export declare const WccParent: string & {
+  __tag: 'wcc-parent';
+
+};
+
+export declare const WccWrapper: string & {
+  __tag: 'wcc-wrapper';
+
+};
+
+export declare const WccConditional: string & {
+  __tag: 'wcc-conditional';
+
+};
+
+export declare const WccInput: string & {
+  __tag: 'wcc-input';
+
+};
+
+export declare const WccStyled: string & {
+  __tag: 'wcc-styled';
+
+};
+
+export declare const WccToggle: string & {
+  __tag: 'wcc-toggle';
+
+};
+

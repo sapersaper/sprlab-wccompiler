@@ -1,0 +1,35 @@
+<script>
+import { defineComponent, defineProps } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-wrapper',
+})
+
+const props = defineProps({ title: '' })
+</script>
+
+<template>
+<div class="wrapper">
+  <h3 if="props.title">{{props.title}}</h3>
+  <div class="wrapper-content">
+    <slot></slot>
+  </div>
+</div>
+</template>
+
+<style>
+.wrapper {
+  border: 2px dashed #999;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+}
+.wrapper h3 {
+  margin: 0 0 8px 0;
+  font-size: 1em;
+  color: #555;
+}
+.wrapper-content {
+  min-height: 20px;
+}
+</style>
