@@ -144,9 +144,10 @@ test.describe('React + WCC Basics', () => {
     test('renders item with React message', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
       const items = page.locator('#test11 li');
-      expect(await items.count()).toBe(3);
-      // External React state can't be serialized — item name renders, message is empty
+      // Wait for items to render (ref callback triggers re-render on next tick)
+      await expect(items).toHaveCount(3);
       await expect(items.nth(0)).toContainText('Apple');
+      await expect(items.nth(0)).toContainText('hello from React');
     });
   });
 });

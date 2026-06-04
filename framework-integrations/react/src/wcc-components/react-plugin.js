@@ -333,6 +333,203 @@ function serializeJsxExpression(expression, paramNames, warnings) {
 
 
 /**
+ * Generates a JSX ref attribute that registers a runtime slot renderer.
+ * Used when a render prop contains external variables that can't be statically serialized.
+ *
+ * The generated ref callback:
+ * 1. Calls el.registerSlotRenderer(slotName, callback)
+ * 2. The callback receives props from the WCC component
+ * 3. Invokes the original render prop function with the item value
+ * 4. Uses renderToStaticMarkup to convert the returned JSX to HTML synchronously
+ *
+ * @param {string} slotName - The derived slot name (e.g., 'item')
+ * @param {string[]} params - The render prop parameter names (e.g., ['item', 'index'])
+ * @param {object} arrowFnNode - The original ArrowFunctionExpression AST node
+ * @returns {object} A JSXAttribute AST node for the ref prop
+ */
+export function generateRuntimeRendererRef(slotName, params, arrowFnNode) {
+  // Generate: ref={__el => { if (__el?.registerSlotRenderer) { ... } }}
+  // The body calls registerSlotRenderer with a callback that:
+  // - Destructures props into the original param names
+  // - Calls the original render function
+  // - Wraps in renderToStaticMarkup
+
+  // Build the ref callback body as raw code (we'll use a template approach)
+  // Since we can't easily construct complex AST nodes for this pattern,
+  // we use a raw expression that references the original arrow function
+
+  // Strategy: keep the original arrow function as-is and wrap it:
+  // ref={__el => {
+  //   if (__el?.registerSlotRenderer) {
+  //     __el.__wccSlotCleanup_slotName?.();
+  //     const __renderFn = originalArrowFunction;
+  //     __el.__wccSlotCleanup_slotName = __el.registerSlotRenderer('slotName', (__p) => {
+  //       return __wccRenderToStaticMarkup(__renderFn(__p.item ?? __p.$implicit, __p.index));
+  //     });
+  //   }
+  // }}
+
+  // Build param access expressions: __p.paramName for each param
+  // First param maps to both $implicit and the param name
+  const paramAccess = params.map((p, i) => {
+    if (i === 0) return `__p.${p} ?? __p.$implicit`
+    return `__p.${p}`
+  }).join(', ')
+
+  // The ref body as a string (will be parsed by Babel)
+  // We construct the AST manually for the ref attribute
+  const refExpression = {
+    type: 'ArrowFunctionExpression',
+    params: [{ type: 'Identifier', name: '__el' }],
+    body: {
+      type: 'BlockStatement',
+      body: [{
+        type: 'IfStatement',
+        test: {
+          type: 'OptionalMemberExpression',
+          object: { type: 'Identifier', name: '__el' },
+          property: { type: 'Identifier', name: 'registerSlotRenderer' },
+          computed: false,
+          optional: true
+        },
+        consequent: {
+          type: 'BlockStatement',
+          body: [
+            // __el.__wccSlotCleanup_slotName?.();
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'OptionalCallExpression',
+                callee: {
+                  type: 'MemberExpression',
+                  object: { type: 'Identifier', name: '__el' },
+                  property: { type: 'Identifier', name: `__wccSlotCleanup_${slotName}` },
+                  computed: false
+                },
+                arguments: [],
+                optional: true
+              }
+            },
+            // const __renderFn = <originalArrowFunction>;
+            {
+              type: 'VariableDeclaration',
+              kind: 'const',
+              declarations: [{
+                type: 'VariableDeclarator',
+                id: { type: 'Identifier', name: '__renderFn' },
+                init: arrowFnNode
+              }]
+            },
+            // __el.__wccSlotCleanup_slotName = __el.registerSlotRenderer('slotName', (__p) => {
+            //   return __wccRenderToStaticMarkup(__renderFn(__p.item, __p.index));
+            // });
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'AssignmentExpression',
+                operator: '=',
+                left: {
+                  type: 'MemberExpression',
+                  object: { type: 'Identifier', name: '__el' },
+                  property: { type: 'Identifier', name: `__wccSlotCleanup_${slotName}` },
+                  computed: false
+                },
+                right: {
+                  type: 'CallExpression',
+                  callee: {
+                    type: 'MemberExpression',
+                    object: { type: 'Identifier', name: '__el' },
+                    property: { type: 'Identifier', name: 'registerSlotRenderer' },
+                    computed: false
+                  },
+                  arguments: [
+                    { type: 'StringLiteral', value: slotName },
+                    {
+                      type: 'ArrowFunctionExpression',
+                      params: [{ type: 'Identifier', name: '__p' }],
+                      body: {
+                        type: 'BlockStatement',
+                        body: [{
+                          type: 'ReturnStatement',
+                          argument: {
+                            type: 'CallExpression',
+                            callee: { type: 'Identifier', name: '__wccRenderToStaticMarkup' },
+                            arguments: [{
+                              type: 'CallExpression',
+                              callee: { type: 'Identifier', name: '__renderFn' },
+                              arguments: params.map((p, i) => {
+                                if (i === 0) {
+                                  // First param: __p.paramName ?? __p.$implicit
+                                  return {
+                                    type: 'LogicalExpression',
+                                    operator: '??',
+                                    left: {
+                                      type: 'MemberExpression',
+                                      object: { type: 'Identifier', name: '__p' },
+                                      property: { type: 'Identifier', name: p },
+                                      computed: false
+                                    },
+                                    right: {
+                                      type: 'MemberExpression',
+                                      object: { type: 'Identifier', name: '__p' },
+                                      property: { type: 'Identifier', name: '$implicit' },
+                                      computed: false
+                                    }
+                                  }
+                                }
+                                return {
+                                  type: 'MemberExpression',
+                                  object: { type: 'Identifier', name: '__p' },
+                                  property: { type: 'Identifier', name: p },
+                                  computed: false
+                                }
+                              })
+                            }]
+                          }
+                        }]
+                      },
+                      async: false
+                    }
+                  ]
+                }
+              }
+            },
+            // Trigger re-render after registering renderer (items already rendered without it)
+            // __el.__invalidate?.('*');
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'OptionalCallExpression',
+                callee: {
+                  type: 'MemberExpression',
+                  object: { type: 'Identifier', name: '__el' },
+                  property: { type: 'Identifier', name: '__invalidate' },
+                  computed: false
+                },
+                arguments: [{ type: 'StringLiteral', value: '*' }],
+                optional: true
+              }
+            }
+          ]
+        },
+        alternate: null
+      }]
+    },
+    async: false
+  }
+
+  return {
+    type: 'JSXAttribute',
+    name: { type: 'JSXIdentifier', name: 'ref' },
+    value: {
+      type: 'JSXExpressionContainer',
+      expression: refExpression
+    }
+  }
+}
+
+
+/**
  * Reserved prop names that should always pass through without slot transformation.
  * @type {Set<string>}
  */
@@ -642,6 +839,7 @@ export function wccReactSlotsPlugin(options = {}) {
       }
 
       let transformed = false
+      let needsServerImport = false
       const pluginCtx = this
 
       traverse(ast, {
@@ -800,34 +998,55 @@ export function wccReactSlotsPlugin(options = {}) {
             } else if (classification.type === 'renderProp') {
               const renderWarnings = []
               serializeJsxToHtml(classification.body, classification.params, renderWarnings)
+
               if (renderWarnings.length > 0) {
-                pluginCtx.warn(`[wcc-react] ${id} — ${propName}: ${renderWarnings[0]}`)
-                // Still generate the slot — external vars become empty but at least items render
+                // Has external variables — use runtime renderer approach
+                // Generate a ref callback that registers the render prop as a slot renderer
+                // using renderToStaticMarkup for synchronous HTML output
+                const params = classification.params
+                const slotName = classification.slotName
+                
+                // Generate the ref attribute that wires up the renderer at runtime
+                // The original arrow function body is preserved as-is, but params are
+                // remapped from __props.paramName
+                const refAttr = generateRuntimeRendererRef(slotName, params, propValue)
+                remainingAttributes.push(refAttr)
+                needsServerImport = true
+                transformed = true
+              } else {
+                // Pure static — use the existing token-based approach
+                slotChildren.push(generateScopedSlotElement(
+                  classification.slotName,
+                  classification.params,
+                  classification.body
+                ))
+                transformed = true
               }
-              slotChildren.push(generateScopedSlotElement(
-                classification.slotName,
-                classification.params,
-                classification.body
-              ))
-              transformed = true
             } else {
               // passthrough — keep the attribute
               remainingAttributes.push(attr)
             }
           }
 
-          if (slotChildren.length > 0) {
+          if (slotChildren.length > 0 || transformed) {
             // Remove transformed slot props from the element's attributes
             openingElement.attributes = remainingAttributes
 
             // If element was self-closing, convert to open/close pair
-            if (openingElement.selfClosing) {
+            if (openingElement.selfClosing && slotChildren.length > 0) {
               openingElement.selfClosing = false
               path.node.closingElement = { type: 'JSXClosingElement', name: { ...nameNode } }
             }
 
             // Append generated slot elements after existing children
-            path.node.children = [...path.node.children, ...slotChildren]
+            if (slotChildren.length > 0) {
+              if (openingElement.selfClosing) {
+                openingElement.selfClosing = false
+                path.node.closingElement = { type: 'JSXClosingElement', name: { ...nameNode } }
+                path.node.children = []
+              }
+              path.node.children = [...(path.node.children || []), ...slotChildren]
+            }
           }
         }
       })
@@ -837,7 +1056,14 @@ export function wccReactSlotsPlugin(options = {}) {
       }
 
       const result = generate(ast, { sourceMaps: true, sourceFileName: id }, code)
-      return { code: result.code, map: result.map }
+      let outputCode = result.code
+      
+      // Auto-inject renderToStaticMarkup import if needed for runtime scoped slots
+      if (needsServerImport && !outputCode.includes('renderToStaticMarkup')) {
+        outputCode = `import { renderToStaticMarkup as __wccRenderToStaticMarkup } from 'react-dom/server';\n` + outputCode
+      }
+      
+      return { code: outputCode, map: result.map }
     }
   }
 }

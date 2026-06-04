@@ -157,6 +157,30 @@ test.describe('test-kitchen-sink', () => {
     await toggleBtn.click();
     await expect(activeStat).toContainText('1');
   });
+
+  test('child custom-event updates parent message', async ({ page }) => {
+    await page.goto(url);
+    // Initial parent message
+    const messageBox = page.locator('test-kitchen-sink .message-box p');
+    await expect(messageBox).toContainText('Parent message');
+
+    // Dispatch custom-event programmatically on the test-model-child element
+    // (since the child component may not be registered in this test fixture)
+    await page.evaluate(() => {
+      const child = document.querySelector('test-kitchen-sink test-model-child');
+      if (child) {
+        child.dispatchEvent(new CustomEvent('custom-event', {
+          detail: 'Hello from child test',
+          bubbles: true,
+          composed: true
+        }));
+      }
+    });
+
+    // Parent message should update with the child event detail
+    await expect(messageBox).toContainText('Child event received:');
+    await expect(messageBox).toContainText('Hello from child test');
+  });
 });
 
 // ── test-large-dataset ────────────────────────────────────────────────
