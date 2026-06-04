@@ -1209,7 +1209,7 @@ describe('React Plugin Slots - Property-Based Tests for Slot Generation and Name
 })
 
 
-const { wccReactPlugin } = await import('../../../integrations/react.js')
+const { wccReactSlotsPlugin } = await import('../../../integrations/react.js')
 
 describe('React Plugin Slots - Property-Based Tests for Main Transform', () => {
   // Helper: create a mock context with this.warn()
@@ -1277,7 +1277,7 @@ describe('React Plugin Slots - Property-Based Tests for Main Transform', () => {
   // Prefix strings for prefix filtering
   const prefixArb = fc.stringMatching(/^[a-z]{2,4}-$/)
 
-  const plugin = wccReactPlugin()
+  const plugin = wccReactSlotsPlugin()
 
   describe('Feature: react-plugin-slots, Property 1: File extension filtering', () => {
     it('for any file ID that does not end with .jsx or .tsx, the transform returns null', () => {
@@ -1467,7 +1467,7 @@ describe('React Plugin Slots - Property-Based Tests for Main Transform', () => {
           slotPropNameArb,
           childTextArb,
           (tag, slotProp, slotValue) => {
-            const defaultPlugin = wccReactPlugin()
+            const defaultPlugin = wccReactSlotsPlugin()
             const code = `import React from 'react';\nexport default function App() { return <${tag} ${slotProp}={<>${slotValue}</>}></${tag}> }`
             const result = callTransform(defaultPlugin, code, 'src/App.jsx')
 
@@ -1491,7 +1491,7 @@ describe('React Plugin Slots - Property-Based Tests for Main Transform', () => {
           slotPropNameArb,
           childTextArb,
           (prefix, slotProp, slotValue) => {
-            const prefixPlugin = wccReactPlugin({ prefix })
+            const prefixPlugin = wccReactSlotsPlugin({ prefix })
 
             // Element that matches the prefix — should be processed
             const matchingTag = `${prefix}card`
@@ -1530,7 +1530,7 @@ describe('React Plugin Slots - Warning Behavior (Tasks 7.2, 7.3, 7.4)', () => {
     return { result, ctx }
   }
 
-  const plugin = wccReactPlugin()
+  const plugin = wccReactSlotsPlugin()
 
   describe('Task 7.2: Warn on invalid render prop values (non-arrow-function)', () => {
     it('emits a warning when render prop value is an Identifier', () => {
@@ -1632,12 +1632,14 @@ describe('React Plugin Slots - Warning Behavior (Tasks 7.2, 7.3, 7.4)', () => {
       expect(ctx.warn.mock.calls[0][0]).toContain('header')
     })
 
-    it('leaves the prop unchanged when named slot JSX has dynamic expressions', () => {
+    it('generates the slot with static content when named slot JSX has dynamic expressions', () => {
       const code = `import React from 'react';\nexport default function App() { return <wcc-card header={<span>{dynamicVar}</span>}></wcc-card> }`
-      const { result } = callTransformWithCtx(plugin, code, 'src/App.jsx')
+      const { result, ctx } = callTransformWithCtx(plugin, code, 'src/App.jsx')
 
-      // No transformation should happen since the slot prop was skipped
-      expect(result).toBeNull()
+      // BUG-0018: slot is still generated with static content, dynamic parts are omitted
+      expect(result).not.toBeNull()
+      // Warning should be emitted
+      expect(ctx.warn).toHaveBeenCalled()
     })
 
     it('does NOT warn when named slot JSX contains only static content', () => {
@@ -1720,7 +1722,7 @@ describe('React Plugin Slots - Integration: Hook Coexistence (Task 9.1)', () => 
     return { result, ctx }
   }
 
-  const plugin = wccReactPlugin()
+  const plugin = wccReactSlotsPlugin()
 
   describe('useWccEvent calls are not modified in transformed files', () => {
     it('preserves useWccEvent(ref, eventName, handler) call alongside slot props', () => {
@@ -1908,7 +1910,7 @@ describe('Feature: react-plugin-slots, Property 21: Hook calls not modified', ()
     return { result, ctx }
   }
 
-  const plugin = wccReactPlugin()
+  const plugin = wccReactSlotsPlugin()
 
   // Generator: event names for useWccEvent
   const eventNameArb = fc.constantFrom(
@@ -2017,7 +2019,7 @@ describe('Feature: react-plugin-slots, Property 25: Semantic equivalence of rend
     return { result, ctx }
   }
 
-  const plugin = wccReactPlugin()
+  const plugin = wccReactSlotsPlugin()
 
   // Generator: parameter names (valid JS identifiers, unique)
   const paramNameArb = fc.stringMatching(/^[a-z][a-zA-Z]{1,7}$/)

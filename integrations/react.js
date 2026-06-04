@@ -618,7 +618,7 @@ export function generateScopedSlotElement(slotName, params, body) {
  * @param {string[]} [options.slotProps] - Explicit list of prop names to treat as named slots (overrides default heuristic).
  * @returns {import('vite').Plugin}
  */
-export function wccReactPlugin(options = {}) {
+export function wccReactSlotsPlugin(options = {}) {
   const { prefix, exclude = [], slotProps } = options
 
   return {
@@ -780,14 +780,14 @@ export function wccReactPlugin(options = {}) {
             const classification = classifyProp(propName, propValue, { exclude, slotProps })
 
             if (classification.type === 'slot') {
-              // Task 7.4: Warn on dynamic expressions in named slot props — leave prop unchanged
+              // BUG-0018: Still generate slot even if some expressions can't be serialized.
+              // The serializer skips unsupported expressions (e.g., ArrowFunctionExpression
+              // in onClick) and returns the static HTML content.
               if (classification.value.type === 'JSXElement' || classification.value.type === 'JSXFragment') {
                 const slotWarnings = []
                 serializeJsxToHtml(classification.value, [], slotWarnings)
                 if (slotWarnings.length > 0) {
                   pluginCtx.warn(`[wcc-react] ${id} — ${propName}: ${slotWarnings[0]}`)
-                  remainingAttributes.push(attr)
-                  continue
                 }
               }
               // Generate slot child element
@@ -842,21 +842,28 @@ export function wccReactPlugin(options = {}) {
   }
 }
 
+function wccReactEvents() {
+  return {    name: 'vite-plugin-wcc-react-events',
+    enforce: 'pre',
+    transform(code, id) {
+      if (!/\.(jsx|tsx)$/.test(id)) return null
 
-/**
- * @deprecated Use the CLI-generated stubs instead (dist/wcc-react.js).
- * The `wcc build` command now auto-generates importable stubs with types.
- * This virtual module plugin is kept for backward compatibility but will be removed.
- *
- * Migration:
- *   Before: import { WccCard } from '@wcc/react'  (virtual module)
- *   After:  import { WccCard } from './dist/wcc-react'  (real file, tree-shakeable)
- */
-export function wccReactComponents(options = {}) {
-  return {
-    name: 'vite-plugin-wcc-react-components-deprecated',
-    buildStart() {
-      this.warn('[wcc] wccReactComponents() is deprecated. Use the CLI-generated stubs from dist/wcc-react.js instead.')
+      let result = code
+      // Match onXxx={...} on hyphenated tags
+      result = result.replace(
+        /(<[\w]+-[\w-]*(?:\s[^>]*?)?)\s+on([A-Z]\w+)=\{([^}]+)\}([^>]*?>)/g,
+        (match, prefix, eventProp, handler, suffix) => {
+          const eventName = eventProp.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '')
+          return `${prefix} ref={el => { if (el) el.addEventListener('${eventName}', e => ${handler}(e.detail)) }}${suffix}`
+        }
+      )
+
+      if (result !== code) return result
+      return null
     }
   }
+}
+
+export function wccReactPlugin(options = {}) {
+  return [wccReactEvents(), wccReactSlotsPlugin(options)]
 }
