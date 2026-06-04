@@ -100,7 +100,9 @@ class WccConditional extends HTMLElement {
   __invalidate(key) {
     switch(key) {
       case 'visible':
-        this.__renderIf_0();
+        if (this.__connected) {
+          this.__renderIf_0();
+        }
         break;
       case '*':
         this.__renderIf_0();
@@ -114,7 +116,7 @@ class WccConditional extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
-    if (name === 'visible') this._state.visible = newVal != null;
+    if (name === 'visible') this._state.visible = newVal !== null && newVal !== 'false';
   }
 
   get visible() { return this._state.visible; }

@@ -1,0 +1,32 @@
+<script>
+import { defineComponent, defineProps, signal } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-prop-signal-init',
+})
+
+const props = defineProps({ initialCount: 5 })
+const count = signal(props.initialCount)
+
+function increment() {
+  count.set(count() + 1)
+}
+</script>
+
+<template>
+<div class="signal-init-test">
+  <h3>Signal from Prop Test</h3>
+  <p>Count: {{count()}}</p>
+  <p>initialCount prop: {{props.initialCount}}</p>
+  <button @click="increment">+</button>
+</div>
+</template>
+
+<style>
+.signal-init-test {
+  padding: 12px;
+  border: 2px solid #ff6d00;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+</style>

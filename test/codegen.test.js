@@ -738,3 +738,163 @@ describe('BUG-0008: transformExpr handles constant names correctly', () => {
     expect(result).toBe('this._const_MAX_SIZE + 1');
   });
 });
+
+describe('BUG-0017: Boolean prop coercion handles "false" string', () => {
+  it('generates newVal !== "false" for boolean props in attributeChangedCallback', () => {
+    const ir = {
+      tagName: 'test-boolean',
+      className: 'TestBoolean',
+      template: '<p if="props.visible">VISIBLE</p><p else>HIDDEN</p>',
+      style: '',
+      signals: [],
+      computeds: [],
+      effects: [],
+      methods: [],
+      propDefs: [{ name: 'visible', default: 'true', attrName: 'visible' }],
+      propsObjectName: 'props',
+      modelDefs: [],
+      bindings: [],
+      events: [],
+      processedTemplate: '<p></p>',
+    };
+
+    const output = generateComponent(ir);
+    expect(output).toContain("newVal !== 'false'");
+    expect(output).not.toContain('newVal != null');
+  });
+
+  it('generates newVal !== "false" for boolean model props', () => {
+    const ir = {
+      tagName: 'test-boolean-model',
+      className: 'TestBooleanModel',
+      template: '<input />',
+      style: '',
+      signals: [],
+      computeds: [],
+      effects: [],
+      methods: [],
+      propDefs: [],
+      modelDefs: [{ name: 'active', default: 'false', varName: 'active' }],
+      modelVarMap: new Map([['active', 'active']]),
+      bindings: [],
+      events: [],
+      processedTemplate: '<input />',
+    };
+
+    const output = generateComponent(ir);
+    expect(output).toContain("newVal !== 'false'");
+  });
+
+  it('preserves Number coercion for numeric props', () => {
+    const ir = {
+      tagName: 'test-number',
+      className: 'TestNumber',
+      template: '<p>{{props.count}}</p>',
+      style: '',
+      signals: [],
+      computeds: [],
+      effects: [],
+      methods: [],
+      propDefs: [{ name: 'count', default: '0', attrName: 'count' }],
+      propsObjectName: 'props',
+      modelDefs: [],
+      bindings: [
+        { varName: '__text_props_count_0', name: 'props.count', type: 'text', path: ['childNodes[0]'] },
+      ],
+      events: [],
+      processedTemplate: '<p></p>',
+    };
+
+    const output = generateComponent(ir);
+    expect(output).toContain('Number(newVal)');
+  });
+});
+
+describe('BUG-0018: renderIf guarded by __connected in __invalidate', () => {
+  it('generates renderIf inside if (this.__connected) guard', () => {
+    const ir = {
+      tagName: 'test-condition',
+      className: 'TestCondition',
+      template: '<p if="props.visible">VISIBLE</p><p else>HIDDEN</p>',
+      style: '',
+      signals: [],
+      computeds: [],
+      effects: [],
+      methods: [],
+      propDefs: [{ name: 'visible', default: 'true', attrName: 'visible' }],
+      propsObjectName: 'props',
+      modelDefs: [],
+      ifBlocks: [{
+        varName: '__if0',
+        branches: [
+          { type: 'if', expression: 'props.visible', events: [], forBlocks: [], refs: [], dynamicComponents: [], modelBindings: [], textNodes: [], showNodes: [], attrBindings: [], classBindings: [], styleBindings: [], childProps: [], watchers: [], computeds: [] },
+          { type: 'else', expression: null, events: [], forBlocks: [], refs: [], dynamicComponents: [], modelBindings: [], textNodes: [], showNodes: [], attrBindings: [], classBindings: [], styleBindings: [], childProps: [], watchers: [], computeds: [] },
+        ],
+      }],
+      bindings: [],
+      events: [],
+      processedTemplate: '<p></p>',
+    };
+
+    const output = generateComponent(ir);
+    // renderIf call should be inside a __connected guard
+    const invalidateSection = output.split('__invalidate(key)')[1] || '';
+    expect(invalidateSection).toContain('if (this.__connected)');
+    // renderIf should NOT be in a "Non-DOM ops" block
+    const nonDomSection = output.split('Non-DOM ops')[1] || '';
+    expect(nonDomSection).not.toContain('renderIf');
+  });
+});
+
+describe('BUG-0019: props.* references in signal init resolve to defaults', () => {
+  it('resolves props.initialCount to default value 0 in constructor state', () => {
+    const ir = {
+      tagName: 'test-signal-init',
+      className: 'TestSignalInit',
+      template: '<p>{{count()}}</p>',
+      style: '',
+      signals: [{ name: 'count', value: 'props.initialCount' }],
+      computeds: [],
+      effects: [],
+      methods: [],
+      propDefs: [{ name: 'initialCount', default: '0', attrName: 'initial-count' }],
+      propsObjectName: 'props',
+      modelDefs: [],
+      bindings: [
+        { varName: '__text_count_0', name: 'count', type: 'text', path: ['childNodes[0]'] },
+      ],
+      events: [],
+      processedTemplate: '<p></p>',
+    };
+
+    const output = generateComponent(ir);
+    // The constructor should have count: 0 (resolved from props.initialCount default)
+    expect(output).toContain('count: 0');
+    // Should NOT contain raw props reference
+    expect(output).not.toContain('count: props');
+  });
+
+  it('resolves props.initialValue to string default value', () => {
+    const ir = {
+      tagName: 'test-signal-str',
+      className: 'TestSignalStr',
+      template: '<p>{{val()}}</p>',
+      style: '',
+      signals: [{ name: 'val', value: 'props.initialValue' }],
+      computeds: [],
+      effects: [],
+      methods: [],
+      propDefs: [{ name: 'initialValue', default: "'hello'", attrName: 'initial-value' }],
+      propsObjectName: 'props',
+      modelDefs: [],
+      bindings: [
+        { varName: '__text_val_0', name: 'val', type: 'text', path: ['childNodes[0]'] },
+      ],
+      events: [],
+      processedTemplate: '<p></p>',
+    };
+
+    const output = generateComponent(ir);
+    expect(output).toContain("val: 'hello'");
+  });
+});

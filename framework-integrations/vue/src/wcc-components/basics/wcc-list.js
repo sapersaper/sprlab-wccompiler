@@ -170,7 +170,9 @@ class WccList extends HTMLElement {
   __invalidate(key) {
     switch(key) {
       case 'items':
-        this.__renderEach_0();
+        if (this.__connected) {
+          this.__renderEach_0();
+        }
         break;
       case '*':
         this.__renderEach_0();

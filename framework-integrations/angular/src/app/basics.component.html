@@ -13,8 +13,10 @@
 <button (click)="modelCount = modelCount + 1">Angular increment (two-way)</button>
 
 <h2>Test 4: Multiple two-way bindings</h2>
-<wcc-counter id="test4" [(count)]="multiCount" label="Multi-test"></wcc-counter>
-<p>Angular multiCount: {{ multiCount }}</p>
+<wcc-dualmodel id="test4" [(first)]="multiFirst" [(second)]="multiSecond"></wcc-dualmodel>
+<p>Angular multiFirst: {{ multiFirst }}, multiSecond: {{ multiSecond }}</p>
+<button (click)="multiFirst = multiFirst === 'foo' ? 'bar' : 'foo'">Toggle first</button>
+<button (click)="multiSecond = multiSecond === 'bar' ? 'baz' : 'bar'">Toggle second</button>
 
 <h2>Test 5: Default slot (children)</h2>
 <wcc-card id="test5">

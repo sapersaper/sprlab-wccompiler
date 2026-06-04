@@ -46,7 +46,7 @@ class WccParent extends HTMLElement {
     super();
     const self = this;
     this._state = new Proxy(
-      { initialCount: 0, label: 'Count', count: props.initialCount },
+      { initialCount: 0, label: 'Count', count: 0 },
       {
         set(target, key, value) {
           if (target[key] === value) return true;

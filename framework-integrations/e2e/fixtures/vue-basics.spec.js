@@ -20,6 +20,7 @@ test.describe('Vue + WCC Basics', () => {
     await page.waitForSelector('wcc-counter');
     await page.waitForSelector('wcc-card');
     await page.waitForSelector('wcc-list');
+    await page.waitForSelector('wcc-dualmodel');
 
     expect(errors).toEqual([]);
   });
@@ -98,18 +99,24 @@ test.describe('Vue + WCC Basics', () => {
   // ── Test 4b: Multiple v-model on same element ──
 
   test.describe('Test 4b: Multiple v-model on same element', () => {
-    test('both v-model bound props render correctly', async ({ page }) => {
+    test('both models render initial values', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
-      await expect(page.locator('#test4b')).toContainText('hello');
-      await expect(page.locator('#test4b')).toBeAttached();
+      await expect(page.locator('#test4b .first')).toContainText('foo');
+      await expect(page.locator('#test4b .second')).toContainText('bar');
     });
 
-    test('incrementing multiCount updates Vue state', async ({ page }) => {
+    test('toggling first model updates display and Vue state', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
-      const btn = page.locator('#test4b button');
-      await btn.click();
+      await page.locator('button:has-text("Toggle first")').click();
+      await expect(page.locator('#test4b .first')).toContainText('bar');
+      await expect(page.locator('p:has-text("multiFirst:")')).toContainText('bar');
+    });
 
-      await expect(page.locator('text=Vue multiCount:').first()).toContainText('1');
+    test('toggling second model updates display and Vue state', async ({ page }) => {
+      await page.goto(BASE + '/#/basics');
+      await page.locator('button:has-text("Toggle second")').click();
+      await expect(page.locator('#test4b .second')).toContainText('baz');
+      await expect(page.locator('p:has-text("multiSecond:")')).toContainText('baz');
     });
   });
 

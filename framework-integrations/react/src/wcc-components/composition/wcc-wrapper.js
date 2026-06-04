@@ -172,9 +172,8 @@ class WccWrapper extends HTMLElement {
   __invalidate(key) {
     switch(key) {
       case 'title':
-        // Non-DOM ops (computeds, renderIf, watchers) always run
-        this.__renderIf_0();
         if (this.__connected) {
+          this.__renderIf_0();
           if (this.__if0_current) {
             this.__if0_current.textContent = this._state.title ?? '';
           }

@@ -59,12 +59,27 @@ test.describe('Angular + WCC Basics', () => {
     });
   });
 
-  // ── Test 4: Multiple bindings ──
+  // ── Test 4: Multiple two-way bindings ──
 
-  test.describe('Test 4: Multiple bindings', () => {
-    test('renders with multiple bindings on same element', async ({ page }) => {
+  test.describe('Test 4: Multiple two-way bindings', () => {
+    test('both banana-box bindings render initial values', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
-      await expect(page.locator('#test4')).toContainText('Multi-test');
+      await expect(page.locator('#test4 .first')).toContainText('foo');
+      await expect(page.locator('#test4 .second')).toContainText('bar');
+    });
+
+    test('toggling first model updates display and Angular state', async ({ page }) => {
+      await page.goto(BASE + '/#/basics');
+      await page.locator('button:has-text("Toggle first")').click();
+      await expect(page.locator('#test4 .first')).toContainText('bar');
+      await expect(page.locator('p:has-text("multiFirst:")')).toContainText('bar');
+    });
+
+    test('toggling second model updates display and Angular state', async ({ page }) => {
+      await page.goto(BASE + '/#/basics');
+      await page.locator('button:has-text("Toggle second")').click();
+      await expect(page.locator('#test4 .second')).toContainText('baz');
+      await expect(page.locator('p:has-text("multiSecond:")')).toContainText('baz');
     });
   });
 

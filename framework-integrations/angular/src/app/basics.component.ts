@@ -13,6 +13,8 @@ export class BasicsComponent {
   modelCount = 0;
   multiCount = 0;
   multiLabel = 'hello';
+  multiFirst = 'foo';
+  multiSecond = 'bar';
   angularMessage = 'hello from Angular!';
 
   onCountChanged(event: Event) {

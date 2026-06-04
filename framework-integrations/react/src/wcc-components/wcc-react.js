@@ -3,6 +3,7 @@
 
 export const WccCard = Object.assign('wcc-card', { __tag: 'wcc-card', Header: 'header', Footer: 'footer' });
 export const WccCounter = Object.assign('wcc-counter', { __tag: 'wcc-counter' });
+export const WccDualmodel = Object.assign('wcc-dualmodel', { __tag: 'wcc-dualmodel' });
 export const WccList = Object.assign('wcc-list', { __tag: 'wcc-list' });
 export const WccParent = Object.assign('wcc-parent', { __tag: 'wcc-parent' });
 export const WccWrapper = Object.assign('wcc-wrapper', { __tag: 'wcc-wrapper' });

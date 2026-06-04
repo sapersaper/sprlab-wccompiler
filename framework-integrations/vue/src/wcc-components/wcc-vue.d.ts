@@ -20,6 +20,13 @@ export interface WccCounterModels {
     'count': any;
 }
 
+export declare const WccDualmodel: 'wcc-dualmodel';
+/** Component: wcc-dualmodel */
+export interface WccDualmodelModels {
+    'first': any;
+    'second': any;
+}
+
 export declare const WccList: 'wcc-list';
 /** Component: wcc-list */
 
@@ -74,6 +81,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     'wcc-card': new () => { $props: {} };
     'wcc-counter': new () => { $props: { label?: string; count?: any }; $emit: { (e: 'count-changed', value: any): void; (e: 'count-changed', value: any): void } };
+    'wcc-dualmodel': new () => { $props: { first?: any; second?: any }; $emit: { (e: 'first-changed', value: any): void; (e: 'second-changed', value: any): void } };
     'wcc-list': new () => { $props: {} };
     'wcc-parent': new () => { $props: { initialCount?: number; label?: string }; $emit: { (e: 'count-changed', value: any): void } };
     'wcc-wrapper': new () => { $props: { title?: string } };

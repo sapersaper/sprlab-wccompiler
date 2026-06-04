@@ -31,8 +31,10 @@
     <p>Vue trimCount: {{ trimCount }} (type: {{ typeof trimCount }})</p>
 
     <h2>Test 4b: Multiple v-model on same element</h2>
-    <wcc-counter id="test4b" v-model:count="multiCount" v-model:label="multiLabel"></wcc-counter>
-    <p>Vue multiCount: {{ multiCount }}, multiLabel: {{ multiLabel }}</p>
+    <wcc-dualmodel id="test4b" v-model:first="multiFirst" v-model:second="multiSecond"></wcc-dualmodel>
+    <p>Vue multiFirst: {{ multiFirst }}, multiSecond: {{ multiSecond }}</p>
+    <button @click="multiFirst = multiFirst === 'foo' ? 'bar' : 'foo'">Toggle first</button>
+    <button @click="multiSecond = multiSecond === 'bar' ? 'baz' : 'bar'">Toggle second</button>
 
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <!-- DEFAULT SLOT                                                       -->
@@ -104,5 +106,7 @@ const modelCount = ref(0)
 const trimCount = ref(0)
 const multiCount = ref(0)
 const multiLabel = ref('hello')
+const multiFirst = ref('foo')
+const multiSecond = ref('bar')
 const vueMessage = ref('hello from Vue!')
 </script>

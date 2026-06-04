@@ -1,0 +1,29 @@
+<script>
+import { defineComponent, defineModel } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-dualmodel',
+})
+
+const first = defineModel({ name: 'first', default: '' })
+const second = defineModel({ name: 'second', default: '' })
+</script>
+
+<template>
+<div class="dualmodel">
+  <span class="first">{{first()}}</span>
+  <span class="sep">|</span>
+  <span class="second">{{second()}}</span>
+</div>
+</template>
+
+<style>
+.dualmodel {
+  display: inline-flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: monospace;
+}
+</style>

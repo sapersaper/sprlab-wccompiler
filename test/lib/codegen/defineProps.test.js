@@ -120,7 +120,7 @@ describe('generateComponent — attributeChangedCallback', () => {
     });
 
     const output = generateComponent(ir);
-    expect(output).toContain("if (name === 'disabled') this._state.disabled = newVal != null");
+    expect(output).toContain("if (name === 'disabled') this._state.disabled = newVal !== null && newVal !== 'false'");
   });
 
   it('generates string passthrough for string defaults', () => {

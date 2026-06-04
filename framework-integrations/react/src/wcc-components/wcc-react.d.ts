@@ -11,6 +11,11 @@ export declare const WccCounter: string & {
 
 };
 
+export declare const WccDualmodel: string & {
+  __tag: 'wcc-dualmodel';
+
+};
+
 export declare const WccList: string & {
   __tag: 'wcc-list';
 

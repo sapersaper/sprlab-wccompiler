@@ -9,6 +9,7 @@ import { routes } from './app/app.routes';
 import './wcc-components/basics/wcc-card';
 import './wcc-components/basics/wcc-counter';
 import './wcc-components/basics/wcc-list';
+import './wcc-components/basics/wcc-dualmodel';
 import './wcc-components/directives/wcc-conditional';
 import './wcc-components/directives/wcc-toggle';
 import './wcc-components/directives/wcc-input';

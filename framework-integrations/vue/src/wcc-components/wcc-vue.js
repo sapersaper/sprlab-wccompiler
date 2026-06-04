@@ -3,6 +3,7 @@
 
 export const WccCard = 'wcc-card';
 export const WccCounter = 'wcc-counter';
+export const WccDualmodel = 'wcc-dualmodel';
 export const WccList = 'wcc-list';
 export const WccParent = 'wcc-parent';
 export const WccWrapper = 'wcc-wrapper';
