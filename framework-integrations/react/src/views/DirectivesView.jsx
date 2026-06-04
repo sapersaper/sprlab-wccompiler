@@ -26,7 +26,7 @@ function ConditionalTest() {
   const [visible, setVisible] = useState(true)
   return (
     <div>
-      <wcc-conditional id="test12" visible={visible}></wcc-conditional>
+      <wcc-conditional id="test12" visible={visible} />
       <p>React visible: {String(visible)}</p>
       <button onClick={() => setVisible(v => !v)}>Toggle conditional</button>
     </div>
@@ -37,7 +37,7 @@ function ShowTest() {
   const [show, setShow] = useState(true)
   return (
     <div>
-      <wcc-toggle id="test13" show={show}></wcc-toggle>
+      <wcc-toggle id="test13" show={show} />
       <p>React show: {String(show)}</p>
       <button onClick={() => setShow(v => !v)}>Toggle show</button>
     </div>
@@ -51,8 +51,8 @@ function InputTest() {
       <wcc-input id="test14"
         placeholder="Type something..."
         value={value}
-        onValueChanged={(e) => setValue(e.detail)}
-      ></wcc-input>
+        onValueChanged={setValue}
+      />
       <p>React value: {value}</p>
     </div>
   )
@@ -63,7 +63,7 @@ function StyledTest() {
   const [color, setColor] = useState('#333')
   return (
     <div>
-      <wcc-styled id="test15" variant={variant} color={color}></wcc-styled>
+      <wcc-styled id="test15" variant={variant} color={color} />
       <p>React variant: {variant}, color: {color}</p>
       <button onClick={() => setVariant(v => v === 'primary' ? 'secondary' : 'primary')}>Toggle variant</button>
       <button onClick={() => setColor(c => c === '#333' ? '#e63946' : '#333')}>Toggle color</button>

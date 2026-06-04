@@ -1,5 +1,37 @@
 # TODO
 
+## 🚨 Angular slots sin `wccSlots` — Hacer `WccSlotDef` autónomo (Prioridad Máxima)
+
+**Problema:** Actualmente los slots con `<ng-template slot="name">` en Angular requieren el atributo `[wccSlots]` en el elemento WCC padre. Esto activa `WccSlotsDirective`, que hace query de los `WccSlotDef` hijos y renderiza sus templates.
+
+**Solución que se perdió en un refactor:** Hacer que `WccSlotDef` sea autónomo — que cada directiva en un `<ng-template slot="name">` se renderice a sí misma sin necesidad de `WccSlotsDirective`.
+
+**Contexto técnico:**
+- `WccSlotDef` (selector: `ng-template[slot]`) ya inyecta `TemplateRef` y obtiene `slotName` del atributo `slot`
+- Podría inyectar `ViewContainerRef`, renderizar el template, crear un wrapper `<div slot="name">`, e insertarlo como hijo del WCC padre vía `elementRef.nativeElement.parentElement`
+- Para scoped slots necesita leer `__scopedSlots` del WCC padre y setear `__slotTpl_name` o `registerSlotRenderer`
+- Actualmente `WccSlotsDirective.initNamedSlot()` y `initScopedSlot()` tienen la lógica de renderizado que habría que mover a `WccSlotDef`
+
+**Archivos involucrados:**
+- `framework-integrations/angular/src/wcc-components/angular-adapter.js` — `WccSlotDef` (lines 42-69), `WccSlotsDirective` (lines 79+)
+- `framework-integrations/angular/src/app/basics.component.html` — Tests 6, 7, 8, 9, 10 (usan `wccSlots`)
+- `framework-integrations/angular/src/app/composition.component.html` — Test 17 (usa `wccSlots`)
+
+**Criterio de éxito:** `<wcc-card><ng-template slot="header">...</ng-template></wcc-card>` funciona SIN `[wccSlots]` en el padre.
+
+**Complejidad: 3/5** — Media-alta
+- Named slots: ~2/5 (render template, wrap, insert)
+- Scoped slots: ~3/5 (requiere `__scopedSlots` + `__slotTpl`)
+- Limpieza de `WccSlotsDirective` + actualización de tests + templates: ~4/5
+
+### Tareas
+- [ ] Agregar `ViewContainerRef` a `WccSlotDef`
+- [ ] Implementar `ngAfterViewInit` que renderice named slots (wrapper `<div slot="name">` + appendChild)
+- [ ] Implementar `ngAfterViewInit` que renderice scoped slots (leer `__scopedSlots`, setear `__slotTpl_name`)
+- [ ] Eliminar dependencia de `WccSlotsDirective` de los templates
+- [ ] Remover o simplificar `WccSlotsDirective`
+- [ ] Actualizar tests E2E
+
 ## 🧪 Framework Integrations — Suite de pruebas E2E (Task-0023 → Task-0033)
 
 ### Task-0023: [WCC] Crear componentes de prueba: directivas básicas

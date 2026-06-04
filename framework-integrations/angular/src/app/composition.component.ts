@@ -1,11 +1,10 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { WccSlotsDirective, WccSlotDef } from '../wcc-components/angular-adapter';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-composition',
   standalone: true,
-  imports: [WccSlotsDirective, WccSlotDef, CommonModule],
+  imports: [CommonModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './composition.component.html',
 })

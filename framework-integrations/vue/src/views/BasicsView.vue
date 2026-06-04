@@ -54,11 +54,11 @@
       <template #footer>Footer via #</template>
     </wcc-card>
 
-    <h2>Test 7: Named slots (div slot="name")</h2>
+    <h2>Test 7: Named slots (template #name — nested)</h2>
     <wcc-card id="test7">
-      <div slot="header"><strong>Bold</strong> header with <em>emphasis</em></div>
+      <template #header><strong>Bold</strong> header with <em>emphasis</em></template>
       <p>Body content</p>
-      <div slot="footer">Footer with <a href="#">link</a></div>
+      <template #footer>Footer with <a href="#">link</a></template>
     </wcc-card>
 
     <h2>Test 8: Named slots (template v-slot:name)</h2>

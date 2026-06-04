@@ -26,7 +26,7 @@ function WrapperCounterTest() {
   const [count] = useState(5)
   return (
     <wcc-wrapper id="test16" title="Wrapper Title">
-      <wcc-counter count={count} label="Inner"></wcc-counter>
+      <wcc-counter count={count} label="Inner" />
     </wcc-wrapper>
   )
 }
@@ -34,8 +34,7 @@ function WrapperCounterTest() {
 function WrapperCardTest() {
   return (
     <wcc-wrapper id="test17" title="Card Wrapper">
-      <wcc-card>
-        <div slot="header">Nested Card</div>
+      <wcc-card header={<div>Nested Card</div>}>
         <p>Body inside wrapper</p>
       </wcc-card>
     </wcc-wrapper>
@@ -47,8 +46,8 @@ function ParentTest() {
   return (
     <div>
       <wcc-parent id="test18" initial-count={3} label="Parent"
-        onCountChanged={(e) => setChanged(e.detail)}
-      ></wcc-parent>
+        onCountChanged={setChanged}
+      />
       <p>React parentChanged: {changed}</p>
     </div>
   )
@@ -60,7 +59,7 @@ function EachTest() {
     <div id="test19-area">
       {items.map((item, i) => (
         <wcc-wrapper key={i} title={'Item ' + item}>
-          <wcc-counter count={item} label={'#' + i}></wcc-counter>
+          <wcc-counter count={item} label={'#' + i} />
         </wcc-wrapper>
       ))}
     </div>

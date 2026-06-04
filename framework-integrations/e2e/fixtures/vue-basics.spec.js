@@ -141,15 +141,15 @@ test.describe('Vue + WCC Basics', () => {
     });
   });
 
-  // ── Test 7: Named slots (div slot="name") ──
+  // ── Test 7: Named slots (template #name — nested) ──
 
-  test.describe('Test 7: Named slots (div slot="name")', () => {
-    test('renders header via div slot="header"', async ({ page }) => {
+  test.describe('Test 7: Named slots (template #name — nested)', () => {
+    test('renders header via #header', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
       await expect(page.locator('#test7')).toContainText('Bold');
     });
 
-    test('renders footer via div slot="footer"', async ({ page }) => {
+    test('renders footer via #footer', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
       await expect(page.locator('#test7')).toContainText('link');
     });

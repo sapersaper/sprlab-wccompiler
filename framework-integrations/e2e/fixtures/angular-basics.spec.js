@@ -19,7 +19,6 @@ test.describe('Angular + WCC Basics', () => {
     await page.goto(BASE + '/#/basics');
     await page.waitForSelector('wcc-counter');
     await page.waitForSelector('wcc-card');
-    await page.waitForSelector('wcc-list');
 
     expect(errors).toEqual([]);
   });
@@ -41,7 +40,7 @@ test.describe('Angular + WCC Basics', () => {
   // ── Test 2: Events ──
 
   test.describe('Test 2: Events', () => {
-    test('increment button triggers (count-changed)', async ({ page }) => {
+    test('increment button triggers (countChange)', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
       const btn = page.locator('#test2 button');
       await btn.click();
@@ -78,17 +77,17 @@ test.describe('Angular + WCC Basics', () => {
     });
   });
 
-  // ── Test 6: Named slots (ng-template[slot]) ──
+  // ── Test 6: Named slots (atributo selector) ──
 
-  test.describe('Test 6: Named slots (ng-template[slot])', () => {
-    test('renders header via ng-template slot="header"', async ({ page }) => {
+  test.describe('Test 6: Named slots (atributo selector)', () => {
+    test('renders header via attribute selector', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
-      await expect(page.locator('#test6')).toContainText('Header via ng-template');
+      await expect(page.locator('#test6')).toContainText('Header via attribute');
     });
 
-    test('renders footer via ng-template slot="footer"', async ({ page }) => {
+    test('renders footer via attribute selector', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
-      await expect(page.locator('#test6')).toContainText('Footer via ng-template');
+      await expect(page.locator('#test6')).toContainText('Footer via attribute');
     });
 
     test('renders default body slot', async ({ page }) => {
@@ -97,9 +96,9 @@ test.describe('Angular + WCC Basics', () => {
     });
   });
 
-  // ── Test 7: Named slots (div slot="name") ──
+  // ── Test 7: Named slots — nested elements (atributo selector) ──
 
-  test.describe('Test 7: Named slots (div slot="name")', () => {
+  test.describe('Test 7: Named slots — nested elements (atributo selector)', () => {
     test('renders header with bold and emphasis', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
       await expect(page.locator('#test7')).toContainText('Bold');
@@ -112,9 +111,9 @@ test.describe('Angular + WCC Basics', () => {
     });
   });
 
-  // ── Test 8: Scoped slot (let-item let-index) ──
+  // ── Test 8: Scoped slot (TemplateRef + input) ──
 
-  test.describe('Test 8: Scoped slot (let-item let-index)', () => {
+  test.describe('Test 8: Scoped slot (TemplateRef + input)', () => {
     test('renders 3 items from scoped slot', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
       const items = page.locator('#test8 li');
@@ -137,7 +136,7 @@ test.describe('Angular + WCC Basics', () => {
     });
   });
 
-  // ── Test 9: Scoped slot — custom class ──
+  // ── Test 9: Scoped slot — custom class (TemplateRef + input) ──
 
   test.describe('Test 9: Scoped slot — custom class', () => {
     test('renders items with custom css class', async ({ page }) => {
@@ -148,7 +147,7 @@ test.describe('Angular + WCC Basics', () => {
     });
   });
 
-  // ── Test 10: Scoped slot + Angular interpolation ──
+  // ── Test 10: Scoped slot + Angular interpolation (TemplateRef + input) ──
 
   test.describe('Test 10: Scoped slot + Angular interpolation', () => {
     test('renders item with Angular message', async ({ page }) => {

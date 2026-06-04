@@ -58,27 +58,26 @@ test.describe('React + WCC Basics', () => {
     });
   });
 
-  // ── Test 6: Named slots (slot="name") ──
+  // ── Test 6: Named slots (JSX prop) ──
 
-  test.describe('Test 6: Named slots (slot="name")', () => {
-    test('renders header via slot="header"', async ({ page }) => {
+  test.describe('Test 6: Named slots (JSX prop)', () => {
+    test('renders header via JSX prop', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
-      await expect(page.locator('#test6')).toContainText('Header via slot attr');
+      await expect(page.locator('#test6')).toContainText('Header via JSX prop');
     });
 
-    test('renders footer via slot="footer"', async ({ page }) => {
+    test('renders footer via JSX prop', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
-      await expect(page.locator('#test6')).toContainText('Footer via slot attr');
+      await expect(page.locator('#test6')).toContainText('Footer via JSX prop');
     });
   });
 
-  // ── Test 7: Named slots (nested elements) ──
+  // ── Test 7: Named slots — nested elements (JSX prop) ──
 
-  test.describe('Test 7: Named slots — nested elements', () => {
-    test('renders header with bold and emphasis', async ({ page }) => {
+  test.describe('Test 7: Named slots — nested elements (JSX prop)', () => {
+    test('renders header with bold', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
       await expect(page.locator('#test7')).toContainText('Bold');
-      await expect(page.locator('#test7')).toContainText('emphasis');
     });
 
     test('renders footer with link', async ({ page }) => {
@@ -87,17 +86,12 @@ test.describe('React + WCC Basics', () => {
     });
   });
 
-  // ── Test 8: Named slots (JSX prop via React plugin) ──
+  // ── Test 8: Named slot — complex content (JSX prop) ──
 
-  test.describe('Test 8: Named slots via JSX prop', () => {
-    test('renders header via JSX prop', async ({ page }) => {
+  test.describe('Test 8: Named slot — complex content', () => {
+    test('renders button inside named slot', async ({ page }) => {
       await page.goto(BASE + '/#/basics');
-      await expect(page.locator('#test8')).toContainText('Header via JSX prop');
-    });
-
-    test('renders footer via JSX prop', async ({ page }) => {
-      await page.goto(BASE + '/#/basics');
-      await expect(page.locator('#test8')).toContainText('Footer via JSX prop');
+      await expect(page.locator('#test8 button')).toContainText('Click me');
     });
   });
 

@@ -6,13 +6,13 @@
 <h2>Test 17: 2 niveles (wrapper > card)</h2>
 <wcc-wrapper id="test17" title="Card Wrapper">
   <wcc-card>
-    <ng-template slot="header">Nested Card</ng-template>
+    <div header>Nested Card</div>
     <p>Body inside wrapper</p>
   </wcc-card>
 </wcc-wrapper>
 
 <h2>Test 18: wcc-parent with internal wcc-counter</h2>
-<wcc-parent id="test18" initial-count="3" label="Parent" (count-changed)="onParentChanged($event)"></wcc-parent>
+<wcc-parent id="test18" [initialCount]="3" label="Parent" (countChange)="onParentChanged($event)"></wcc-parent>
 <p>Angular parentChanged: {{ parentChanged }}</p>
 
 <h2>Test 19: each con wcc-counter por item</h2>

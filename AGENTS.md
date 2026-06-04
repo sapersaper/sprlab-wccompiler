@@ -68,10 +68,10 @@ El test de integración exitosa es: un desarrollador escribe el componente WCC c
 | Concepto | Vue | React | Angular |
 |----------|-----|-------|---------|
 | Props | `:count="ref"` | `count={state}` | `[count]="val"` |
-| Eventos | `@count-changed` | `oncountchanged` | `(count-changed)` |
+| Eventos | `@count-changed` | `onCountChanged` | `(countChange)` |
 | Two-way | `v-model:count` | prop + event manual | `[(count)]` |
 | Slot default | children | children | children |
-| Slot named | `<template #name>` | `slot="name"` / JSX prop | `<ng-template slot="name">` |
+| Slot named | `<template #name>` | JSX prop (`header={<JSX/>}`) | `<ng-template slot="name">` |
 | Slot scoped | `<template #name="{ item }">` | `renderItem={(item) => <JSX/>}` | `<ng-template slot="name" let-item>` |
 
 Cada framework tiene su plugin/adapter (`wccVuePlugin`, `wccReactPlugin`, `angular-adapter.js`) que traduce la sintaxis del framework a la API de Custom Elements v1. Si un componente WCC solo puede usarse con `<wcc-counter count="10">` (HTML plano) y no con la sintaxis del framework, la integración **no está completa**.
@@ -89,6 +89,13 @@ Un WCC está correctamente integrado cuando:
 - Los slots (named/scoped) funcionan con la sintaxis de slots del framework
 - El estado del framework puede fluir hacia el WCC y los eventos del WCC pueden actualizar estado del framework
 - No hay template syntax leaks (`{{`, `{%`, `${`) visibles en el DOM renderizado
+
+## Reglas para el asistente
+
+- **NUNCA hacer commit ni push sin que el usuario lo solicite explícitamente.**
+- Siempre mostrar los cambios para revisión antes de commitear.
+- Si el usuario dice "no commitees nada", respetarlo sin excepción.
+- **LA SINTAXIS NATIVA DE CADA FRAMEWORK SE TIENE QUE RESPETAR** al escribir vistas de integración. El código debe verse como si el WCC fuera un componente nativo del framework, usando `@Input()`, `@Output()`, `[(prop)]`, `<ng-template #ref>` (Angular); `onEvent={handler}`, JSX props, `renderItem` (React); `:prop`, `@event`, `v-model`, `<template #name>` (Vue). Excepciones solo si una regla explícita lo modifica.
 
 ## Stack técnico
 

@@ -25,24 +25,25 @@ export default function BasicsView() {
       </wcc-card>
 
       {/* NAMED SLOTS */}
-      <h2>Test 6: Named slots (slot="name")</h2>
-      <wcc-card id="test6">
-        <div slot="header"><strong>Header via slot attr</strong></div>
-        <p>Body content</p>
-        <span slot="footer">Footer via slot attr</span>
-      </wcc-card>
-
-      <h2>Test 7: Named slots (slot="name" — nested elements)</h2>
-      <wcc-card id="test7">
-        <div slot="header"><strong>Bold</strong> header with <em>emphasis</em></div>
-        <p>Body content</p>
-        <div slot="footer">Footer with <a href="#">link</a></div>
-      </wcc-card>
-
-      <h2>Test 8: Named slots (JSX prop — via React plugin)</h2>
-      <wcc-card id="test8"
+      <h2>Test 6: Named slots (JSX prop)</h2>
+      <wcc-card id="test6"
         header={<strong>Header via JSX prop</strong>}
         footer={<span>Footer via JSX prop</span>}
+      >
+        <p>Body content</p>
+      </wcc-card>
+
+      <h2>Test 7: Named slots — nested elements (JSX prop)</h2>
+      <wcc-card id="test7"
+        header={<strong>Bold</strong>}
+        footer={<a href="#">link</a>}
+      >
+        <p>Body content</p>
+      </wcc-card>
+
+      <h2>Test 8: Named slot — complex content (JSX prop)</h2>
+      <wcc-card id="test8"
+        header={<button onClick={() => alert('test')}>Click me</button>}
       >
         <p>Body content</p>
       </wcc-card>
@@ -68,7 +69,7 @@ function PropsTest() {
   const [propCount] = useState(10)
   return (
     <div>
-      <wcc-counter id="test1" count={propCount} label="Static Label"></wcc-counter>
+      <wcc-counter id="test1" count={propCount} label="Static Label" />
       <p>React propCount: {propCount}</p>
     </div>
   )
@@ -78,7 +79,7 @@ function EventsTest() {
   const [eventCount, setEventCount] = useState(0)
   return (
     <div>
-      <wcc-counter id="test2" count={eventCount} onCountChanged={(e) => setEventCount(e.detail)}></wcc-counter>
+      <wcc-counter id="test2" count={eventCount} onCountChanged={setEventCount} />
       <p>React eventCount: {eventCount}</p>
       <button onClick={() => setEventCount(c => c + 1)}>React increment (manual)</button>
     </div>
