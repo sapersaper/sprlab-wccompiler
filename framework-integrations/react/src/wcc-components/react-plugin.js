@@ -780,14 +780,14 @@ export function wccReactPlugin(options = {}) {
             const classification = classifyProp(propName, propValue, { exclude, slotProps })
 
             if (classification.type === 'slot') {
-              // Task 7.4: Warn on dynamic expressions in named slot props — leave prop unchanged
+              // BUG-0018: Still generate slot even if some expressions can't be serialized.
+              // The serializer skips unsupported expressions (e.g., ArrowFunctionExpression
+              // in onClick) and returns the static HTML content.
               if (classification.value.type === 'JSXElement' || classification.value.type === 'JSXFragment') {
                 const slotWarnings = []
                 serializeJsxToHtml(classification.value, [], slotWarnings)
                 if (slotWarnings.length > 0) {
                   pluginCtx.warn(`[wcc-react] ${id} — ${propName}: ${slotWarnings[0]}`)
-                  remainingAttributes.push(attr)
-                  continue
                 }
               }
               // Generate slot child element
