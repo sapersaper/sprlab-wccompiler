@@ -98,8 +98,12 @@ class WccStyled extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
-    if (name === 'variant') this._state.variant = newVal ?? 'primary';
-    if (name === 'color') this._state.color = newVal ?? '#333';
+    if (name === 'variant') {
+      this._state.variant = newVal ?? 'primary';
+    }
+    if (name === 'color') {
+      this._state.color = newVal ?? '#333';
+    }
   }
 
   get variant() { return this._state.variant; }

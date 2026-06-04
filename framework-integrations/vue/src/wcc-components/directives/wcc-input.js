@@ -103,7 +103,9 @@ class WccInput extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
-    if (name === 'placeholder') this._state.placeholder = newVal ?? 'Type here...';
+    if (name === 'placeholder') {
+      this._state.placeholder = newVal ?? 'Type here...';
+    }
     if (name === 'value') this._state.value = newVal ?? '';
   }
 
@@ -122,7 +124,6 @@ class WccInput extends HTMLElement {
       composed: true
     }));
     this.dispatchEvent(new CustomEvent('value-changed', { detail: newVal, bubbles: true }));
-    this.dispatchEvent(new CustomEvent('valueChange', { detail: newVal, bubbles: true }));
   }
 
   // --- Model wrapper methods ---

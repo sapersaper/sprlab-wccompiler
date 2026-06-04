@@ -75,8 +75,8 @@ function handleClick() {
 
     // attributeChangedCallback (esbuild may convert quotes)
     expect(output).toContain('attributeChangedCallback(name, oldVal, newVal)');
-    expect(output).toMatch(/if \(name === 'label'\) this\._state\.label = newVal \?\? ['"]Hello['"]/);
-    expect(output).toContain("if (name === 'count') this._state.count = newVal != null ? Number(newVal) : 0");
+    expect(output).toMatch(/if \(name === 'label'\) \{/);
+    expect(output).toMatch(/if \(name === 'count'\) \{/);
 
     // Getters and setters
     expect(output).toContain('get label() { return this._state.label; }');
@@ -117,7 +117,7 @@ const props = defineProps(['title'])
     expect(output).toContain("static get observedAttributes()");
     expect(output).toContain("'title'");
     expect(output).toContain('title:');
-    expect(output).toContain("if (name === 'title') this._state.title = newVal");
+    expect(output).toContain("if (name === 'title') {");
     expect(output).toContain('get title()');
     expect(output).toContain('set title(val)');
   });

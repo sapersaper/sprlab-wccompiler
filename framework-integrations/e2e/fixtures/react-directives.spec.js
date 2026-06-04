@@ -61,7 +61,7 @@ test.describe('React + WCC Directives', () => {
     test('content is hidden after toggling show to false', async ({ page }) => {
       await page.goto(BASE + '/#/directives');
       await page.locator('button:has-text("Toggle show")').click();
-      await expect(page.locator('#test13')).not.toContainText('This content is toggled via show directive');
+      await expect(page.locator('#test13 p')).not.toBeVisible();
     });
   });
 

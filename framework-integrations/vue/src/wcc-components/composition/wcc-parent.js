@@ -114,8 +114,13 @@ class WccParent extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
-    if (name === 'initial-count') this._state.initialCount = newVal != null ? Number(newVal) : 0;
-    if (name === 'label') this._state.label = newVal ?? 'Count';
+    if (name === 'initial-count') {
+      this._state.initialCount = newVal != null ? Number(newVal) : 0;
+      this._state.count = this._state.initialCount;
+    }
+    if (name === 'label') {
+      this._state.label = newVal ?? 'Count';
+    }
   }
 
   get initialCount() { return this._state.initialCount; }
@@ -127,8 +132,6 @@ class WccParent extends HTMLElement {
   _emit(name, detail) {
     const evt = { detail, bubbles: true, composed: true };
     this.dispatchEvent(new CustomEvent(name, evt));
-    const lower = name.replace(/-/g, '').toLowerCase();
-    if (lower !== name) this.dispatchEvent(new CustomEvent(lower, evt));
   }
 
   _onCountChanged(e) {

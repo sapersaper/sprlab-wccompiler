@@ -1,5 +1,27 @@
 # TODO
 
+## 🚨 React stabilization bugs (Prioridad Máxima)
+
+### BUG-0017: React — `onValueChanged` no sincroniza React state
+
+**Problema:** `onValueChanged={setValue}` en un custom element no actualiza el estado de React. React 19 transforma `onValueChanged` → `addEventListener('valuechanged')`, pero el WCC emite `valueChange` (camelCase) y `value-changed` (kebab), no `valuechanged` (lowercase). El `wccReactPlugin` no intercepta estos props.
+
+**Reproduce:** `react-directives.spec.js` Test 14 — al tipear en `wcc-input`, el `<span>` del WCC muestra el valor pero `React value:` queda vacío.
+
+**Fix:** En `wccReactPlugin`, interceptar props `on[A-Z]*` en custom elements y generar `addEventListener(eventName, handler)` con el nombre de evento derivado correctamente.
+
+**Archivos:** `framework-integrations/react/src/wcc-components/react-plugin.js`
+
+### BUG-0018: React — JSX slots con contenido dinámico no se serializan
+
+**Problema:** El `wccReactPlugin` no serializa slot content con `ArrowFunctionExpression` (ej: `<button onClick={() => ...}>`). El serializador aborta el slot entero.
+
+**Reproduce:** `react-basics.spec.js` Test 8 — `#test8 button` no se encuentra en el DOM.
+
+**Fix:** En `serializeJsxExpression`, al encontrar `ArrowFunctionExpression` en contexto de slot, serializar contenido estático y omitir handlers.
+
+**Archivos:** `framework-integrations/react/src/wcc-components/react-plugin.js`
+
 ## 🚨 Angular slots sin `wccSlots` — Hacer `WccSlotDef` autónomo (Prioridad Máxima)
 
 **Problema:** Actualmente los slots con `<ng-template slot="name">` en Angular requieren el atributo `[wccSlots]` en el elemento WCC padre. Esto activa `WccSlotsDirective`, que hace query de los `WccSlotDef` hijos y renderiza sus templates.

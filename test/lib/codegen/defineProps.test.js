@@ -110,7 +110,7 @@ describe('generateComponent — attributeChangedCallback', () => {
     });
 
     const output = generateComponent(ir);
-    expect(output).toContain("if (name === 'count') this._state.count = newVal != null ? Number(newVal) : 0");
+    expect(output).toContain("this._state.count = newVal != null ? Number(newVal) : 0");
   });
 
   it('generates boolean coercion for boolean defaults', () => {
@@ -120,7 +120,7 @@ describe('generateComponent — attributeChangedCallback', () => {
     });
 
     const output = generateComponent(ir);
-    expect(output).toContain("if (name === 'disabled') this._state.disabled = newVal !== null && newVal !== 'false'");
+    expect(output).toContain("this._state.disabled = newVal !== null && newVal !== 'false'");
   });
 
   it('generates string passthrough for string defaults', () => {
@@ -130,7 +130,7 @@ describe('generateComponent — attributeChangedCallback', () => {
     });
 
     const output = generateComponent(ir);
-    expect(output).toContain("if (name === 'label') this._state.label = newVal ?? 'Click'");
+    expect(output).toContain("this._state.label = newVal ?? 'Click'");
   });
 
   it('generates passthrough for undefined defaults', () => {
@@ -140,7 +140,7 @@ describe('generateComponent — attributeChangedCallback', () => {
     });
 
     const output = generateComponent(ir);
-    expect(output).toContain("if (name === 'value') this._state.value = newVal");
+    expect(output).toContain("this._state.value = newVal");
   });
 
   it('does not generate attributeChangedCallback when no props', () => {

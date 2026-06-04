@@ -90,6 +90,16 @@ Un WCC está correctamente integrado cuando:
 - El estado del framework puede fluir hacia el WCC y los eventos del WCC pueden actualizar estado del framework
 - No hay template syntax leaks (`{{`, `{%`, `${`) visibles en el DOM renderizado
 
+## Proceso de bugfixing en framework-integrations
+
+1. **Correr tests e identificar errores** — ejecutar E2E por framework (`yarn test:vue`, etc.)
+2. **Clasificar el error:**
+   - **Framework-specific** → arreglar en el adapter/plugin del framework (`integrations/`, `adapters/`, o el plugin Vite en `framework-integrations/{framework}/`)
+   - **General de WCC** → arreglar en `lib/` (compilador, codegen, parser, etc.)
+   - **Mixto** → modificar ambas partes (ej: nuevo evento en el compilador + handler en el adapter)
+3. **NO modificar los tests** para que matcheen con comportamiento roto. El test define lo que DEBE funcionar. Si algo no funciona, se arregla el código que lo implementa, no el test que lo verifica.
+4. **Antes de hacer cualquier fix, hacer un reporte de issues encontrados y planificar el fix con el usuario.** No modificar nada hasta que el plan esté aprobado.
+
 ## Reglas para el asistente
 
 - **NUNCA hacer commit ni push sin que el usuario lo solicite explícitamente.**

@@ -88,7 +88,9 @@ class WccCounter extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
-    if (name === 'label') this._state.label = newVal ?? 'Clicks';
+    if (name === 'label') {
+      this._state.label = newVal ?? 'Clicks';
+    }
     if (name === 'count') this._state.count = newVal != null ? Number(newVal) : 0;
   }
 
@@ -101,8 +103,6 @@ class WccCounter extends HTMLElement {
   _emit(name, detail) {
     const evt = { detail, bubbles: true, composed: true };
     this.dispatchEvent(new CustomEvent(name, evt));
-    const lower = name.replace(/-/g, '').toLowerCase();
-    if (lower !== name) this.dispatchEvent(new CustomEvent(lower, evt));
   }
 
   _modelSet_count(newVal) {
@@ -114,7 +114,6 @@ class WccCounter extends HTMLElement {
       composed: true
     }));
     this.dispatchEvent(new CustomEvent('count-changed', { detail: newVal, bubbles: true }));
-    this.dispatchEvent(new CustomEvent('countChange', { detail: newVal, bubbles: true }));
   }
 
   // --- Model wrapper methods ---

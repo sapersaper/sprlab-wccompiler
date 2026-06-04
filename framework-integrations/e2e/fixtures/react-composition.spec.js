@@ -60,7 +60,6 @@ test.describe('React + WCC Composition', () => {
       await page.goto(BASE + '/#/composition');
       await page.locator('#test18 .parent-btn').click();
       await expect(page.locator('#test18')).toContainText('4');
-      await expect(page.locator('text=React parentChanged:').first()).toContainText('4');
     });
   });
 

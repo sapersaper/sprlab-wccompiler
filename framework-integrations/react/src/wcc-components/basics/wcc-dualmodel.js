@@ -102,7 +102,6 @@ class WccDualmodel extends HTMLElement {
       composed: true
     }));
     this.dispatchEvent(new CustomEvent('first-changed', { detail: newVal, bubbles: true }));
-    this.dispatchEvent(new CustomEvent('firstChange', { detail: newVal, bubbles: true }));
   }
 
   _modelSet_second(newVal) {
@@ -114,7 +113,6 @@ class WccDualmodel extends HTMLElement {
       composed: true
     }));
     this.dispatchEvent(new CustomEvent('second-changed', { detail: newVal, bubbles: true }));
-    this.dispatchEvent(new CustomEvent('secondChange', { detail: newVal, bubbles: true }));
   }
 
   // --- Model wrapper methods ---
