@@ -770,38 +770,6 @@ export function wccReactPlugin(options = {}) {
               propValue = propValue.expression
             }
 
-            // BUG-0017: Transform onEventName props on custom elements
-            // Replaces onXxx prop with ref callback that uses addEventListener
-            // with the correct kebab-case event name and unwraps e.detail.
-            if (/^on[A-Z]/.test(propName) && propValue) {
-              const eventName = propName.slice(2).replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '')
-              const refAttr = {
-                type: 'JSXAttribute',
-                name: { type: 'JSXIdentifier', name: 'ref' },
-                value: { type: 'JSXExpressionContainer', expression: {
-                  type: 'ArrowFunctionExpression',
-                  params: [{ type: 'Identifier', name: 'el' }],
-                  body: { type: 'BlockStatement', body: [{ type: 'IfStatement',
-                    test: { type: 'Identifier', name: 'el' },
-                    consequent: { type: 'ExpressionStatement', expression: {
-                      type: 'CallExpression', callee: { type: 'MemberExpression',
-                        object: { type: 'Identifier', name: 'el' },
-                        property: { type: 'Identifier', name: 'addEventListener' }, computed: false },
-                      arguments: [
-                        { type: 'StringLiteral', value: eventName },
-                        { type: 'ArrowFunctionExpression', params: [{ type: 'Identifier', name: 'e' }],
-                          body: { type: 'CallExpression', callee: propValue,
-                            arguments: [{ type: 'MemberExpression', object: { type: 'Identifier', name: 'e' },
-                              property: { type: 'Identifier', name: 'detail' }, computed: false }] } }
-                      ] } },
-                    alternate: null }] }
-                } }
-              }
-              remainingAttributes.push(refAttr)
-              transformed = true
-              continue
-            }
-
             // Task 7.2: Warn on invalid render prop values (non-arrow-function)
             if (/^render[A-Z]/.test(propName) && propValue && propValue.type !== 'ArrowFunctionExpression' && propValue.type !== 'StringLiteral') {
               pluginCtx.warn(`[wcc-react] ${id} — ${propName}: expected ArrowFunctionExpression, got ${propValue.type}`)
@@ -848,7 +816,7 @@ export function wccReactPlugin(options = {}) {
             }
           }
 
-          if (slotChildren.length > 0 || transformed) {
+          if (slotChildren.length > 0) {
             // Remove transformed slot props from the element's attributes
             openingElement.attributes = remainingAttributes
 
@@ -884,6 +852,41 @@ export function wccReactPlugin(options = {}) {
  *   Before: import { WccCard } from '@wcc/react'  (virtual module)
  *   After:  import { WccCard } from './dist/wcc-react'  (real file, tree-shakeable)
  */
+/**
+ * Vite plugin that bridges WCC custom element events to React.
+ *
+ * Transforms idiomatic React event handler props on hyphenated custom elements:
+ *   <wcc-counter onCountChanged={handler} />
+ * → <wcc-counter ref={el => { if (el) el.addEventListener('count-changed', e => handler(e.detail)) }} />
+ *
+ * Runs before the main wccReactPlugin so event handlers are already
+ * converted to ref callbacks before slot processing runs.
+ *
+ * @returns {import('vite').Plugin}
+ */
+export function wccReactEvents() {
+  return {
+    name: 'vite-plugin-wcc-react-events',
+    enforce: 'pre',
+    transform(code, id) {
+      if (!/\.(jsx|tsx)$/.test(id)) return null
+
+      let result = code
+      // Match onXxx={...} on hyphenated tags
+      result = result.replace(
+        /(<[\w]+-[\w-]*(?:\s[^>]*?)?)\s+on([A-Z]\w+)=\{([^}]+)\}([^>]*?>)/g,
+        (match, prefix, eventProp, handler, suffix) => {
+          const eventName = eventProp.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '')
+          return `${prefix} ref={el => { if (el) el.addEventListener('${eventName}', e => ${handler}(e.detail)) }}${suffix}`
+        }
+      )
+
+      if (result !== code) return result
+      return null
+    }
+  }
+}
+
 export function wccReactComponents(options = {}) {
   return {
     name: 'vite-plugin-wcc-react-components-deprecated',
