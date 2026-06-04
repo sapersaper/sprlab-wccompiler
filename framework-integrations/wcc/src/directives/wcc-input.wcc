@@ -1,0 +1,41 @@
+<script>
+import { defineComponent, defineProps, defineModel } from 'wcc'
+
+export default defineComponent({
+  tag: 'wcc-input',
+})
+
+const props = defineProps({ placeholder: 'Type here...' })
+const value = defineModel({ name: 'value', default: '' })
+</script>
+
+<template>
+<div class="wcc-input">
+  <input :placeholder="props.placeholder" model="value" />
+  <span>{{value()}}</span>
+</div>
+</template>
+
+<style>
+.wcc-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 8px 0;
+}
+.wcc-input input {
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.wcc-input span {
+  font-family: monospace;
+  padding: 4px 8px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  min-width: 60px;
+}
+</style>

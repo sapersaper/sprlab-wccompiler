@@ -665,6 +665,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@angular/router@npm:^19.0.0":
+  version: 19.2.25
+  resolution: "@angular/router@npm:19.2.25"
+  dependencies:
+    tslib: "npm:^2.3.0"
+  peerDependencies:
+    "@angular/common": 19.2.25
+    "@angular/core": 19.2.25
+    "@angular/platform-browser": 19.2.25
+    rxjs: ^6.5.3 || ^7.4.0
+  checksum: 10c0/83d3d058f56f57ae14b02c89f35758330f075c27f016b56171bf3abd07338fae12a85aa7bcc11c49bbf0fdc95d437f20ad27a1bc0c07a1343736c697ca0b6559
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.0.0, @babel/code-frame@npm:^7.26.2, @babel/code-frame@npm:^7.28.6, @babel/code-frame@npm:^7.29.0":
   version: 7.29.0
   resolution: "@babel/code-frame@npm:7.29.0"
@@ -9903,6 +9917,7 @@ __metadata:
     "@angular/core": "npm:^19.0.0"
     "@angular/platform-browser": "npm:^19.0.0"
     "@angular/platform-browser-dynamic": "npm:^19.0.0"
+    "@angular/router": "npm:^19.0.0"
     rxjs: "npm:^7.8.0"
     tslib: "npm:^2.6.0"
     typescript: "npm:~5.6.0"

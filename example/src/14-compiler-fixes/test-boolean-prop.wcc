@@ -1,0 +1,27 @@
+<script>
+import { defineComponent, defineProps } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-boolean-prop',
+})
+
+const props = defineProps({ visible: true })
+</script>
+
+<template>
+<div class="boolean-test">
+  <h3>Boolean Prop Test</h3>
+  <p>visible prop: {{props.visible}}</p>
+  <p if="props.visible">VISIBLE</p>
+  <p else>HIDDEN</p>
+</div>
+</template>
+
+<style>
+.boolean-test {
+  padding: 12px;
+  border: 2px solid #7c4dff;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+</style>

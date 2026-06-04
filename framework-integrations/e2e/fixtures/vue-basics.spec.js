@@ -1,25 +1,26 @@
 /**
- * E2E tests for Vue 3 integration with WCC components.
+ * E2E tests for Vue 3 integration — Basics.
  * Dev server must be running on port 4001.
  *
- * Covers all test cases from App.vue (Tests 1–11).
+ * Covers Tests 1–11: props, events, v-model, slots, scoped slots.
  */
 
 import { test, expect } from '@playwright/test';
 
 const BASE = 'http://localhost:4001';
 
-test.describe('Vue + WCC integration', () => {
+test.describe('Vue + WCC Basics', () => {
 
   test('page loads without console errors', async ({ page }) => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
     page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });
 
-    await page.goto(BASE);
+    await page.goto(BASE + '/#/basics');
     await page.waitForSelector('wcc-counter');
     await page.waitForSelector('wcc-card');
     await page.waitForSelector('wcc-list');
+    await page.waitForSelector('wcc-dualmodel');
 
     expect(errors).toEqual([]);
   });
@@ -28,13 +29,13 @@ test.describe('Vue + WCC integration', () => {
 
   test.describe('Test 1: Props', () => {
     test('renders label prop as text', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       const el = page.locator('#test1');
       await expect(el).toContainText('Static Label');
     });
 
     test('renders count prop passed via :count', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       const el = page.locator('#test1');
       await expect(el).toContainText('10');
     });
@@ -44,7 +45,7 @@ test.describe('Vue + WCC integration', () => {
 
   test.describe('Test 2: Events', () => {
     test('increment button triggers @count-changed and updates eventCount', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       const btn = page.locator('#test2 button');
       await btn.click();
 
@@ -58,7 +59,7 @@ test.describe('Vue + WCC integration', () => {
 
   test.describe('Test 3: v-model:count', () => {
     test('increment via v-model updates both counter and Vue state', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       const btn = page.locator('#test3 button');
       await btn.click();
 
@@ -67,7 +68,7 @@ test.describe('Vue + WCC integration', () => {
     });
 
     test('Vue increment button updates the wcc-counter via v-model', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       await page.locator('button:has-text("Vue increment (v-model)")').click();
 
       await expect(page.locator('#test3')).toContainText('1');
@@ -79,7 +80,7 @@ test.describe('Vue + WCC integration', () => {
 
   test.describe('Test 4: v-model:count.number modifier', () => {
     test('increment via modifier updates counter', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       const btn = page.locator('#test4 button');
       await btn.click();
 
@@ -87,7 +88,7 @@ test.describe('Vue + WCC integration', () => {
     });
 
     test('value type with .number modifier is "number"', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       const btn = page.locator('#test4 button');
       await btn.click();
 
@@ -98,18 +99,24 @@ test.describe('Vue + WCC integration', () => {
   // ── Test 4b: Multiple v-model on same element ──
 
   test.describe('Test 4b: Multiple v-model on same element', () => {
-    test('both v-model bound props render correctly', async ({ page }) => {
-      await page.goto(BASE);
-      await expect(page.locator('#test4b')).toContainText('hello');
-      await expect(page.locator('#test4b')).toBeAttached();
+    test('both models render initial values', async ({ page }) => {
+      await page.goto(BASE + '/#/basics');
+      await expect(page.locator('#test4b .first')).toContainText('foo');
+      await expect(page.locator('#test4b .second')).toContainText('bar');
     });
 
-    test('incrementing multiCount updates Vue state', async ({ page }) => {
-      await page.goto(BASE);
-      const btn = page.locator('#test4b button');
-      await btn.click();
+    test('toggling first model updates display and Vue state', async ({ page }) => {
+      await page.goto(BASE + '/#/basics');
+      await page.locator('button:has-text("Toggle first")').click();
+      await expect(page.locator('#test4b .first')).toContainText('bar');
+      await expect(page.locator('p:has-text("multiFirst:")')).toContainText('bar');
+    });
 
-      await expect(page.locator('text=Vue multiCount:').first()).toContainText('1');
+    test('toggling second model updates display and Vue state', async ({ page }) => {
+      await page.goto(BASE + '/#/basics');
+      await page.locator('button:has-text("Toggle second")').click();
+      await expect(page.locator('#test4b .second')).toContainText('baz');
+      await expect(page.locator('p:has-text("multiSecond:")')).toContainText('baz');
     });
   });
 
@@ -117,7 +124,7 @@ test.describe('Vue + WCC integration', () => {
 
   test.describe('Test 5: Default slot', () => {
     test('renders default slot content inside wcc-card', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       await expect(page.locator('#test5')).toContainText('Body content via default slot');
     });
   });
@@ -126,31 +133,31 @@ test.describe('Vue + WCC integration', () => {
 
   test.describe('Test 6: Named slots (template #name)', () => {
     test('renders header slot via #header', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       await expect(page.locator('#test6')).toContainText('Header via #');
     });
 
     test('renders footer slot via #footer', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       await expect(page.locator('#test6')).toContainText('Footer via #');
     });
 
     test('renders default body slot alongside named slots', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       await expect(page.locator('#test6')).toContainText('Body content');
     });
   });
 
-  // ── Test 7: Named slots (div slot="name") ──
+  // ── Test 7: Named slots (template #name — nested) ──
 
-  test.describe('Test 7: Named slots (div slot="name")', () => {
-    test('renders header via div slot="header"', async ({ page }) => {
-      await page.goto(BASE);
+  test.describe('Test 7: Named slots (template #name — nested)', () => {
+    test('renders header via #header', async ({ page }) => {
+      await page.goto(BASE + '/#/basics');
       await expect(page.locator('#test7')).toContainText('Bold');
     });
 
-    test('renders footer via div slot="footer"', async ({ page }) => {
-      await page.goto(BASE);
+    test('renders footer via #footer', async ({ page }) => {
+      await page.goto(BASE + '/#/basics');
       await expect(page.locator('#test7')).toContainText('link');
     });
   });
@@ -159,12 +166,12 @@ test.describe('Vue + WCC integration', () => {
 
   test.describe('Test 8: Named slots (template v-slot:name)', () => {
     test('renders header via v-slot:header', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       await expect(page.locator('#test8')).toContainText('Header v-slot');
     });
 
     test('renders footer via v-slot:footer', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       await expect(page.locator('#test8')).toContainText('Footer v-slot');
     });
   });
@@ -173,7 +180,7 @@ test.describe('Vue + WCC integration', () => {
 
   test.describe('Test 9: Scoped slot (#item="{ item, index }")', () => {
     test('renders item index and name from scoped slot', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       const items = page.locator('#test9 li');
       const count = await items.count();
       expect(count).toBe(3);
@@ -186,7 +193,7 @@ test.describe('Vue + WCC integration', () => {
     });
 
     test('renders all items names (Apple, Banana, Cherry)', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       const items = page.locator('#test9 li');
       await expect(items.nth(0)).toContainText('Apple');
       await expect(items.nth(1)).toContainText('Banana');
@@ -198,7 +205,7 @@ test.describe('Vue + WCC integration', () => {
 
   test.describe('Test 10: Scoped slot (v-slot:item)', () => {
     test('renders scoped slot via v-slot:item', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       const items = page.locator('#test10 li.custom');
       const count = await items.count();
       expect(count).toBe(3);
@@ -209,7 +216,7 @@ test.describe('Vue + WCC integration', () => {
     });
 
     test('custom class is applied from scoped slot template', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       const firstItem = page.locator('#test10 li.custom').first();
       await expect(firstItem).toHaveClass('custom');
     });
@@ -219,7 +226,7 @@ test.describe('Vue + WCC integration', () => {
 
   test.describe('Test 11: Scoped slot + Vue interpolation', () => {
     test('renders item with Vue message', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       const items = page.locator('#test11 li');
       const count = await items.count();
       expect(count).toBe(3);
@@ -229,7 +236,7 @@ test.describe('Vue + WCC integration', () => {
     });
 
     test('Vue message is reactive', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       const firstItem = page.locator('#test11 li').first();
       await expect(firstItem).toContainText('hello from Vue');
     });
@@ -239,7 +246,7 @@ test.describe('Vue + WCC integration', () => {
 
   test.describe('Slot fallback content', () => {
     test('default fallback content is NOT shown when content is provided', async ({ page }) => {
-      await page.goto(BASE);
+      await page.goto(BASE + '/#/basics');
       // Test 5 provides body content, so "no body" should NOT appear
       await expect(page.locator('#test5')).not.toContainText('no body');
     });

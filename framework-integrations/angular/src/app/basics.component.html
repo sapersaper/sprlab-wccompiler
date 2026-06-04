@@ -1,0 +1,62 @@
+<h2>Test 1: Props ([count], label)</h2>
+<wcc-counter id="test1" [count]="propCount" label="Static Label"></wcc-counter>
+<p>Angular propCount: {{ propCount }}</p>
+
+<h2>Test 2: Events ((countChange))</h2>
+<wcc-counter id="test2" [count]="eventCount" (countChange)="onCountChanged($event)"></wcc-counter>
+<p>Angular eventCount: {{ eventCount }}</p>
+<button (click)="eventCount = eventCount + 1">Angular increment (manual)</button>
+
+<h2>Test 3: Two-way binding ([(count)])</h2>
+<wcc-counter id="test3" [(count)]="modelCount"></wcc-counter>
+<p>Angular modelCount: {{ modelCount }}</p>
+<button (click)="modelCount = modelCount + 1">Angular increment (two-way)</button>
+
+<h2>Test 4: Multiple two-way bindings</h2>
+<wcc-dualmodel id="test4" [(first)]="multiFirst" [(second)]="multiSecond"></wcc-dualmodel>
+<p>Angular multiFirst: {{ multiFirst }}, multiSecond: {{ multiSecond }}</p>
+<button (click)="multiFirst = multiFirst === 'foo' ? 'bar' : 'foo'">Toggle first</button>
+<button (click)="multiSecond = multiSecond === 'bar' ? 'baz' : 'bar'">Toggle second</button>
+
+<h2>Test 5: Default slot (children)</h2>
+<wcc-card id="test5">
+  <p>Body content via default slot</p>
+</wcc-card>
+
+<!-- Named slots: sintaxis Angular nativa con atributo selector (<div header>).
+     Alternativa Web Components: <div slot="header">.
+     Alternativa directiva: <ng-template slot="header"> + wccSlots. -->
+<h2>Test 6: Named slots (atributo selector)</h2>
+<wcc-card id="test6">
+  <div header><strong>Header via attribute</strong></div>
+  <p>Body content</p>
+  <div footer>Footer via attribute</div>
+</wcc-card>
+
+<h2>Test 7: Named slots — nested elements (atributo selector)</h2>
+<wcc-card id="test7">
+  <div header><strong>Bold</strong> header with <em>emphasis</em></div>
+  <p>Body content</p>
+  <div footer>Footer with <a href="#">link</a></div>
+</wcc-card>
+
+<!-- Scoped slots: sintaxis Angular nativa con TemplateRef + input.
+     Alternativa WCC: <ng-template slot="item" let-item> + wccSlots directive.
+     Alternativa low-level: <div slot="item" slot-props="item,index">{%item%}</div> -->
+<ng-template #itemTpl let-item let-index="index">
+  <li><strong>{{ index }}</strong>: {{ item }}</li>
+</ng-template>
+<h2>Test 8: Scoped slot (TemplateRef + input)</h2>
+<wcc-list id="test8" [itemTemplate]="itemTpl"></wcc-list>
+
+<ng-template #customItemTpl let-item>
+  <li class="custom">★ {{ item }}</li>
+</ng-template>
+<h2>Test 9: Scoped slot — custom class</h2>
+<wcc-list id="test9" [itemTemplate]="customItemTpl"></wcc-list>
+
+<ng-template #coexistItemTpl let-item>
+  <li>{{ item }} (Angular says: {{ angularMessage }})</li>
+</ng-template>
+<h2>Test 10: Scoped slot + Angular interpolation coexistence</h2>
+<wcc-list id="test10" [itemTemplate]="coexistItemTpl"></wcc-list>

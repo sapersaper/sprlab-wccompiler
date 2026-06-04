@@ -41,6 +41,8 @@ function findAnchor(root, type, index) {
 }
 
 class WccList extends HTMLElement {
+  static __scopedSlots = ['item'];
+
   static __meta = { tag: 'wcc-list', props: [], events: [], models: [], slots: [] };
 
   constructor() {
@@ -133,8 +135,12 @@ class WccList extends HTMLElement {
     __iter.forEach((item, index) => {
       const clone = this.__for0_tpl.content.cloneNode(true);
       const node = clone.firstChild;
-          if (this.__slotTpl_item) {
+          if (this.__slotTpl_item || (this.__slotRenderers && this.__slotRenderers['item'])) {
             let __slotHtml = this.__slotTpl_item;
+            if (this.__slotRenderers && this.__slotRenderers['item']) {
+              const __rendered = this.__slotRenderers['item']({"item": item, "index": index});
+              if (__rendered) __slotHtml = __rendered;
+            }
             __slotHtml = __slotHtml.replace(/{%\s*item\s*%}/g, item);
             __slotHtml = __slotHtml.replace(/{%\s*index\s*%}/g, index);
             const __slotNode = node.querySelector('[data-slot="item"]');
@@ -164,7 +170,9 @@ class WccList extends HTMLElement {
   __invalidate(key) {
     switch(key) {
       case 'items':
-        this.__renderEach_0();
+        if (this.__connected) {
+          this.__renderEach_0();
+        }
         break;
       case '*':
         this.__renderEach_0();
@@ -175,6 +183,21 @@ class WccList extends HTMLElement {
   disconnectedCallback() {
     this.__connected = false;
     this.__ac.abort();
+  }
+
+  get __scopedSlots() { return this.constructor.__scopedSlots || []; }
+
+  registerSlotRenderer(slotName, callback) {
+    if (!this.__slotRenderers) this.__slotRenderers = {};
+    this.__slotRenderers[slotName] = callback;
+    if (this.__slotProps && this.__slotProps[slotName]) {
+      callback(this.__slotProps[slotName]);
+    }
+    return () => {
+      if (this.__slotRenderers) {
+        delete this.__slotRenderers[slotName];
+      }
+    };
   }
 
 }

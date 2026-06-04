@@ -1,0 +1,23 @@
+<h2>Test 16: WCC→WCC simple (wrapper > counter)</h2>
+<wcc-wrapper id="test16" title="Wrapper Title">
+  <wcc-counter [count]="wrapperCount" label="Inner"></wcc-counter>
+</wcc-wrapper>
+
+<h2>Test 17: 2 niveles (wrapper > card)</h2>
+<wcc-wrapper id="test17" title="Card Wrapper">
+  <wcc-card>
+    <div header>Nested Card</div>
+    <p>Body inside wrapper</p>
+  </wcc-card>
+</wcc-wrapper>
+
+<h2>Test 18: wcc-parent with internal wcc-counter</h2>
+<wcc-parent id="test18" [initialCount]="3" label="Parent" (countChange)="onParentChanged($event)"></wcc-parent>
+<p>Angular parentChanged: {{ parentChanged }}</p>
+
+<h2>Test 19: each con wcc-counter por item</h2>
+<div id="test19-area">
+  <wcc-wrapper *ngFor="let item of eachItems; let i = index" [title]="'Item ' + item">
+    <wcc-counter [count]="item" [label]="'#' + i"></wcc-counter>
+  </wcc-wrapper>
+</div>

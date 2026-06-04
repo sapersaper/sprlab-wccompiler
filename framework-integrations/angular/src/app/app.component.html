@@ -1,85 +1,11 @@
 <h1>WCC Angular Integration Tests</h1>
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- PROPS                                                              -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
+<nav>
+  <a routerLink="/basics">Basics</a> |
+  <a routerLink="/directives">Directives</a> |
+  <a routerLink="/composition">Composition</a>
+</nav>
 
-<h2>Test 1: Props ([count], label)</h2>
-<wcc-counter id="test1" [count]="propCount" label="Static Label"></wcc-counter>
-<p>Angular propCount: {{ propCount }}</p>
+<hr />
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- EVENTS                                                             -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-
-<h2>Test 2: Events ((count-changed))</h2>
-<wcc-counter id="test2" [count]="eventCount" (count-changed)="onCountChanged($event)"></wcc-counter>
-<p>Angular eventCount: {{ eventCount }}</p>
-<button (click)="eventCount = eventCount + 1">Angular increment (manual)</button>
-
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- TWO-WAY BINDING                                                    -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-
-<h2>Test 3: Two-way binding ([(count)] via plugin)</h2>
-<wcc-counter id="test3" [count]="modelCount" (countChange)="modelCount = $any($event).detail"></wcc-counter>
-<p>Angular modelCount: {{ modelCount }}</p>
-<button (click)="modelCount = modelCount + 1">Angular increment (two-way)</button>
-
-<h2>Test 4: Multiple two-way bindings</h2>
-<!-- N/A: v-model.number modifier — Angular no tiene modifiers en [()] -->
-<wcc-counter id="test4" [count]="multiCount" (countChange)="multiCount = $any($event).detail" label="Multi-test"></wcc-counter>
-<p>Angular multiCount: {{ multiCount }}</p>
-
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- DEFAULT SLOT                                                       -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-
-<h2>Test 5: Default slot (children)</h2>
-<wcc-card id="test5">
-  <p>Body content via default slot</p>
-</wcc-card>
-
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- NAMED SLOTS                                                        -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-
-<h2>Test 6: Named slots (ng-template[slot] — WccSlotsDirective)</h2>
-<wcc-card id="test6" wccSlots>
-  <ng-template slot="header"><strong>Header via ng-template</strong></ng-template>
-  <p>Body content</p>
-  <ng-template slot="footer">Footer via ng-template</ng-template>
-</wcc-card>
-
-<h2>Test 7: Named slots (div slot="name")</h2>
-<!-- N/A: v-slot:name — Angular no tiene esa sintaxis, usa ng-template[slot] (Test 6) -->
-<wcc-card id="test7">
-  <div slot="header"><strong>Bold</strong> header with <em>emphasis</em></div>
-  <p>Body content</p>
-  <div slot="footer">Footer with <a href="#">link</a></div>
-</wcc-card>
-
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- SCOPED SLOTS                                                       -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-
-<h2>Test 8: Scoped slot (ng-template[slot] let-item let-index)</h2>
-<wcc-list id="test8" wccSlots>
-  <ng-template slot="item" let-item let-index="index">
-    <li><strong>{{ index }}</strong>: {{ item }}</li>
-  </ng-template>
-</wcc-list>
-
-<h2>Test 9: Scoped slot — custom class</h2>
-<wcc-list id="test9" wccSlots>
-  <ng-template slot="item" let-item>
-    <li class="custom">★ {{ item }}</li>
-  </ng-template>
-</wcc-list>
-
-<h2>Test 10: Scoped slot + Angular interpolation coexistence</h2>
-<wcc-list id="test10" wccSlots>
-  <ng-template slot="item" let-item>
-    <li>{{ item }} (Angular says: {{ angularMessage }})</li>
-  </ng-template>
-</wcc-list>
+<router-outlet></router-outlet>

@@ -1,0 +1,25 @@
+<script>
+import { defineComponent, defineProps } from 'wcc'
+
+export default defineComponent({
+  tag: 'test-attr-before-connect',
+})
+
+const props = defineProps({ title: 'Default' })
+</script>
+
+<template>
+<div class="attr-test">
+  <h3 if="props.title">{{props.title}}</h3>
+  <p else>No title</p>
+</div>
+</template>
+
+<style>
+.attr-test {
+  padding: 12px;
+  border: 2px solid #00c853;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+</style>

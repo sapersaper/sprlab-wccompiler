@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>E2E: 14-compiler-fixes</title>
+</head>
+<body>
+  <h1>Compiler Fixes (BUG-0017 to BUG-0019)</h1>
+
+  <h2>BUG-0017: Boolean prop false string</h2>
+  <test-boolean-prop visible="false"></test-boolean-prop>
+
+  <h2>BUG-0018: renderIf before connectedCallback</h2>
+  <test-attr-before-connect title="Set via attribute"></test-attr-before-connect>
+
+  <h2>BUG-0019: props.* reference in signal init</h2>
+  <test-prop-signal-init></test-prop-signal-init>
+
+  <!-- compiled scripts injected by test setup -->
+</body>
+</html>

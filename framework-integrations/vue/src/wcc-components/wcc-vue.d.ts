@@ -20,8 +20,59 @@ export interface WccCounterModels {
     'count': any;
 }
 
+export declare const WccDualmodel: 'wcc-dualmodel';
+/** Component: wcc-dualmodel */
+export interface WccDualmodelModels {
+    'first': any;
+    'second': any;
+}
+
 export declare const WccList: 'wcc-list';
 /** Component: wcc-list */
+
+export declare const WccParent: 'wcc-parent';
+/** Component: wcc-parent */
+export interface WccParentProps {
+    initialCount?: number;
+    label?: string;
+}
+export interface WccParentEvents {
+    'count-changed': CustomEvent;
+}
+
+export declare const WccWrapper: 'wcc-wrapper';
+/** Component: wcc-wrapper */
+export interface WccWrapperProps {
+    title?: string;
+}
+
+export declare const WccConditional: 'wcc-conditional';
+/** Component: wcc-conditional */
+export interface WccConditionalProps {
+    visible?: boolean;
+}
+
+export declare const WccInput: 'wcc-input';
+/** Component: wcc-input */
+export interface WccInputProps {
+    placeholder?: string;
+}
+export interface WccInputModels {
+    'value': any;
+}
+
+export declare const WccStyled: 'wcc-styled';
+/** Component: wcc-styled */
+export interface WccStyledProps {
+    variant?: string;
+    color?: string;
+}
+
+export declare const WccToggle: 'wcc-toggle';
+/** Component: wcc-toggle */
+export interface WccToggleProps {
+    show?: boolean;
+}
 
 // ── Volar Global Component Types ──────────────────────────────────
 // Add this file to tsconfig.json "include" for template autocompletion.
@@ -30,7 +81,14 @@ declare module 'vue' {
   export interface GlobalComponents {
     'wcc-card': new () => { $props: {} };
     'wcc-counter': new () => { $props: { label?: string; count?: any }; $emit: { (e: 'count-changed', value: any): void; (e: 'count-changed', value: any): void } };
+    'wcc-dualmodel': new () => { $props: { first?: any; second?: any }; $emit: { (e: 'first-changed', value: any): void; (e: 'second-changed', value: any): void } };
     'wcc-list': new () => { $props: {} };
+    'wcc-parent': new () => { $props: { initialCount?: number; label?: string }; $emit: { (e: 'count-changed', value: any): void } };
+    'wcc-wrapper': new () => { $props: { title?: string } };
+    'wcc-conditional': new () => { $props: { visible?: boolean } };
+    'wcc-input': new () => { $props: { placeholder?: string; value?: any }; $emit: { (e: 'value-changed', value: any): void } };
+    'wcc-styled': new () => { $props: { variant?: string; color?: string } };
+    'wcc-toggle': new () => { $props: { show?: boolean } };
   }
 }
 

@@ -1,0 +1,19 @@
+{
+  "name": "wcc-framework-integrations",
+  "private": true,
+  "scripts": {
+    "dev:vue": "yarn --cwd vue dev",
+    "dev:react": "yarn --cwd react dev",
+    "dev:angular": "yarn --cwd angular start",
+    "dev": "concurrently -n vue,react,angular -c blue,green,magenta \"yarn dev:vue\" \"yarn dev:react\" \"yarn dev:angular\"",
+    "test:vue": "yarn --cwd e2e test:vue",
+    "test:react": "yarn --cwd e2e test:react",
+    "test:angular": "yarn --cwd e2e test:angular",
+    "test": "concurrently -n vue,react,angular -c blue,green,magenta \"yarn test:vue\" \"yarn test:react\" \"yarn test:angular\"",
+    "build:wcc": "yarn --cwd wcc build",
+    "ci": "yarn build:wcc && yarn test"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

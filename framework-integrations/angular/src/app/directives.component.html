@@ -1,0 +1,19 @@
+<h2>Test 12: Conditional (if/else-if/else)</h2>
+<wcc-conditional id="test12" [visible]="condVisible"></wcc-conditional>
+<p>Angular condVisible: {{ condVisible }}</p>
+<button (click)="condVisible = !condVisible">Toggle conditional</button>
+
+<h2>Test 13: Show directive</h2>
+<wcc-toggle id="test13" [show]="showVisible"></wcc-toggle>
+<p>Angular showVisible: {{ showVisible }}</p>
+<button (click)="showVisible = !showVisible">Toggle show</button>
+
+<h2>Test 14: Input</h2>
+<wcc-input id="test14" placeholder="Type something..." [value]="inputValue" (valueChange)="onValueChanged($event)"></wcc-input>
+<p>Angular inputValue: {{ inputValue }}</p>
+
+<h2>Test 15: Styled (:class / :style)</h2>
+<wcc-styled id="test15" [variant]="styledVariant" [color]="styledColor"></wcc-styled>
+<p>Angular variant: {{ styledVariant }}, color: {{ styledColor }}</p>
+<button (click)="styledVariant = styledVariant === 'primary' ? 'secondary' : 'primary'">Toggle variant</button>
+<button (click)="styledColor = styledColor === '#333' ? '#e63946' : '#333'">Toggle color</button>
