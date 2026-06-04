@@ -4,6 +4,7 @@ import { provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withHashLocation } from '@angular/router';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
+import { provideWccBridge } from './wcc-components/angular-adapter';
 
 // Import WCC compiled components
 import './wcc-components/basics/wcc-card';
@@ -19,6 +20,7 @@ import './wcc-components/composition/wcc-parent';
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideWccBridge(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withHashLocation()),
   ]
