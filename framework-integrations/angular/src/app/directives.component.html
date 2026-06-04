@@ -9,7 +9,7 @@
 <button (click)="showVisible = !showVisible">Toggle show</button>
 
 <h2>Test 14: Input</h2>
-<wcc-input id="test14" placeholder="Type something..." [value]="inputValue" (value-changed)="onValueChanged($event)"></wcc-input>
+<wcc-input id="test14" placeholder="Type something..." [value]="inputValue" (valueChange)="onValueChanged($event)"></wcc-input>
 <p>Angular inputValue: {{ inputValue }}</p>
 
 <h2>Test 15: Styled (:class / :style)</h2>

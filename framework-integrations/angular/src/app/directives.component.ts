@@ -16,6 +16,6 @@ export class DirectivesComponent {
   styledColor = '#333';
 
   onValueChanged(event: Event) {
-    this.inputValue = (event as CustomEvent).detail.value;
+    this.inputValue = (event as CustomEvent).detail;
   }
 }

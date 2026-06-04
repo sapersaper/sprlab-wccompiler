@@ -12,7 +12,7 @@
 </wcc-wrapper>
 
 <h2>Test 18: wcc-parent with internal wcc-counter</h2>
-<wcc-parent id="test18" [initial-count]="3" label="Parent" (count-changed)="onParentChanged($event)"></wcc-parent>
+<wcc-parent id="test18" initial-count="3" label="Parent" (count-changed)="onParentChanged($event)"></wcc-parent>
 <p>Angular parentChanged: {{ parentChanged }}</p>
 
 <h2>Test 19: each con wcc-counter por item</h2>

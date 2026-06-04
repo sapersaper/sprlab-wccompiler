@@ -51,7 +51,7 @@ function InputTest() {
       <wcc-input id="test14"
         placeholder="Type something..."
         value={value}
-        onvaluechanged={(e) => setValue(e.detail.value)}
+        onvaluechanged={(e) => setValue(e.detail)}
       ></wcc-input>
       <p>React value: {value}</p>
     </div>
