@@ -618,7 +618,7 @@ export function generateScopedSlotElement(slotName, params, body) {
  * @param {string[]} [options.slotProps] - Explicit list of prop names to treat as named slots (overrides default heuristic).
  * @returns {import('vite').Plugin}
  */
-export function wccReactPlugin(options = {}) {
+export function wccReactSlotsPlugin(options = {}) {
   const { prefix, exclude = [], slotProps } = options
 
   return {
@@ -842,31 +842,8 @@ export function wccReactPlugin(options = {}) {
   }
 }
 
-
-/**
- * @deprecated Use the CLI-generated stubs instead (dist/wcc-react.js).
- * The `wcc build` command now auto-generates importable stubs with types.
- * This virtual module plugin is kept for backward compatibility but will be removed.
- *
- * Migration:
- *   Before: import { WccCard } from '@wcc/react'  (virtual module)
- *   After:  import { WccCard } from './dist/wcc-react'  (real file, tree-shakeable)
- */
-/**
- * Vite plugin that bridges WCC custom element events to React.
- *
- * Transforms idiomatic React event handler props on hyphenated custom elements:
- *   <wcc-counter onCountChanged={handler} />
- * → <wcc-counter ref={el => { if (el) el.addEventListener('count-changed', e => handler(e.detail)) }} />
- *
- * Runs before the main wccReactPlugin so event handlers are already
- * converted to ref callbacks before slot processing runs.
- *
- * @returns {import('vite').Plugin}
- */
-export function wccReactEvents() {
-  return {
-    name: 'vite-plugin-wcc-react-events',
+function wccReactEvents() {
+  return {    name: 'vite-plugin-wcc-react-events',
     enforce: 'pre',
     transform(code, id) {
       if (!/\.(jsx|tsx)$/.test(id)) return null
@@ -887,11 +864,6 @@ export function wccReactEvents() {
   }
 }
 
-export function wccReactComponents(options = {}) {
-  return {
-    name: 'vite-plugin-wcc-react-components-deprecated',
-    buildStart() {
-      this.warn('[wcc] wccReactComponents() is deprecated. Use the CLI-generated stubs from dist/wcc-react.js instead.')
-    }
-  }
+export function wccReactPlugin(options = {}) {
+  return [wccReactEvents(), wccReactSlotsPlugin(options)]
 }
