@@ -269,7 +269,7 @@ describe('codegen slots — unit tests', () => {
     const output = generateComponent(pr);
 
     expect(output).toContain('const __defaultSlotNodes = []');
-    expect(output).toContain("if (__defaultSlotNodes.length) { this.__s0.textContent = ''; __defaultSlotNodes.forEach(n => this.__s0.appendChild(n.cloneNode(true))); }");
+    expect(output).toContain("__dsn.forEach(n => this.__s0.appendChild(n));");
   });
 
   it('scoped slot — generates template storage and reactive effect', () => {

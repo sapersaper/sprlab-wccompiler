@@ -115,7 +115,13 @@ class WccWrapper extends HTMLElement {
     }
     if (!this.__ssr) { this.innerHTML = ''; }
     if (!this.__ssr) { this.appendChild(__root); }
-    if (__defaultSlotNodes.length) { this.__slot_default_0.textContent = ''; __defaultSlotNodes.forEach(n => this.__slot_default_0.appendChild(n.cloneNode(true))); }
+    if (__defaultSlotNodes.length) {
+      const __dsn = __defaultSlotNodes;
+      queueMicrotask(() => {
+        this.__slot_default_0.textContent = '';
+        __dsn.forEach(n => this.__slot_default_0.appendChild(n));
+      });
+    }
     if (Object.keys(__slotMap).length === 0 && __defaultSlotNodes.length === 0) {
       const __renderedRoot = this.firstElementChild;
       queueMicrotask(() => {
@@ -144,7 +150,7 @@ class WccWrapper extends HTMLElement {
           }
         }
         if (Object.keys(__sm).length > 0 || __dn.length > 0) {
-          if (__dn.length) { this.__slot_default_0.textContent = ''; __dn.forEach(n => this.__slot_default_0.appendChild(n.cloneNode(true))); }
+          if (__dn.length) { this.__slot_default_0.textContent = ''; __dn.forEach(n => this.__slot_default_0.appendChild(n)); }
         }
       });
     }

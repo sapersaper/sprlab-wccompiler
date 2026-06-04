@@ -96,7 +96,13 @@ class WccCard extends HTMLElement {
     if (!this.__ssr) { this.innerHTML = ''; }
     if (!this.__ssr) { this.appendChild(__root); }
     if (__slotMap['header']) { this.__slot_header_0.innerHTML = __slotMap['header'].content; }
-    if (__defaultSlotNodes.length) { this.__slot_default_1.textContent = ''; __defaultSlotNodes.forEach(n => this.__slot_default_1.appendChild(n.cloneNode(true))); }
+    if (__defaultSlotNodes.length) {
+      const __dsn = __defaultSlotNodes;
+      queueMicrotask(() => {
+        this.__slot_default_1.textContent = '';
+        __dsn.forEach(n => this.__slot_default_1.appendChild(n));
+      });
+    }
     if (__slotMap['footer']) { this.__slot_footer_2.innerHTML = __slotMap['footer'].content; }
     if (Object.keys(__slotMap).length === 0 && __defaultSlotNodes.length === 0) {
       const __renderedRoot = this.firstElementChild;
@@ -127,7 +133,7 @@ class WccCard extends HTMLElement {
         }
         if (Object.keys(__sm).length > 0 || __dn.length > 0) {
           if (__sm['header']) { this.__slot_header_0.innerHTML = __sm['header'].content; }
-          if (__dn.length) { this.__slot_default_1.textContent = ''; __dn.forEach(n => this.__slot_default_1.appendChild(n.cloneNode(true))); }
+          if (__dn.length) { this.__slot_default_1.textContent = ''; __dn.forEach(n => this.__slot_default_1.appendChild(n)); }
           if (__sm['footer']) { this.__slot_footer_2.innerHTML = __sm['footer'].content; }
         }
       });
