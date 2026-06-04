@@ -47,7 +47,7 @@ function ParentTest() {
   return (
     <div>
       <wcc-parent id="test18" initial-count={3} label="Parent"
-        oncountchanged={(e) => setChanged(e.detail)}
+        onCountChanged={(e) => setChanged(e.detail)}
       ></wcc-parent>
       <p>React parentChanged: {changed}</p>
     </div>

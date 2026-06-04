@@ -8,7 +8,7 @@ export default function BasicsView() {
       <PropsTest />
 
       {/* EVENTS */}
-      <h2>Test 2: Events (oncountchanged)</h2>
+      <h2>Test 2: Events (onCountChanged)</h2>
       <EventsTest />
 
       {/* TWO-WAY BINDING */}
@@ -78,7 +78,7 @@ function EventsTest() {
   const [eventCount, setEventCount] = useState(0)
   return (
     <div>
-      <wcc-counter id="test2" count={eventCount} oncountchanged={(e) => setEventCount(e.detail)}></wcc-counter>
+      <wcc-counter id="test2" count={eventCount} onCountChanged={(e) => setEventCount(e.detail)}></wcc-counter>
       <p>React eventCount: {eventCount}</p>
       <button onClick={() => setEventCount(c => c + 1)}>React increment (manual)</button>
     </div>
