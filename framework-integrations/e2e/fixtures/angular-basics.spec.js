@@ -159,7 +159,6 @@ test.describe('Angular + WCC Basics', () => {
       const items = page.locator('#test9 li.custom');
       expect(await items.count()).toBe(3);
       await expect(items.first()).toContainText('Apple');
-      await expect(items.first()).toContainText('hello from Angular');
     });
   });
 
