@@ -51,9 +51,8 @@ describe('generateComponent — _emit method', () => {
     const output = generateComponent(ir);
     expect(output).toContain('_emit(name, detail)');
     expect(output).toContain("this.dispatchEvent(new CustomEvent(name, evt))");
-    // lowercase-no-hyphens for React 19 compatibility
-    expect(output).toContain("name.replace(/-/g, '').toLowerCase()");
-    expect(output).toContain("if (lower !== name) this.dispatchEvent(new CustomEvent(lower, evt))");
+    // _emit only dispatches the kebab-case event — framework plugins handle adaptation
+    expect(output).not.toContain("toLowerCase()");
   });
 
   it('does not generate _emit method when no emits declared', () => {

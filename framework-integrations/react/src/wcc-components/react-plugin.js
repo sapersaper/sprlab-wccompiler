@@ -770,6 +770,38 @@ export function wccReactPlugin(options = {}) {
               propValue = propValue.expression
             }
 
+            // BUG-0017: Transform onEventName props on custom elements
+            // Replaces onXxx prop with ref callback that uses addEventListener
+            // with the correct kebab-case event name and unwraps e.detail.
+            if (/^on[A-Z]/.test(propName) && propValue) {
+              const eventName = propName.slice(2).replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '')
+              const refAttr = {
+                type: 'JSXAttribute',
+                name: { type: 'JSXIdentifier', name: 'ref' },
+                value: { type: 'JSXExpressionContainer', expression: {
+                  type: 'ArrowFunctionExpression',
+                  params: [{ type: 'Identifier', name: 'el' }],
+                  body: { type: 'BlockStatement', body: [{ type: 'IfStatement',
+                    test: { type: 'Identifier', name: 'el' },
+                    consequent: { type: 'ExpressionStatement', expression: {
+                      type: 'CallExpression', callee: { type: 'MemberExpression',
+                        object: { type: 'Identifier', name: 'el' },
+                        property: { type: 'Identifier', name: 'addEventListener' }, computed: false },
+                      arguments: [
+                        { type: 'StringLiteral', value: eventName },
+                        { type: 'ArrowFunctionExpression', params: [{ type: 'Identifier', name: 'e' }],
+                          body: { type: 'CallExpression', callee: propValue,
+                            arguments: [{ type: 'MemberExpression', object: { type: 'Identifier', name: 'e' },
+                              property: { type: 'Identifier', name: 'detail' }, computed: false }] } }
+                      ] } },
+                    alternate: null }] }
+                } }
+              }
+              remainingAttributes.push(refAttr)
+              transformed = true
+              continue
+            }
+
             // Task 7.2: Warn on invalid render prop values (non-arrow-function)
             if (/^render[A-Z]/.test(propName) && propValue && propValue.type !== 'ArrowFunctionExpression' && propValue.type !== 'StringLiteral') {
               pluginCtx.warn(`[wcc-react] ${id} — ${propName}: expected ArrowFunctionExpression, got ${propValue.type}`)
@@ -816,7 +848,7 @@ export function wccReactPlugin(options = {}) {
             }
           }
 
-          if (slotChildren.length > 0) {
+          if (slotChildren.length > 0 || transformed) {
             // Remove transformed slot props from the element's attributes
             openingElement.attributes = remainingAttributes
 

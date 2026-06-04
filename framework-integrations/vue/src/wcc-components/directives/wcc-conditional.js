@@ -116,7 +116,9 @@ class WccConditional extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
-    if (name === 'visible') this._state.visible = newVal !== null && newVal !== 'false';
+    if (name === 'visible') {
+      this._state.visible = newVal !== null && newVal !== 'false';
+    }
   }
 
   get visible() { return this._state.visible; }

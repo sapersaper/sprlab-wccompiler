@@ -69,7 +69,8 @@ function handleReset() {
     // _emit method
     expect(output).toContain('_emit(name, detail)');
     expect(output).toContain("this.dispatchEvent(new CustomEvent(name, evt))");
-    expect(output).toContain("replace(/-/g, '').toLowerCase()");
+    // _emit only dispatches kebab-case — framework plugins handle adaptation
+    expect(output).not.toContain("toLowerCase()");
     // Transformed emit calls in methods
     expect(output).toMatch(/this\._emit\(['"]change['"], this\._state\.count\)/);
     expect(output).toMatch(/this\._emit\(['"]reset['"]\)/);

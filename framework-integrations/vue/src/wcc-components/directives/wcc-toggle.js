@@ -75,7 +75,9 @@ class WccToggle extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
-    if (name === 'show') this._state.show = newVal !== null && newVal !== 'false';
+    if (name === 'show') {
+      this._state.show = newVal !== null && newVal !== 'false';
+    }
   }
 
   get show() { return this._state.show; }

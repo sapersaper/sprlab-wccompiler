@@ -194,7 +194,9 @@ class WccWrapper extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
-    if (name === 'title') this._state.title = newVal ?? '';
+    if (name === 'title') {
+      this._state.title = newVal ?? '';
+    }
   }
 
   get title() { return this._state.title; }
